@@ -1,19 +1,17 @@
 package com.octopod.network.listener;
 
-import java.util.Map;
-
+import com.octopod.network.LPRequestUtils;
+import com.octopod.network.NetworkPlugin;
+import com.octopod.network.cache.PlayerCache;
 import lilypad.client.connect.api.request.RequestException;
 import lilypad.client.connect.api.request.impl.RedirectRequest;
-
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import com.octopod.network.NetworkPlugin;
-import com.octopod.network.LPRequestUtils;
-import com.octopod.network.cache.PlayerCache;
+import java.util.Map;
 
 public class BukkitListeners implements Listener {
 

@@ -1,12 +1,11 @@
 package com.octopod.network.commands;
 
-import java.util.Arrays;
-
+import com.octopod.network.NetworkPlugin;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-import com.octopod.network.NetworkPlugin;
+import java.util.Arrays;
 
 /**
  * Extend this class when making commands, and it will automatically be added into the /help command list.

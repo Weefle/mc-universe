@@ -1,19 +1,6 @@
 package com.octopod.network.listener;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-
-import lilypad.client.connect.api.request.RequestException;
-import lilypad.client.connect.api.request.impl.RedirectRequest;
-
-import org.apache.commons.lang.StringUtils;
-
-import com.octopod.network.Debug;
-import com.octopod.network.NetworkPlugin;
-import com.octopod.network.NetworkConfig;
-import com.octopod.network.LPRequestUtils;
-import com.octopod.network.ServerInfo;
+import com.octopod.network.*;
 import com.octopod.network.cache.PlayerCache;
 import com.octopod.network.cache.ServerCache;
 import com.octopod.network.events.EventEmitter;
@@ -25,6 +12,13 @@ import com.octopod.network.events.player.NetworkPlayerRedirectEvent;
 import com.octopod.network.events.relays.MessageEvent;
 import com.octopod.network.events.server.ServerCacheEvent;
 import com.octopod.network.events.server.ServerUncacheEvent;
+import lilypad.client.connect.api.request.RequestException;
+import lilypad.client.connect.api.request.impl.RedirectRequest;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 public class NetworkListener {
 	

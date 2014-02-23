@@ -1,12 +1,11 @@
 package com.octopod.network.commands;
 
+import com.octopod.network.cache.CommandCache;
+import com.octopod.octolib.minecraft.ChatUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import com.octopod.network.cache.CommandCache;
-import com.octopod.octolib.minecraft.ChatUtils;
 
 public class CommandMaster extends DocumentedCommand{
 

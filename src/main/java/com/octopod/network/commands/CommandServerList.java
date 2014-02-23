@@ -1,19 +1,18 @@
 package com.octopod.network.commands;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
+import com.octopod.network.Debug;
+import com.octopod.network.LPRequestUtils;
+import com.octopod.network.NetworkPlugin;
+import com.octopod.network.cache.ServerCache;
+import com.octopod.network.events.server.ServerInfoEvent;
+import com.octopod.network.events.synclisteners.SyncServerInfoListener;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.octopod.network.Debug;
-import com.octopod.network.NetworkPlugin;
-import com.octopod.network.LPRequestUtils;
-import com.octopod.network.cache.ServerCache;
-import com.octopod.network.events.server.ServerInfoEvent;
-import com.octopod.network.events.synclisteners.SyncServerInfoListener;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 public class CommandServerList extends DocumentedCommand{
 

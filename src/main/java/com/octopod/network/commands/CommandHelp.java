@@ -1,13 +1,12 @@
 package com.octopod.network.commands;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-
 import com.octopod.network.NetworkPlugin;
 import com.octopod.network.cache.CommandCache;
 import com.octopod.octolib.minecraft.ChatBuilder;
 import com.octopod.octolib.minecraft.ChatElement;
 import com.octopod.octolib.minecraft.ChatUtils.Color;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 
 public class CommandHelp extends DocumentedCommand{
 

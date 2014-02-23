@@ -1,13 +1,13 @@
 package com.octopod.network.events.synclisteners;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import com.octopod.network.NetworkConfig;
 import com.octopod.network.events.EventHandler;
 import com.octopod.network.events.SynchronizedListener;
 import com.octopod.network.events.server.ServerInfoEvent;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class SyncServerInfoListener extends
 		SynchronizedListener<ServerInfoEvent> {

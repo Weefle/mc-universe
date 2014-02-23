@@ -1,11 +1,10 @@
 package com.octopod.network.commands;
 
+import com.octopod.network.LPRequestUtils;
+import com.octopod.network.NetworkConfig;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-
-import com.octopod.network.NetworkConfig;
-import com.octopod.network.LPRequestUtils;
 
 public class CommandAlert extends DocumentedCommand {
 	

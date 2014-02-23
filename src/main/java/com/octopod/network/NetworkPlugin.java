@@ -1,29 +1,9 @@
 package com.octopod.network;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.octopod.network.cache.PlayerCache;
-import lilypad.client.connect.api.Connect;
-
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import com.octopod.network.cache.CommandCache;
+import com.octopod.network.cache.PlayerCache;
 import com.octopod.network.cache.ServerCache;
-import com.octopod.network.commands.CommandAlert;
-import com.octopod.network.commands.CommandFind;
-import com.octopod.network.commands.CommandHelp;
-import com.octopod.network.commands.CommandMessage;
-import com.octopod.network.commands.CommandServerList;
-import com.octopod.network.commands.CommandMaster;
-import com.octopod.network.commands.CommandServerPing;
-import com.octopod.network.commands.CommandServerConnect;
-import com.octopod.network.commands.CommandServerSend;
-import com.octopod.network.commands.CommandServerSendAll;
+import com.octopod.network.commands.*;
 import com.octopod.network.events.EventEmitter;
 import com.octopod.network.events.EventManager;
 import com.octopod.network.events.network.NetworkConnectedEvent;
@@ -31,6 +11,15 @@ import com.octopod.network.listener.BukkitListeners;
 import com.octopod.network.listener.DebugListener;
 import com.octopod.network.listener.LilyPadListeners;
 import com.octopod.network.listener.NetworkListener;
+import lilypad.client.connect.api.Connect;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class NetworkPlugin extends JavaPlugin {
 

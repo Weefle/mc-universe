@@ -1,12 +1,12 @@
 package com.octopod.network;
 
+import com.octopod.octolib.common.IOUtils;
+import com.octopod.octolib.yaml.YamlConfiguration;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import com.octopod.octolib.common.IOUtils;
-import com.octopod.octolib.yaml.YamlConfiguration;
 
 public class NetworkConfig {
 

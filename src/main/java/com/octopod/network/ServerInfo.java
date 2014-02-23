@@ -1,10 +1,10 @@
 package com.octopod.network;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
 
 public class ServerInfo {
 	

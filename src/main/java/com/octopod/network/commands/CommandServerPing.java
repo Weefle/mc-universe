@@ -1,15 +1,14 @@
 package com.octopod.network.commands;
 
-import java.util.Arrays;
-import java.util.List;
-
+import com.octopod.network.LPRequestUtils;
+import com.octopod.network.NetworkPlugin;
+import com.octopod.network.events.server.ServerInfoEvent;
+import com.octopod.network.events.synclisteners.SyncServerInfoListener;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-import com.octopod.network.NetworkPlugin;
-import com.octopod.network.LPRequestUtils;
-import com.octopod.network.events.server.ServerInfoEvent;
-import com.octopod.network.events.synclisteners.SyncServerInfoListener;
+import java.util.Arrays;
+import java.util.List;
 
 public class CommandServerPing extends DocumentedCommand {
 

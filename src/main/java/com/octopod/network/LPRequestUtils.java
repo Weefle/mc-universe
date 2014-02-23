@@ -1,11 +1,5 @@
 package com.octopod.network;
 
-import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.octopod.network.cache.ServerCache;
 import com.octopod.network.events.EventEmitter;
 import com.octopod.network.events.SynchronizedListener;
@@ -13,7 +7,6 @@ import com.octopod.network.events.SynchronizedListener.EventCallback;
 import com.octopod.network.events.relays.MessageEvent;
 import com.octopod.network.events.server.ServerInfoEvent;
 import com.octopod.network.events.synclisteners.SyncMessageListener;
-
 import lilypad.client.connect.api.request.RequestException;
 import lilypad.client.connect.api.request.impl.GetPlayersRequest;
 import lilypad.client.connect.api.request.impl.MessageRequest;
@@ -21,6 +14,12 @@ import lilypad.client.connect.api.result.FutureResult;
 import lilypad.client.connect.api.result.StatusCode;
 import lilypad.client.connect.api.result.impl.GetPlayersResult;
 import lilypad.client.connect.api.result.impl.MessageResult;
+
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Utilities class to interface with LilyPad. 

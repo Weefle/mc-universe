@@ -1,13 +1,11 @@
 package com.octopod.network.commands;
 
+import com.octopod.network.LPRequestUtils;
+import com.octopod.network.NetworkPlugin;
 import lilypad.client.connect.api.result.StatusCode;
 import lilypad.client.connect.api.result.impl.MessageResult;
-
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-
-import com.octopod.network.NetworkPlugin;
-import com.octopod.network.LPRequestUtils;
 
 public class CommandServerSendAll extends DocumentedCommand {
 	

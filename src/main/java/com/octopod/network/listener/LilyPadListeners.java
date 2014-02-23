@@ -1,12 +1,11 @@
 package com.octopod.network.listener;
 
-import java.io.UnsupportedEncodingException;
-
+import com.octopod.network.NetworkConfig;
+import com.octopod.network.events.EventEmitter;
 import lilypad.client.connect.api.event.EventListener;
 import lilypad.client.connect.api.event.MessageEvent;
 
-import com.octopod.network.NetworkConfig;
-import com.octopod.network.events.EventEmitter;
+import java.io.UnsupportedEncodingException;
 
 public class LilyPadListeners {
 

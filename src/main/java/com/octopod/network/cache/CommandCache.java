@@ -1,14 +1,14 @@
 package com.octopod.network.cache;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.octopod.network.NetworkPlugin;
 import com.octopod.network.commands.DocumentedCommand;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class CommandCache {
 	
-	private CommandCache() {};	
+	private CommandCache() {}
 	
 	private static CommandCache cache;
 	

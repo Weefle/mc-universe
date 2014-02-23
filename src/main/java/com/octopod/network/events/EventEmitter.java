@@ -1,9 +1,9 @@
 package com.octopod.network.events;
 
+import com.octopod.network.Debug;
+
 import java.lang.reflect.Method;
 import java.util.List;
-
-import com.octopod.network.Debug;
 
 public class EventEmitter {
 	
@@ -34,43 +34,40 @@ public class EventEmitter {
 		Debug.verbose("Triggering event: &a" + event.getClass().getSimpleName());
 
 		List<Object> listeners = EventManager.getManager().getListeners();
-		
-		synchronized(listeners) 
-		{
-			for(final Object listener: listeners) 
-			{
-				Method[] methods = listener.getClass().getMethods();
-				for(final Method method: methods) 
-				{
-					EventHandler annotation = method.getAnnotation(EventHandler.class);
-					if(annotation != null) 
-					{
-						Class<?>[] argTypes = method.getParameterTypes();
-						if(argTypes.length != 1)
-							continue;
-						if(!event.getClass().getSimpleName().equals(argTypes[0].getSimpleName()))
-							continue;
-						
-						Runnable invoke = new Runnable() {
-							public void run() {
-								try {
-									method.invoke(listener, event);
-								} catch (Exception e) {
-									e.printStackTrace();
-								}								
-							}
-						};
-						
-						if(annotation.runAsync()) {
-							new Thread(invoke).start();					
-						} else {
-							invoke.run();
-						}
-						
-					}
-				}
-			}
-		}
+
+        for(final Object listener: listeners)
+        {
+            Method[] methods = listener.getClass().getMethods();
+            for(final Method method: methods)
+            {
+                EventHandler annotation = method.getAnnotation(EventHandler.class);
+                if(annotation != null)
+                {
+                    Class<?>[] argTypes = method.getParameterTypes();
+                    if(argTypes.length != 1)
+                        continue;
+                    if(!event.getClass().getSimpleName().equals(argTypes[0].getSimpleName()))
+                        continue;
+
+                    Runnable invoke = new Runnable() {
+                        public void run() {
+                            try {
+                                method.invoke(listener, event);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    };
+
+                    if(annotation.runAsync()) {
+                        new Thread(invoke).start();
+                    } else {
+                        invoke.run();
+                    }
+
+                }
+            }
+        }
 		
 		totalTriggers++;
 		

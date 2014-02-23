@@ -1,10 +1,9 @@
 package com.octopod.network.commands;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-
 import com.octopod.network.NetworkPlugin;
 import com.octopod.network.cache.PlayerCache;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 
 public class CommandFind extends DocumentedCommand {
 
@@ -15,7 +14,7 @@ public class CommandFind extends DocumentedCommand {
 		);
 	}
 	
-	Integer[] numArgs = new Integer[]{1};
+	private Integer[] numArgs = new Integer[]{1};
 	
 	@Override
 	public Integer[] numArgs() {

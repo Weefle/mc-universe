@@ -1,16 +1,15 @@
 package com.octopod.network.commands;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-
+import com.octopod.network.LPRequestUtils;
+import com.octopod.network.NetworkConfig;
+import com.octopod.network.NetworkPlugin;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.octopod.network.NetworkConfig;
-import com.octopod.network.NetworkPlugin;
-import com.octopod.network.LPRequestUtils;
+import java.util.Arrays;
+import java.util.LinkedList;
 
 public class CommandMessage extends DocumentedCommand {
 	

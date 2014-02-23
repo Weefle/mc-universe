@@ -1,15 +1,11 @@
 package com.octopod.network.cache;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.octopod.network.Debug;
 import com.octopod.network.LPRequestUtils;
 import com.octopod.network.events.server.ServerInfoEvent;
 import com.octopod.network.events.synclisteners.SyncServerInfoListener;
+
+import java.util.*;
 
 /**
  * This cache will be used to track which server players are on.
