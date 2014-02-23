@@ -1,0 +1,70 @@
+servers:
+    pve:
+        name: 'MCed | PvE'
+        description: ''
+        categories: [pve]
+
+    factions:
+        name: 'NxN | Factions'
+        description: ''
+        categories: [pvp]
+
+    race:
+        name: 'NxN | Race'
+        description: ''
+        categories: [minigame, wip]
+
+    creative:
+        name: 'BlockWorks'
+        description: ''
+        categories: [creative]
+
+    dev:
+        name: 'NxN | Dev'
+        description: ''
+        categories: [wip]
+
+    arena:
+        name: 'NxN | Arena'
+        description: ''
+        categories: [minigame, wip]
+
+    angelsreach:
+        name: 'Angel''s Reach'
+        description: ''
+        categories: [pvp, pve]
+
+    dentedshield:
+        name: 'Dented Shield'
+        description: ''
+        categories: [rp, pvp, pve]
+
+    zeoldcraft:
+        name: 'ZeoldCraft'
+        description: ''
+        categories: [pvp]
+
+    zeoldcreative:
+        name: 'ZeoldCreative'
+        description: ''
+        categories: [creative]
+
+    classpvp:
+        name: 'Class PvP'
+        description: ''
+        categories: [pvp] 
+
+    prison:
+        name: 'Sky Prison'
+        description: ''
+        categories: [pvp,pve,rp] 
+
+    kitpvp:
+        name: 'Kit PvP'
+        description: ''
+        categories: [pvp]
+
+    roleplay:
+        name: 'Role Play'
+        description: ''
+        categories: [pvp, pve, rp] 

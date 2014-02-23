@@ -1,0 +1,26 @@
+name: Network
+main: com.octopod.network.NetworkPlugin
+version: 0.1
+author: Octopod
+softdepend: ['LilyPad-Connect']
+commands:
+  net:
+    usage: <command>
+  nserver:
+    usage: <command>
+  nlist:
+    usage: <command>
+  nhelp:
+    usage: <command>
+  nalert:
+    usage: <command>
+  nfind:
+    usage: <command>
+  nsend:
+    usage: <command>
+  nsendall:
+    usage: <command>
+  nmsg:
+    usage: <command>
+  ping:
+    usage: <command>
