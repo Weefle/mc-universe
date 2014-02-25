@@ -8,17 +8,16 @@ import com.octopod.octolib.minecraft.ChatUtils.Color;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-public class CommandHelp extends DocumentedCommand{
+public class CommandHelp extends DocumentedCommand {
 
-	public CommandHelp() {
-		super(
-			"nhelp", "<command>", 
+    public CommandHelp(String root) {
+        super(root, "<command>",
 			"Lists out avaliable commands."
 		);
 	}
 
 	@Override
-	public boolean exec(CommandSender sender, Command cmd, String label, String[] args) {
+	public boolean exec(CommandSender sender, String label, String[] args) {
 
 		NetworkPlugin.sendMessage(sender, "&8-----------------------------------------------------");
 		NetworkPlugin.sendMessage(sender, new ChatBuilder().appendBlock(new ChatElement("Network Commands").color(Color.AQUA), 320, 2).toLegacy());

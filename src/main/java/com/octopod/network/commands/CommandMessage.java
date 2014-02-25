@@ -13,8 +13,8 @@ import java.util.LinkedList;
 
 public class CommandMessage extends DocumentedCommand {
 	
-	public CommandMessage() {
-		super("nmsg", "<command> <player> <message>", 
+	public CommandMessage(String root) {
+		super(root, "<command> <player> <message>",
 				
 			"Sends all players to a server."
 					
@@ -22,7 +22,7 @@ public class CommandMessage extends DocumentedCommand {
 	}
 
 	@Override
-	protected boolean exec(CommandSender cmdsender, Command cmd, String label, String[] args) {
+	protected boolean exec(CommandSender cmdsender, String label, String[] args) {
 		
 		if(args.length <= 1 || !(cmdsender instanceof Player)) return false;
 

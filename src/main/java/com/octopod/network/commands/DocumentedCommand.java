@@ -11,7 +11,7 @@ import java.util.Arrays;
  * Extend this class when making commands, and it will automatically be added into the /help command list.
  * @author Octopod
  */
-public abstract class DocumentedCommand implements CommandExecutor {
+public abstract class DocumentedCommand {
 
 	protected String root = "";
 	protected String usage = "<command>";
@@ -28,7 +28,7 @@ public abstract class DocumentedCommand implements CommandExecutor {
 	}
 
 	public String getUsage() {
-		return usage.replaceAll("<command>", "/" + root);
+		return usage.replaceAll("<command>", root);
 	}
 	
 	public String getDescription() {
@@ -39,19 +39,33 @@ public abstract class DocumentedCommand implements CommandExecutor {
 		return null;
 	}
 
-	protected abstract boolean exec(CommandSender sender, Command cmd, String label, String[] args);
-		
-	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		
-		if((numArgs() != null && !Arrays.asList(numArgs()).contains(args.length)) || !exec(sender, cmd, label, args)) {
-			NetworkPlugin.sendMessage(sender, 
-				"&8[&b" + getUsage() + "&8]: " +
-				"&6" + getDescription());
+    public boolean weakCommand() {
+        return true;
+    }
+
+	protected abstract boolean exec(CommandSender sender, String label, String[] args);
+
+	public boolean onCommand(CommandSender sender, String label, String[] args) {
+
+        //If number of arguments matches required for this command
+		if((numArgs() != null && !Arrays.asList(numArgs()).contains(args.length))) {
+
+            //If command returns true
+            if(exec(sender, label, args)) {
+                return true;
+            } else
+            //If the command isn't weak, show the help entry instead of letting Bukkit handle the command.
+            if(!weakCommand()) {
+                NetworkPlugin.sendMessage(sender,
+                        "&8[&b" + getUsage() + "&8]: " +
+                                "&6" + getDescription());
+                return true;
+            }
+
 		}
 
-		return true;
-		
+        return false;
+
 	}
 
 }

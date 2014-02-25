@@ -11,8 +11,8 @@ import org.bukkit.command.CommandSender;
 
 public class CommandServerSend extends DocumentedCommand {
 	
-	public CommandServerSend() {
-		super("nsend", "<command> <player> <server>", 
+	public CommandServerSend(String root) {
+		super(root, "<command> <player> <server>",
 				
 			"Sends a player to a server."
 					
@@ -27,7 +27,7 @@ public class CommandServerSend extends DocumentedCommand {
 	}	
 	
 	@Override
-	protected boolean exec(CommandSender sender, Command cmd, String label, String[] args) {
+	protected boolean exec(CommandSender sender, String label, String[] args) {
 
 		String player = args[0];
 		String server = args[1];

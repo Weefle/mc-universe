@@ -28,26 +28,25 @@ public class NetworkPlugin extends JavaPlugin {
 		//TODO: > be able to join the server a friend is on
 	
 	public final static String PREFIX = "&8[&bNetwork&8] &f";
+
+    protected static boolean connected = false;
 	
 	public static Connect connect;
 	public static JavaPlugin self;
-	public static LilyPadListeners lilyPadListeners = null;
-	public static BukkitListeners bukkitListeners = null;
-	public static NetworkListener messageListener = null;
-	public static DebugListener debugListener = null;
+
+	static LilyPadListeners lilyPadListeners = null;
+	static BukkitListeners bukkitListeners = null;
+	static NetworkListener messageListener = null;
+	static DebugListener debugListener = null;
 
     public static boolean isConnected() {
-        if(connect == null) {
-            return false;
-        } else {
-            return connect.isConnected();
-        }
+        return connected;
     }
 	
 	public void reload() {
 
         disable();
-        enable();
+        enable(false);
 
     }
 
@@ -66,7 +65,7 @@ public class NetworkPlugin extends JavaPlugin {
 
     }
 
-    public void enable() {
+    public void enable(boolean startup) {
 
         connect = this.getServer().getServicesManager().getRegistration(Connect.class).getProvider();
         self = this;
@@ -84,57 +83,65 @@ public class NetworkPlugin extends JavaPlugin {
         CommandCache commandCache = CommandCache.getCache();
 
         commandCache.registerCommand(
-                new CommandMaster(),
-                new CommandHelp(),
-                new CommandServerList(),
-                new CommandServerConnect(),
-                new CommandAlert(),
-                new CommandServerPing(),
-                new CommandFind(),
-                new CommandMessage(),
-                new CommandServerSend(),
-                new CommandServerSendAll()
+
+            new CommandMaster           ("/net"),
+            new CommandHelp             ("/ghelp"),
+            new CommandServerList       ("/glist"),
+            new CommandServerConnect    ("/server"),
+            new CommandAlert            ("/alert"),
+            new CommandServerPing       ("/ping"),
+            new CommandFind             ("/find"),
+            new CommandMessage          ("/msg"),
+            new CommandServerSend       ("/send"),
+            new CommandServerSendAll    ("/sendall")
+
         );
 
         if(connect != null) {
-            new Thread(new Runnable() {
+            if(startup) {
+                new Thread(new Runnable() {
 
-                @Override
-                public void run() {
-
-                    if(!connect.isConnected()) {
-                        console("Waiting for LilyPad to connect...");
-                        int connectionAttempts = 1;
-
-                        while(!connect.isConnected() && connectionAttempts <= 10) {
-                            try {
-                                console("Waiting for LilyPad connection... " + connectionAttempts);
-                                synchronized(this) {
-                                    wait(1000);
-                                }
-                            } catch (InterruptedException e) {}
-                            connectionAttempts++;
-                        }
+                    @Override
+                    public void run() {
 
                         if(!connect.isConnected()) {
-                            console("&cGave up waiting for LilyPad to connect. Disabling plugin...");
-                            Bukkit.getPluginManager().disablePlugin(NetworkPlugin.this);
-                            return;
+                            console("Waiting for LilyPad to connect...");
+                            int connectionAttempts = 1;
+
+                            while(!connect.isConnected() && connectionAttempts <= 10) {
+                                try {
+                                    console("Waiting for LilyPad connection... " + connectionAttempts);
+                                    synchronized(this) {
+                                        wait(1000);
+                                    }
+                                } catch (InterruptedException e) {}
+                                connectionAttempts++;
+                            }
+
+                            if(connect.isConnected()) {
+                                NetworkPlugin.connected = true;
+                            } else {
+                                console("&cGave up waiting for LilyPad to connect. Disabling plugin...");
+                                Bukkit.getPluginManager().disablePlugin(NetworkPlugin.this);
+                                return;
+                            }
                         }
+
+                        EventEmitter.getEmitter().triggerEvent(new NetworkConnectedEvent());
+
                     }
 
-                    EventEmitter.getEmitter().triggerEvent(new NetworkConnectedEvent());
-
-                }
-
-            }).start();
+                }).start();
+            } else {
+                NetworkPlugin.connected = connect.isConnected();
+            }
         }
 
     }
 
 	@Override
 	public void onEnable() {
-		enable();
+		enable(true);
 	}
 	
 	@Override

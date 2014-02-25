@@ -2,18 +2,42 @@ package com.octopod.network.listener;
 
 import com.octopod.network.LPRequestUtils;
 import com.octopod.network.NetworkPlugin;
+import com.octopod.network.cache.CommandCache;
 import com.octopod.network.cache.PlayerCache;
+import com.octopod.network.commands.DocumentedCommand;
 import lilypad.client.connect.api.request.RequestException;
 import lilypad.client.connect.api.request.impl.RedirectRequest;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.Map;
+import java.util.*;
 
 public class BukkitListeners implements Listener {
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onCommand(PlayerCommandPreprocessEvent event) {
+
+        Map<String, DocumentedCommand> commands = CommandCache.getCache().getCommands();
+
+        String[] parsed = event.getMessage().split(" ");
+
+        String root = parsed[0];
+        String[] args = Arrays.copyOfRange(parsed, 1, parsed.length);
+
+        DocumentedCommand command = commands.get(root);
+
+        if(command != null) {
+            if(command.onCommand(event.getPlayer(), root, args)) {
+                event.setCancelled(true);
+            }
+        }
+
+    }
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {

@@ -8,8 +8,8 @@ import org.bukkit.command.CommandSender;
 
 public class CommandAlert extends DocumentedCommand {
 	
-	public CommandAlert() {
-		super("nalert", "<command> <message...>", 
+	public CommandAlert(String root) {
+		super(root, "<command> <message...>",
 				
 			"Broadcasts a message to the entire network. " +
 			"Only servers that are running this plugin will recieve the alert."
@@ -18,7 +18,7 @@ public class CommandAlert extends DocumentedCommand {
 	}
 	
 	@Override
-	protected boolean exec(CommandSender sender, Command cmd, String label, String[] args) {
+	protected boolean exec(CommandSender sender, String label, String[] args) {
 		
 		String message = StringUtils.join(args, " ");
 		

@@ -12,9 +12,8 @@ import org.bukkit.entity.Player;
 
 public class CommandServerConnect extends DocumentedCommand {
 
-	public CommandServerConnect() {
-		super(
-			"nserver", "<command> <server>",
+    public CommandServerConnect(String root) {
+        super(root, "<command> <server>",
 			"Attempts to send you to another server. The console cannot run this command."
 		);
 	}
@@ -27,7 +26,7 @@ public class CommandServerConnect extends DocumentedCommand {
 	}	
 	
 	@Override
-	protected boolean exec(CommandSender sender, Command command, String label, String[] args) {
+	protected boolean exec(CommandSender sender, String label, String[] args) {
 
 		if(!(sender instanceof Player)) return false;
 

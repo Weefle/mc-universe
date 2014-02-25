@@ -9,8 +9,8 @@ import org.bukkit.command.CommandSender;
 
 public class CommandServerSendAll extends DocumentedCommand {
 	
-	public CommandServerSendAll() {
-		super("nsendall", "<command> <server>", 
+	public CommandServerSendAll(String root) {
+		super(root, "<command> <server>",
 				
 			"Sends all players to a server."
 					
@@ -25,7 +25,7 @@ public class CommandServerSendAll extends DocumentedCommand {
 	}	
 	
 	@Override
-	protected boolean exec(CommandSender sender, Command cmd, String label, String[] args) {
+	protected boolean exec(CommandSender sender, String label, String[] args) {
 
 		String from = null, server;
 		if(args.length == 2) {

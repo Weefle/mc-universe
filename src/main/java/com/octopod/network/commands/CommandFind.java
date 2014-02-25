@@ -7,10 +7,11 @@ import org.bukkit.command.CommandSender;
 
 public class CommandFind extends DocumentedCommand {
 
-	public CommandFind() {
-		super(
-			"nfind", "<command> <player>", 
+	public CommandFind(String root) {
+		super(root, "<command> <player>",
+
 			"Finds a player and attempts to return their location."
+
 		);
 	}
 	
@@ -22,7 +23,7 @@ public class CommandFind extends DocumentedCommand {
 	}	
 	
 	@Override
-	public boolean exec(CommandSender sender, Command cmd, String label, String[] args) {
+	public boolean exec(CommandSender sender, String label, String[] args) {
 		
 		if(args.length != 1) return false;
 

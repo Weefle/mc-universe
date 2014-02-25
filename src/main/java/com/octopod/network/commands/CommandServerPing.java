@@ -12,16 +12,16 @@ import java.util.List;
 
 public class CommandServerPing extends DocumentedCommand {
 
-	public CommandServerPing() {
-		super(
-			"ping", 
-			"<command> <server>",
+	public CommandServerPing(String root) {
+		super(root, "<command> <server>",
+
 			"Pings a LilyPad server that is running this plugin."
+
 		);
 	}
 
 	@Override
-	public boolean exec(CommandSender sender, Command command, String label, String[] args) {
+	public boolean exec(CommandSender sender, String label, String[] args) {
 
 		final String server = args[0];
 		

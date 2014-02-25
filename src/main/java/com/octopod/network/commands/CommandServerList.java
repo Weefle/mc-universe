@@ -16,15 +16,15 @@ import java.util.List;
 
 public class CommandServerList extends DocumentedCommand{
 
-	public CommandServerList() {
-		super(
-			"nlist", 
-			"<command>", 
+	public CommandServerList(String root) {
+		super(root, "<command>",
+
 			"Lists out avaliable servers."
+
 		);
 	}
 	
-	public boolean exec(CommandSender sender, Command cmd, String label, String[] args) {
+	public boolean exec(CommandSender sender, String label, String[] args) {
 		
 		if(!(sender instanceof Player)) {return false;}
 		

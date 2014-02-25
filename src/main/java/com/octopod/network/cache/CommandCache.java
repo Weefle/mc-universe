@@ -2,6 +2,7 @@ package com.octopod.network.cache;
 
 import com.octopod.network.NetworkPlugin;
 import com.octopod.network.commands.DocumentedCommand;
+import com.octopod.octolib.common.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +32,7 @@ public class CommandCache {
 	public DocumentedCommand getCommand(String label) {
 		return commandMap.get(label);
 	}
-	
+
 	public Map<String, DocumentedCommand> getCommands() {
 		return commandMap;
 	}
@@ -39,7 +40,6 @@ public class CommandCache {
 	public void registerCommand(DocumentedCommand... commands) {
 		for(DocumentedCommand command: commands) {
 			commandMap.put(command.getClass().getSimpleName(), command);
-			NetworkPlugin.self.getCommand(command.getLabel()).setExecutor(command);			
 		}
 	}
 

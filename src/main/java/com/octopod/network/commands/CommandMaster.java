@@ -16,15 +16,15 @@ public class CommandMaster extends DocumentedCommand{
 	public final static String WIN_HOR2 = ChatColor.DARK_GRAY + "|";
 	public final static int WIN_SIZE = 306;
 	
-	public CommandMaster(){
-		super(
-			"net", 
-			"<command> <arguments...>",
+	public CommandMaster(String root){
+		super(root, "<command> <arguments...>",
+
 			"Network general command."
+
 		);
 	}
 
-	public boolean exec(CommandSender sender, Command cmd, String label, String[] args) {
+	public boolean exec(CommandSender sender, String label, String[] args) {
 		
 		if(!(sender instanceof Player)){return false;}
 		
@@ -39,7 +39,7 @@ public class CommandMaster extends DocumentedCommand{
 
 			switch(label){
 				case "help":
-					CommandCache.getCache().getCommand("CommandHelp").onCommand(sender, cmd, label, args);
+					CommandCache.getCache().getCommand("CommandHelp").onCommand(sender, label, args);
 					break;
 				case "core":
 				    //player.connect(ProxyServer.getInstance().getServerInfo("core"));
