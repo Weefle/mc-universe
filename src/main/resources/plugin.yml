@@ -3,3 +3,10 @@ main: com.octopod.network.NetworkPlugin
 version: 0.1
 author: Octopod
 softdepend: ['LilyPad-Connect']
+permissions:
+    network.server.connect:
+        default: true
+    network.server.glist:
+        default: true
+    network.main:
+        default: true

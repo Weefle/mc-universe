@@ -1,6 +1,7 @@
 package com.octopod.network.commands;
 
 import com.octopod.network.LPRequestUtils;
+import com.octopod.network.NetworkPermission;
 import com.octopod.network.NetworkPlugin;
 import lilypad.client.connect.api.request.RequestException;
 import lilypad.client.connect.api.request.impl.RedirectRequest;
@@ -13,8 +14,10 @@ import org.bukkit.entity.Player;
 public class CommandServerConnect extends DocumentedCommand {
 
     public CommandServerConnect(String root) {
-        super(root, "<command> <server>",
+        super(root, "<command> <server>", NetworkPermission.NETWORK_SERVER_CONNECT,
+
 			"Attempts to send you to another server. The console cannot run this command."
+
 		);
 	}
 	

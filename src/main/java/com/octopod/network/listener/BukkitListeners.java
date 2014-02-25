@@ -1,5 +1,6 @@
 package com.octopod.network.listener;
 
+import com.octopod.network.Debug;
 import com.octopod.network.LPRequestUtils;
 import com.octopod.network.NetworkPlugin;
 import com.octopod.network.cache.CommandCache;
@@ -74,15 +75,17 @@ public class BukkitListeners implements Listener {
 	
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerKicked(PlayerKickEvent event) {
-		
-		event.setCancelled(true);
-		
-		try {
-			NetworkPlugin.sendMessage(event.getPlayer(), NetworkPlugin.PREFIX + "&7You've been moved to the hub server: &c\"" + event.getReason() + "\"");
-			NetworkPlugin.connect.request(new RedirectRequest("core", event.getPlayer().getName()));
-		} catch (RequestException e) {
-			e.printStackTrace();
-		}
+
+        if(NetworkPlugin.getServerName() != "core") {
+            event.setCancelled(true);
+
+            try {
+                NetworkPlugin.sendMessage(event.getPlayer(), NetworkPlugin.PREFIX + "&7You've been moved to the hub server: &c\"" + event.getReason() + "\"");
+                NetworkPlugin.connect.request(new RedirectRequest("core", event.getPlayer().getName()));
+            } catch (RequestException e) {
+                e.printStackTrace();
+            }
+        }
 		
 	}
 

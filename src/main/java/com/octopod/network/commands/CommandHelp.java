@@ -1,5 +1,6 @@
 package com.octopod.network.commands;
 
+import com.octopod.network.NetworkPermission;
 import com.octopod.network.NetworkPlugin;
 import com.octopod.network.cache.CommandCache;
 import com.octopod.octolib.minecraft.ChatBuilder;
@@ -11,7 +12,7 @@ import org.bukkit.command.CommandSender;
 public class CommandHelp extends DocumentedCommand {
 
     public CommandHelp(String root) {
-        super(root, "<command>",
+        super(root, "<command>", NetworkPermission.NETWORK_HELP,
 			"Lists out avaliable commands."
 		);
 	}

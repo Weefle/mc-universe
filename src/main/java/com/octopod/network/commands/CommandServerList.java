@@ -2,6 +2,7 @@ package com.octopod.network.commands;
 
 import com.octopod.network.Debug;
 import com.octopod.network.LPRequestUtils;
+import com.octopod.network.NetworkPermission;
 import com.octopod.network.NetworkPlugin;
 import com.octopod.network.cache.ServerCache;
 import com.octopod.network.events.server.ServerInfoEvent;
@@ -17,7 +18,7 @@ import java.util.List;
 public class CommandServerList extends DocumentedCommand{
 
 	public CommandServerList(String root) {
-		super(root, "<command>",
+		super(root, "<command>", NetworkPermission.NETWORK_SERVER_LIST,
 
 			"Lists out avaliable servers."
 

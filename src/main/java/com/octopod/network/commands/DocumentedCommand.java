@@ -1,5 +1,6 @@
 package com.octopod.network.commands;
 
+import com.octopod.network.NetworkPermission;
 import com.octopod.network.NetworkPlugin;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -13,14 +14,14 @@ import java.util.Arrays;
  */
 public abstract class DocumentedCommand {
 
-	protected String root = "";
-	protected String usage = "<command>";
-	protected String description = "This is a command.";
+	protected String root, usage, description;
+    protected NetworkPermission permission;
 	
-	public DocumentedCommand(String root, String usage, String description) {
+	public DocumentedCommand(String root, String usage, NetworkPermission permission, String description) {
 		this.root = root;
 		this.usage = usage;
 		this.description = description;
+        this.permission = permission;
 	}
 	
 	public String getLabel() {
@@ -47,8 +48,10 @@ public abstract class DocumentedCommand {
 
 	public boolean onCommand(CommandSender sender, String label, String[] args) {
 
+        if(!permission.playerHas(sender)) return false;
+
         //If number of arguments matches required for this command
-		if((numArgs() != null && !Arrays.asList(numArgs()).contains(args.length))) {
+		if(numArgs() == null || Arrays.asList(numArgs()).contains(args.length)) {
 
             //If command returns true
             if(exec(sender, label, args)) {

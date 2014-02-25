@@ -1,6 +1,7 @@
 package com.octopod.network.commands;
 
 import com.octopod.network.LPRequestUtils;
+import com.octopod.network.NetworkPermission;
 import com.octopod.network.NetworkPlugin;
 import com.octopod.network.events.server.ServerInfoEvent;
 import com.octopod.network.events.synclisteners.SyncServerInfoListener;
@@ -13,7 +14,7 @@ import java.util.List;
 public class CommandServerPing extends DocumentedCommand {
 
 	public CommandServerPing(String root) {
-		super(root, "<command> <server>",
+		super(root, "<command> <server>", NetworkPermission.NETWORK_SERVER_PING,
 
 			"Pings a LilyPad server that is running this plugin."
 

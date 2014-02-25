@@ -2,6 +2,7 @@ package com.octopod.network.commands;
 
 import com.octopod.network.LPRequestUtils;
 import com.octopod.network.NetworkConfig;
+import com.octopod.network.NetworkPermission;
 import com.octopod.network.NetworkPlugin;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.Command;
@@ -14,7 +15,7 @@ import java.util.LinkedList;
 public class CommandMessage extends DocumentedCommand {
 	
 	public CommandMessage(String root) {
-		super(root, "<command> <player> <message>",
+		super(root, "<command> <player> <message>", NetworkPermission.NETWORK_MESSAGE,
 				
 			"Sends all players to a server."
 					

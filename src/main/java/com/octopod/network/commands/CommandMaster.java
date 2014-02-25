@@ -1,5 +1,6 @@
 package com.octopod.network.commands;
 
+import com.octopod.network.NetworkPermission;
 import com.octopod.network.cache.CommandCache;
 import com.octopod.octolib.minecraft.ChatUtils;
 import org.bukkit.ChatColor;
@@ -17,7 +18,7 @@ public class CommandMaster extends DocumentedCommand{
 	public final static int WIN_SIZE = 306;
 	
 	public CommandMaster(String root){
-		super(root, "<command> <arguments...>",
+		super(root, "<command> <arguments...>", NetworkPermission.NETWORK_MASTER,
 
 			"Network general command."
 

@@ -1,5 +1,6 @@
 package com.octopod.network.commands;
 
+import com.octopod.network.NetworkPermission;
 import com.octopod.network.NetworkPlugin;
 import com.octopod.network.cache.PlayerCache;
 import org.bukkit.command.Command;
@@ -8,7 +9,7 @@ import org.bukkit.command.CommandSender;
 public class CommandFind extends DocumentedCommand {
 
 	public CommandFind(String root) {
-		super(root, "<command> <player>",
+		super(root, "<command> <player>", NetworkPermission.NETWORK_FIND,
 
 			"Finds a player and attempts to return their location."
 
