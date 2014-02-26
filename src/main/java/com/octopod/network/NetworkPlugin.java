@@ -82,6 +82,15 @@ public class NetworkPlugin extends JavaPlugin {
 
         CommandCache commandCache = CommandCache.getCache();
 
+        NetworkConfig config = NetworkConfig.getConfig();
+
+        Debug.info(
+            "Loaded configuration: ",
+            "    " + "Request Timeout: &a" + config.getRequestTimeout() + "ms",
+            "    " + "Request Prefix: &a" + config.getRequestPrefix(),
+            "    " + "Debug Mode: &a" + config.getDebugMode()
+        );
+
         commandCache.registerCommand(
 
             new CommandMaster           ("/net"),

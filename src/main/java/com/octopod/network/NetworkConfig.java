@@ -49,16 +49,12 @@ public class NetworkConfig {
 		
 		//Grabs the default configuration from our resources.
 		InputStream defaultConfig = this.getClass().getClassLoader().getResourceAsStream("config.yml");
-		
-		Debug.info("&7Loading configuration...");
-		
+
 		try 
 		{		
 			if(!configFile.exists()) //Checks the existance of config.yml
 			{
 				//Generate a new config.yml
-				Debug.info("&7Generating new configuration...");
-				
 				configFile.getParentFile().mkdirs();
 				configFile.createNewFile();
 				
@@ -73,29 +69,20 @@ public class NetworkConfig {
 			
 		//Something went wrong, so use the default config.
 		} catch (IOException e) {
-			Debug.info("&cThe configuration could not be read into. Using defaults...");
 			config.load(defaultConfig);
 		}
 		
 		IOUtils.closeSilent(defaultConfig);
-		
-		Debug.info("&7Successfully loaded configuration!");
-		
+
 		TIMEOUT = Long.valueOf(config.getInt("request-timeout"));
 		TIMEOUT = TIMEOUT == null ? 500L : TIMEOUT;
-		
-		Debug.info("&7Request Timeout: &a" + TIMEOUT);
-		
+
 		DEBUG_MODE = config.getInt("debug-messages");
 		DEBUG_MODE = DEBUG_MODE == null ? 0 : DEBUG_MODE;
-		
-		Debug.info("&7Debug Mode: &a" + DEBUG_MODE);
-		
+
 		CHANNEL_PREFIX = config.getString("channel-prefix");
 		CHANNEL_PREFIX = CHANNEL_PREFIX == null ? "network" : CHANNEL_PREFIX;
-		
-		Debug.info("&7Channel Prefix: &a\"" + CHANNEL_PREFIX + "\"");
-		
+
 		REQUEST_PLAYER_JOIN = 		CHANNEL_PREFIX + ".player.join";	
 		REQUEST_PLAYER_REDIRECT = 	CHANNEL_PREFIX + ".player.redirect";
 		REQUEST_PLAYER_LEAVE = 		CHANNEL_PREFIX + ".player.leave";	
