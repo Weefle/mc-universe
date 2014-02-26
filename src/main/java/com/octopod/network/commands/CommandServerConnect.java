@@ -7,7 +7,6 @@ import lilypad.client.connect.api.request.RequestException;
 import lilypad.client.connect.api.request.impl.RedirectRequest;
 import lilypad.client.connect.api.result.StatusCode;
 import lilypad.client.connect.api.result.impl.MessageResult;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -20,14 +19,14 @@ public class CommandServerConnect extends DocumentedCommand {
 
 		);
 	}
-	
+
 	Integer[] numArgs = new Integer[]{1};
-	
+
 	@Override
 	public Integer[] numArgs() {
 		return numArgs;
-	}	
-	
+	}
+
 	@Override
 	protected boolean exec(CommandSender sender, String label, String[] args) {
 
@@ -35,7 +34,7 @@ public class CommandServerConnect extends DocumentedCommand {
 
 		Player player = (Player)sender;
 		String server = args[0];
-		
+
 		//Checks if the server they're trying to connect to is this same server
 		if(server.equals(NetworkPlugin.connect.getSettings().getUsername())) {
 			NetworkPlugin.sendMessage(sender, "&cYou are already connected to this server.");
@@ -44,7 +43,7 @@ public class CommandServerConnect extends DocumentedCommand {
 
 		//Sends a dummy message request to the server . If it fails, then the server doesn't exist.
 		MessageResult result = LPRequestUtils.sendDummyMessage(server).awaitUninterruptibly();
-		
+
 		//Checks if the message went through before sending them there.
 		if(result.getStatusCode() != StatusCode.SUCCESS) {
 			NetworkPlugin.sendMessage(sender, "&cThis server is offline or does not exist.");
@@ -55,9 +54,9 @@ public class CommandServerConnect extends DocumentedCommand {
 		try {
 			NetworkPlugin.connect.request(new RedirectRequest(server, player.getName()));
 		} catch (RequestException e) {}
-		
+
 		return true;
-		
+
 	}
 
 }

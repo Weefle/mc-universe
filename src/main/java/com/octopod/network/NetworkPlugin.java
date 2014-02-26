@@ -52,9 +52,9 @@ public class NetworkPlugin extends JavaPlugin {
 
     public void disable() {
 
-        ServerCache.deleteCache();
-        CommandCache.deleteCache();
-        PlayerCache.deleteCache();
+        ServerCache.reset();
+        CommandCache.reset();
+        PlayerCache.reset();
 
         if(lilyPadListeners != null)
             connect.unregisterEvents(lilyPadListeners);
@@ -80,8 +80,6 @@ public class NetworkPlugin extends JavaPlugin {
         connect.registerEvents(lilyPadListeners);
         Bukkit.getPluginManager().registerEvents(bukkitListeners, this);
 
-        CommandCache commandCache = CommandCache.getCache();
-
         NetworkConfig config = NetworkConfig.getConfig();
 
         Debug.info(
@@ -91,7 +89,7 @@ public class NetworkPlugin extends JavaPlugin {
             "    " + "Debug Mode: &a" + config.getDebugMode()
         );
 
-        commandCache.registerCommand(
+        CommandCache.registerCommand(
 
             new CommandMaster           ("/net"),
             new CommandHelp             ("/ghelp"),

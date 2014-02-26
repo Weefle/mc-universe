@@ -30,7 +30,7 @@ public class CommandFind extends DocumentedCommand {
 
 		String player = args[0];
 
-		String server = PlayerCache.getCache().findPlayer(player);
+		String server = PlayerCache.findPlayer(player);
 		
 		if(server == null) {
 			NetworkPlugin.sendMessage(sender, "&cThis player was not found.");

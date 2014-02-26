@@ -31,31 +31,31 @@ public class NetworkListener {
 	@EventHandler(runAsync = true)
 	public void serverCacheEvent(ServerCacheEvent event) {
 		String server = event.getCachedServer();
-		ServerCache.getCache().addServer(server);
-		PlayerCache.getCache().importServer(server);
+		ServerCache.addServer(server);
+		PlayerCache.importServer(server);
 	}
 
     @EventHandler(runAsync = true)
 	public void serverUncacheEvent(ServerUncacheEvent event) {
-		ServerCache.getCache().removeServer(event.getUncachedServer());
+		ServerCache.removeServer(event.getUncachedServer());
 	}
 
     @EventHandler(runAsync = true)
 	public void playerJoinEvent(NetworkPlayerJoinEvent event) {
 		Debug.info("&b" + event.getPlayer() + " &7joined network through &a" + event.getServer());
-		PlayerCache.getCache().putPlayer(event.getPlayer(), event.getServer());
+		PlayerCache.putPlayer(event.getPlayer(), event.getServer());
 	}
 
     @EventHandler(runAsync = true)
 	public void playerLeaveEvent(NetworkPlayerLeaveEvent event) {
 		Debug.info("&b" + event.getPlayer() + " &7left network through &a" + event.getServer());
-		PlayerCache.getCache().removePlayer(event.getPlayer());
+		PlayerCache.removePlayer(event.getPlayer());
 	}
 
     @EventHandler(runAsync = true)
 	public void playerRedirectEvent(NetworkPlayerRedirectEvent event) {
 		Debug.info("&b" + event.getPlayer() + " &7switched servers to &a" + event.getServer());
-		PlayerCache.getCache().putPlayer(event.getPlayer(), event.getServer());
+		PlayerCache.putPlayer(event.getPlayer(), event.getServer());
 	}
 
     @EventHandler(runAsync = true)

@@ -12,7 +12,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-  
+
 	<build>
         <!--<finalName>original</finalName>-->
 		<plugins>
@@ -106,10 +106,10 @@
 			</plugin>
             -->
 		</plugins>
-			
+
 	</build>
-	  
-	<repositories>  
+
+	<repositories>
 		<repository>
 			<id>nixium-repo</id>
 			<url>http://repo.nixium.com/</url>
@@ -131,7 +131,7 @@
             <url>http://repo1.maven.org/maven2/</url>
         </repository>
 	</repositories>
-  
+
 	<dependencies>
 		<dependency>
 			<groupId>com.octopod</groupId>
@@ -152,7 +152,7 @@
 			<groupId>org.bukkit</groupId>
 			<artifactId>craftbukkit</artifactId>
 			<version>LATEST</version>
-		</dependency> 
+		</dependency>
 	</dependencies>
 
 </project>

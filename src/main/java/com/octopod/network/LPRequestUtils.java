@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Utilities class to interface with LilyPad. 
+ * Utilities class to interface with LilyPad.
  * Try not to import Bukkit classes into here.
  * @author Octopod
  */
@@ -31,7 +31,7 @@ public class LPRequestUtils {
 	public static Set<String> getNetworkedPlayers() {
 		return getNetworkedPlayers(true).getPlayers();
 	}
-	
+
 	public static boolean serverExists(String server) {
 		try {
 			return sendDummyMessage(server).await().getStatusCode() == StatusCode.SUCCESS;
@@ -39,37 +39,37 @@ public class LPRequestUtils {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Server Info Requester
 	 * These methods might cause the ServerInfoEvent to fire. Listen to it!
 	 */
-	
+
 	public static int requestServerInfo() {
-		List<String> servers = ServerCache.getCache().getServers();
+		List<String> servers = ServerCache.getServerList();
 		requestServerInfo(servers);
 		return servers.size();
 	}
-	
+
 	public static void requestServerInfo(String server) {
 		requestServerInfo(Arrays.asList(server));
 	}
-		
-	public static void requestServerInfo(final List<String> servers) 
+
+	public static void requestServerInfo(final List<String> servers)
 	{
 		Debug.verbose("Requesting info from: &a" + servers);
 		Thread thread = new Thread() {
-			public void run() 
+			public void run()
 			{
 				final long startTime = System.currentTimeMillis();
-				
+
 				NetworkConfig config = NetworkConfig.getConfig();
 					final String requestChannel = config.REQUEST_INFO;
 					final String relayChannel = config.REQUEST_INFO_RELAY;
 					long timeout = config.getRequestTimeout();
-					
+
 				final Set<ServerInfoEvent> events = new HashSet<ServerInfoEvent>();
-				
+
 				SynchronizedListener<MessageEvent> listener = new SyncMessageListener(new EventCallback<MessageEvent>() {
 
 					@Override
@@ -82,11 +82,11 @@ public class LPRequestUtils {
 					}
 
 				}).register();
-				
+
 				sendEmptyMessage(servers, requestChannel);
-				
+
 				listener.waitFor(servers.size(), timeout).unregister();
-				
+
 				for(ServerInfoEvent event: events)
 					EventEmitter.getEmitter().triggerEvent(event);
 			}
@@ -102,7 +102,7 @@ public class LPRequestUtils {
 			return true;
 		}
 	}
-	
+
 	public static void broadcastServerMessage(String server, String message) {
 		if(server.equals(NetworkPlugin.getServerName())) {
 			NetworkPlugin.broadcastMessage(message);
@@ -110,11 +110,11 @@ public class LPRequestUtils {
 			sendMessage(server, NetworkConfig.getConfig().REQUEST_BROADCAST, message);
 		}
 	}
-	
+
 	public static void broadcastNetworkMessage(String message) {
-		broadcastMessage(NetworkConfig.getConfig().REQUEST_BROADCAST, message);		
+		broadcastMessage(NetworkConfig.getConfig().REQUEST_BROADCAST, message);
 	}
-	
+
 	public static void sendPlayerMessage(String player, String message) {
 		if(NetworkPlugin.isPlayerOnline(player)) {
 			NetworkPlugin.sendMessage(player, message);
@@ -122,11 +122,11 @@ public class LPRequestUtils {
 			broadcastMessage(NetworkConfig.getConfig().REQUEST_MESSAGE, player + " " + message);
 		}
 	}
-	
+
 	public static void requestSendAll(String server, String destination) {
 		sendMessage(server, NetworkConfig.getConfig().REQUEST_SENDALL, destination);
 	}
-	
+
 	public static void requestSendAll(String destination) {
 		broadcastMessage(NetworkConfig.getConfig().REQUEST_SENDALL, destination);
 	}
@@ -137,34 +137,34 @@ public class LPRequestUtils {
 		} catch (RequestException e) {
 			return null;
 		}
-	}	
-	
+	}
+
 	public static void broadcastMessage(String channel, String message) {
 		try {
 			NetworkPlugin.connect.request(new MessageRequest((String)null, channel, message));
 		} catch (UnsupportedEncodingException | RequestException e) {}
 	}
-	
+
 	public static void sendMessage(String server, String channel, String message) {
 		try {
 			NetworkPlugin.connect.request(new MessageRequest(server, channel, message));
 		} catch (UnsupportedEncodingException | RequestException e) {}
 	}
-	
+
 	public static void sendMessage(List<String> servers, String channel, String message) {
 		try {
 			NetworkPlugin.connect.request(new MessageRequest(servers, channel, message));
-		} catch (UnsupportedEncodingException | RequestException e) {}		
+		} catch (UnsupportedEncodingException | RequestException e) {}
 	}
 
 	public static void sendEmptyMessage(String server, String channel) {
 		sendMessage(server, channel, "");
 	}
-	
+
 	public static void sendEmptyMessage(List<String> servers, String channel) {
 		sendMessage(servers, channel, "");
 	}
-	
+
 	public static FutureResult<MessageResult> sendDummyMessage(String server) {
 		try {
 			return NetworkPlugin.connect.request(new MessageRequest(server, "", ""));
@@ -172,5 +172,5 @@ public class LPRequestUtils {
 			return null;
 		}
 	}
-	
+
 }

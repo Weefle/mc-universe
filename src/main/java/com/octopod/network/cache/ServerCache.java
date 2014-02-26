@@ -8,53 +8,38 @@ import java.util.List;
 
 public class ServerCache {
 
-	private static ServerCache cache = null;
+    private ServerCache() {}
 
-	public static ServerCache getCache() {
-		if(cache != null) {
-			return cache;
-		} else {
-			return (cache = new ServerCache());
-		}
-	}
-	
-	public static void deleteCache() {
-		if(cache != null) {
-			cache = null;
-		}
-	}
-			
-	private List<String> cachedServers = Collections.synchronizedList(new ArrayList<String>());
+    public static void reset() {
+        serverList.clear();
+    }
 
-	public boolean addServer(String server) {
-		if(!cachedServers.contains(server)) {
+	private static List<String> serverList = Collections.synchronizedList(new ArrayList<String>());
+
+	public static boolean addServer(String server) {
+		if(!serverList.contains(server)) {
             Debug.info("Cached server &a" + server);
-			return cachedServers.add(server);
+			return serverList.add(server);
 		} else {
 			return false;
 		}
 	}
 	
-	public boolean removeServer(String server) {
-		if(cachedServers.contains(server)) {
+	public static boolean removeServer(String server) {
+		if(serverList.contains(server)) {
             Debug.debug("&cUncached server &a" + server);
-			return cachedServers.remove(server);
+			return serverList.remove(server);
 		} else {
 			return false;
 		}
 	}
 	
-	public boolean serverExists(String server) {
-		return cachedServers.contains(server);
+	public static boolean serverExists(String server) {
+		return serverList.contains(server);
 	}
 	
-	public List<String> getServers() {
-		return new ArrayList<String>(cachedServers);
-	}
-
-	private ServerCache() {
-		if(cache != null) {return;}
-		cache = this;
+	public static List<String> getServerList() {
+		return new ArrayList<String>(serverList);
 	}
 
 }

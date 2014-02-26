@@ -14,24 +14,10 @@ import java.util.*;
  * @author Octopod
  */
 public class PlayerCache {
-	
-	private static PlayerCache cache = null;
-	
-	public static PlayerCache getCache() {
-		if(cache == null) {
-			return (cache = new PlayerCache());
-		} else {
-			return cache;
-		}
-	}
 
-    public static void deleteCache() {
-        if(cache != null) {
-            cache = null;
-        }
-    }
-	
-	public void importServer(final String server) 
+    private PlayerCache() {}
+
+	public static void importServer(final String server)
 	{
 		LPRequestUtils.requestServerInfo(Arrays.asList(server));
 		List<ServerInfoEvent> events = SyncServerInfoListener.waitForExecutions(1, Arrays.asList(server));
@@ -43,28 +29,32 @@ public class PlayerCache {
             Iterator<String> it = event.getServerInfo().getPlayers().iterator();
             int playerCount = 0;
 			while(it.hasNext()) {
-                PlayerCache.this.putPlayer(it.next(), server);
+                PlayerCache.putPlayer(it.next(), server);
                 playerCount++;
             }
 			Debug.info("Imported &a" + playerCount + "&7 players from &a" + server);
 		}
 	}
 
-	final private Map<String, String> playerMap = Collections.synchronizedMap(new HashMap<String, String>());
+    public static void reset() {
+        playerMap.clear();
+    }
 
-	public void putPlayer(String player, String server) {
+	final static private Map<String, String> playerMap = Collections.synchronizedMap(new HashMap<String, String>());
+
+	public static void putPlayer(String player, String server) {
 		playerMap.put(player, server);
 	}
 	
-	public void removePlayer(String player) {
+	public static void removePlayer(String player) {
 		playerMap.remove(player);
 	}
 	
-	public String findPlayer(String player) {
+	public static String findPlayer(String player) {
 		return playerMap.get(player);
 	}
 	
-	public Map<String, String> getPlayerMap() {
+	public static Map<String, String> getPlayerMap() {
 		return playerMap;
 	}
 

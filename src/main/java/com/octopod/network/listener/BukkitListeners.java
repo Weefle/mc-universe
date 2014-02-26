@@ -23,7 +23,7 @@ public class BukkitListeners implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onCommand(PlayerCommandPreprocessEvent event) {
 
-        Map<String, DocumentedCommand> commands = CommandCache.getCache().getCommands();
+        Map<String, DocumentedCommand> commands = CommandCache.getCommands();
 
         String[] parsed = event.getMessage().split(" ");
 
@@ -43,7 +43,7 @@ public class BukkitListeners implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		
-		Map<String, String> playerMap = PlayerCache.getCache().getPlayerMap();
+		Map<String, String> playerMap = PlayerCache.getPlayerMap();
 		
 		String location = playerMap.get(event.getPlayer().getName());		
 		String channel;
@@ -61,7 +61,7 @@ public class BukkitListeners implements Listener {
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent event) {
 		
-		Map<String, String> playerMap = PlayerCache.getCache().getPlayerMap();
+		Map<String, String> playerMap = PlayerCache.getPlayerMap();
 		
 		String location = playerMap.get(event.getPlayer().getName());
 		String channel = NetworkPlugin.getNetworkConfig().REQUEST_PLAYER_LEAVE;
