@@ -21,56 +21,52 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class NetworkListener {
-	
-	@EventHandler
+
+    @EventHandler(runAsync = true)
 	public void networkConnected(NetworkConnectedEvent event) {
-
-		Debug.debug("Successfully connected to LilyPad!");
+		Debug.info("&aSuccessfully connected to LilyPad!");
 		LPRequestUtils.broadcastMessage(NetworkConfig.getConfig().REQUEST_CACHE, NetworkPlugin.getServerName());
-
 	}
 	
-	@EventHandler
+	@EventHandler(runAsync = true)
 	public void serverCacheEvent(ServerCacheEvent event) {
 		String server = event.getCachedServer();
 		ServerCache.getCache().addServer(server);
 		PlayerCache.getCache().importServer(server);
 	}
-	
-	@EventHandler
-	public void serverUncacheEvent(ServerCacheEvent event) {
-		String server = event.getCachedServer();
-		ServerCache.getCache().addServer(server);
+
+    @EventHandler(runAsync = true)
+	public void serverUncacheEvent(ServerUncacheEvent event) {
+		ServerCache.getCache().removeServer(event.getUncachedServer());
 	}
-	
-	@EventHandler
+
+    @EventHandler(runAsync = true)
 	public void playerJoinEvent(NetworkPlayerJoinEvent event) {
-		Debug.debug("&b" + event.getPlayer() + " &7joined network through &a" + event.getServer());
+		Debug.info("&b" + event.getPlayer() + " &7joined network through &a" + event.getServer());
 		PlayerCache.getCache().putPlayer(event.getPlayer(), event.getServer());
 	}
-	
-	@EventHandler
+
+    @EventHandler(runAsync = true)
 	public void playerLeaveEvent(NetworkPlayerLeaveEvent event) {
-		Debug.debug("&b" + event.getPlayer() + " &7left network through &a" + event.getServer());
+		Debug.info("&b" + event.getPlayer() + " &7left network through &a" + event.getServer());
 		PlayerCache.getCache().removePlayer(event.getPlayer());
 	}
-	
-	@EventHandler
+
+    @EventHandler(runAsync = true)
 	public void playerRedirectEvent(NetworkPlayerRedirectEvent event) {
-		Debug.debug("&b" + event.getPlayer() + " &7switched servers to &a" + event.getServer());
+		Debug.info("&b" + event.getPlayer() + " &7switched servers to &a" + event.getServer());
 		PlayerCache.getCache().putPlayer(event.getPlayer(), event.getServer());
 	}
-	
-	@EventHandler
+
+    @EventHandler(runAsync = true)
 	public void messageRecieved(MessageEvent event) {
 		
 		String sender = event.getSender();
 		String channel = event.getChannel();
 		String message = event.getMessage();
 		
-		Debug.verbose(
-				"&7Recieved message from &a" + sender + "&7:\n",
-				"    &7channel: &b" + channel
+		Debug.debug(
+				"&7Message: &a" + sender + "&7 on &b" + channel
 		);
 
 		NetworkConfig config = NetworkPlugin.getNetworkConfig();

@@ -11,15 +11,18 @@ public class Debug {
 	 */
 	public static void info(String... messages) 
 	{
-		for(String message: messages) {
+        if(NetworkConfig.getConfig().getDebugMode() >= 0)
+        {
+            for(String message: messages) {
 
-			NetworkPlugin.console(message);
-			for(Player player: NetworkPlugin.getPlayers()) {
-				if(player.hasPermission("network.debug")) {
-					NetworkPlugin.sendMessage(player, NetworkPlugin.PREFIX + message);
-				}
-			}				
-		}		
+                NetworkPlugin.console(message);
+                for(Player player: NetworkPlugin.getPlayers()) {
+                    if(player.hasPermission("network.debug")) {
+                        NetworkPlugin.sendMessage(player, NetworkPlugin.PREFIX + "&7" + message);
+                    }
+                }
+            }
+        }
 	}	
 	
 	/**
