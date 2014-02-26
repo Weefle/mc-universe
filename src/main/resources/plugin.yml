@@ -6,7 +6,7 @@ softdepend: ['LilyPad-Connect']
 permissions:
     network.server.connect:
         default: true
-    network.server.glist:
+    network.server.list:
         default: true
     network.main:
         default: true

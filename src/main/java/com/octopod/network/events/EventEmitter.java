@@ -3,6 +3,8 @@ package com.octopod.network.events;
 import com.octopod.network.Debug;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class EventEmitter {
@@ -21,7 +23,7 @@ public class EventEmitter {
 	public long totalTriggers = 0;
 
 	public void triggerEvent(final Event event) {
-		new Thread(event.getClass().getSimpleName() + "-" + totalTriggers) {
+		new Thread(event.getClass().getSimpleName() + "-" + totalTriggers++) {
 			@Override
 			public void run() {
 				trigger(event);
@@ -31,46 +33,49 @@ public class EventEmitter {
 	
 	private synchronized void trigger(final Event event) {
 		
-		Debug.verbose("Triggering event: &a" + event.getClass().getSimpleName());
+		Debug.verbose("Triggering event in thread: &a" + Thread.currentThread().getName());
 
-		List<Object> listeners = EventManager.getManager().getListeners();
+		List<Object> listeners = new ArrayList<>(EventManager.getManager().getListeners());
 
-        for(final Object listener: listeners)
-        {
-            Method[] methods = listener.getClass().getMethods();
-            for(final Method method: methods)
-            {
-                EventHandler annotation = method.getAnnotation(EventHandler.class);
-                if(annotation != null)
+        Iterator<Object> listener_it = listeners.iterator();
+
+        synchronized(listeners) {
+            while(listener_it.hasNext()) {
+                final Object listener = listener_it.next();
+                Method[] methods = listener.getClass().getMethods();
+                for(final Method method: methods)
                 {
-                    Class<?>[] argTypes = method.getParameterTypes();
-                    if(argTypes.length != 1)
-                        continue;
-                    if(!event.getClass().getSimpleName().equals(argTypes[0].getSimpleName()))
-                        continue;
+                    EventHandler annotation = method.getAnnotation(EventHandler.class);
+                    if(annotation != null)
+                    {
+                        Class<?>[] argTypes = method.getParameterTypes();
+                        if(argTypes.length != 1)
+                            continue;
+                        if(!event.getClass().getSimpleName().equals(argTypes[0].getSimpleName()))
+                            continue;
 
-                    Runnable invoke = new Runnable() {
-                        public void run() {
-                            try {
-                                method.invoke(listener, event);
-                            } catch (Exception e) {
-                                e.printStackTrace();
+                        Runnable invoke = new Runnable() {
+                            public void run() {
+                                try {
+                                    method.invoke(listener, event);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
                             }
+                        };
+
+                        if(annotation.runAsync()) {
+                            new Thread(invoke).start();
+                        } else {
+                            invoke.run();
                         }
-                    };
 
-                    if(annotation.runAsync()) {
-                        new Thread(invoke).start();
-                    } else {
-                        invoke.run();
                     }
-
                 }
             }
+
         }
-		
-		totalTriggers++;
-		
+
 	}
 
 }

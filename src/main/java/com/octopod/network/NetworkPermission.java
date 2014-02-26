@@ -22,7 +22,6 @@ public enum NetworkPermission {
     private NetworkPermission(String node) {
         this.node = node;
     }
-    public String node() {return node;}
 
     public boolean playerHas(CommandSender sender) {
         return sender.hasPermission(node);

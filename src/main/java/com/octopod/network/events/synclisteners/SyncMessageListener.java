@@ -11,7 +11,7 @@ public class SyncMessageListener extends SynchronizedListener<MessageEvent> {
 	}
 
 	@Override
-	@EventHandler
+	@EventHandler(runAsync = true)
 	public void executionListener(MessageEvent event) {
 		execute(event);
 	}

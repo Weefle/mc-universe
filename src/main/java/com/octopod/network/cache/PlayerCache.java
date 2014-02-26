@@ -4,6 +4,7 @@ import com.octopod.network.Debug;
 import com.octopod.network.LPRequestUtils;
 import com.octopod.network.events.server.ServerInfoEvent;
 import com.octopod.network.events.synclisteners.SyncServerInfoListener;
+import org.bukkit.entity.Player;
 
 import java.util.*;
 
@@ -36,14 +37,17 @@ public class PlayerCache {
 		List<ServerInfoEvent> events = SyncServerInfoListener.waitForExecutions(1, Arrays.asList(server));
 		
 		if(events.isEmpty()) {
-			Debug.verbose("Failed to import players from &a" + server);
+			Debug.info("Failed to import players from &a" + server);
 		} else {
 			ServerInfoEvent event = events.get(0);
-			for(String player: event.getServerInfo().getPlayers()) {
-				PlayerCache.this.putPlayer(player, event.getSender());
-			}
-			Debug.verbose("Imported players from &a" + event.getSender());
-		}					
+            Iterator<String> it = event.getServerInfo().getPlayers().iterator();
+            int playerCount = 0;
+			while(it.hasNext()) {
+                PlayerCache.this.putPlayer(it.next(), server);
+                playerCount++;
+            }
+			Debug.info("Imported &a" + playerCount + "&7 players from &a" + server);
+		}
 	}
 
 	final private Map<String, String> playerMap = Collections.synchronizedMap(new HashMap<String, String>());
