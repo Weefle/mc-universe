@@ -16,7 +16,7 @@ public class CommandMaster extends DocumentedCommand{
 	public final static String WIN_HOR1 = ChatColor.DARK_GRAY + "\u2019| " + ChatColor.WHITE;
 	public final static String WIN_HOR2 = ChatColor.DARK_GRAY + "|";
 	public final static int WIN_SIZE = 306;
-	
+
 	public CommandMaster(String root){
 		super(root, "<command> <arguments...>", NetworkPermission.NETWORK_MASTER,
 
@@ -26,21 +26,21 @@ public class CommandMaster extends DocumentedCommand{
 	}
 
 	public boolean exec(CommandSender sender, String label, String[] args) {
-		
+
 		if(!(sender instanceof Player)){return false;}
-		
+
 		Player player = (Player)sender;
-		
+
 		if(args.length == 0) {
-			
+
 			player.sendMessage(PREFIX + "Welcome to the Nixium Network!");
 			player.sendMessage(PREFIX + "Type /net help to view commands.");
-			
+
 		} else {
 
 			switch(label){
 				case "help":
-					CommandCache.getCache().getCommand("CommandHelp").onCommand(sender, label, args);
+					CommandCache.getCommand("CommandHelp").onCommand(sender, label, args);
 					break;
 				case "core":
 				    //player.connect(ProxyServer.getInstance().getServerInfo("core"));
@@ -65,7 +65,7 @@ public class CommandMaster extends DocumentedCommand{
 						"The filter processes on BungeeCord,",
 						"giving our servers extra performance."
 					}) {
-						player.sendMessage(WIN_HOR1 + ChatUtils.blockString(COLOR + line, WIN_SIZE, 0) + WIN_HOR2); 
+						player.sendMessage(WIN_HOR1 + ChatUtils.blockString(COLOR + line, WIN_SIZE, 0) + WIN_HOR2);
 					}
 					player.sendMessage(WIN_VER);
 					break;
@@ -73,7 +73,7 @@ public class CommandMaster extends DocumentedCommand{
 					break;
 			}
 		}
-		
+
 		return true;
 
 	}

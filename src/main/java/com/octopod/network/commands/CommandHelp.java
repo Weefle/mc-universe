@@ -23,11 +23,11 @@ public class CommandHelp extends DocumentedCommand {
 		NetworkPlugin.sendMessage(sender, "&8-----------------------------------------------------");
 		NetworkPlugin.sendMessage(sender, new ChatBuilder().appendBlock(new ChatElement("Network Commands").color(Color.AQUA), 320, 2).toLegacy());
 		NetworkPlugin.sendMessage(sender, "&8-----------------------------------------------------");
-		
-		for(DocumentedCommand command: CommandCache.getCache().getCommands().values()) {
+
+		for(DocumentedCommand command: CommandCache.getCommands().values()) {
 			NetworkPlugin.sendMessage(sender, "&8[&b" + command.getUsage() + "&8]: &6" + command.getDescription());
 		}
-	
+
 		return true;
 	}
 }

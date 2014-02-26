@@ -24,16 +24,16 @@ public class CommandServerList extends DocumentedCommand{
 
 		);
 	}
-	
+
 	public boolean exec(CommandSender sender, String label, String[] args) {
-		
+
 		if(!(sender instanceof Player)) {return false;}
-		
+
 		long startTime = System.currentTimeMillis();
 
-		final List<String> cachedServers =  ServerCache.getCache().getServers();
+		final List<String> cachedServers =  ServerCache.getServerList();
 		Debug.verbose("&7Expecting responses from: &b" + cachedServers);
-		
+
 		LPRequestUtils.requestServerInfo(cachedServers);
 		List<ServerInfoEvent> events = SyncServerInfoListener.waitForExecutions(cachedServers.size());
 
@@ -41,35 +41,35 @@ public class CommandServerList extends DocumentedCommand{
 		for(ServerInfoEvent event: events) {
 			playerCount += event.getServerInfo().getPlayers().size();
 		}
-		
+
 		long time = System.currentTimeMillis() - startTime;
 
 		NetworkPlugin.sendMessage(sender, "&7Found &a" + events.size() + " &7servers in &f" + time + "ms&7: &b(" + playerCount + " players)");
-		
+
 		Collections.sort(events);
-		
+
 		for(Iterator<ServerInfoEvent> it = events.iterator(); it.hasNext();) {
 			ServerInfoEvent event = it.next();
-			NetworkPlugin.sendMessage(sender, 
+			NetworkPlugin.sendMessage(sender,
 					"    " +
 					"&7(" + event.getPing() + "ms) " +
-					"&8[&a" + event.getSender() + "&8] " + 
+					"&8[&a" + event.getSender() + "&8] " +
 					"&b(" + event.getServerInfo().getPlayers().size() + ")"
 			);
 			cachedServers.remove(event.getSender());
 		}
-		
+
 		for(String extraServer: cachedServers) {
-			NetworkPlugin.sendMessage(sender, 
+			NetworkPlugin.sendMessage(sender,
 					"    " +
 					"&8(?ms) " +
-					"&8[" + extraServer + "] " + 
+					"&8[" + extraServer + "] " +
 					"&8(?)"
-			);			
+			);
 		}
 
 		return true;
-		
+
 	}
 
 }
