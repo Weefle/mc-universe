@@ -1,45 +1,47 @@
 package com.octopod.network.cache;
 
 import com.octopod.network.Debug;
+import com.octopod.network.ServerInfo;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class ServerCache {
 
     private ServerCache() {}
 
     public static void reset() {
-        serverList.clear();
+        serverMap.clear();
     }
 
-	private static List<String> serverList = Collections.synchronizedList(new ArrayList<String>());
+	private static Map<String, ServerInfo> serverMap = Collections.synchronizedMap(new HashMap<String, ServerInfo>());
 
-	public static boolean addServer(String server) {
-		if(!serverList.contains(server)) {
-            Debug.info("Cached server &a" + server);
-			return serverList.add(server);
-		} else {
-			return false;
-		}
+	public static boolean addServer(String server, ServerInfo info) {
+        boolean isNew = !serverMap.containsKey(server);
+        serverMap.put(server, info);
+        if(isNew) {
+            Debug.info("Recieved new info from &a" + server);
+        } else {
+            Debug.info("Recieved updated info from &a" + server);
+        }
+        return isNew;
 	}
-	
+
 	public static boolean removeServer(String server) {
-		if(serverList.contains(server)) {
-            Debug.debug("&cUncached server &a" + server);
-			return serverList.remove(server);
+		if(serverMap.containsKey(server)) {
+            Debug.debug("&cRemoved server &a" + server + "&c from cache.");
+			serverMap.remove(server);
+            return true;
 		} else {
 			return false;
 		}
 	}
-	
+
 	public static boolean serverExists(String server) {
-		return serverList.contains(server);
+		return serverMap.containsKey(server);
 	}
-	
-	public static List<String> getServerList() {
-		return new ArrayList<String>(serverList);
+
+	public static Map<String, ServerInfo> getServerMap() {
+		return new HashMap<>(serverMap);
 	}
 
 }

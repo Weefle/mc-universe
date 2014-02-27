@@ -1,12 +1,5 @@
 package com.octopod.network;
 
-import com.octopod.network.cache.ServerCache;
-import com.octopod.network.events.EventEmitter;
-import com.octopod.network.events.SynchronizedListener;
-import com.octopod.network.events.SynchronizedListener.EventCallback;
-import com.octopod.network.events.relays.MessageEvent;
-import com.octopod.network.events.server.ServerInfoEvent;
-import com.octopod.network.events.synclisteners.SyncMessageListener;
 import lilypad.client.connect.api.request.RequestException;
 import lilypad.client.connect.api.request.impl.GetPlayersRequest;
 import lilypad.client.connect.api.request.impl.MessageRequest;
@@ -16,8 +9,6 @@ import lilypad.client.connect.api.result.impl.GetPlayersResult;
 import lilypad.client.connect.api.result.impl.MessageResult;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -45,54 +36,25 @@ public class LPRequestUtils {
 	 * These methods might cause the ServerInfoEvent to fire. Listen to it!
 	 */
 
-	public static int requestServerInfo() {
-		List<String> servers = ServerCache.getServerList();
-		requestServerInfo(servers);
-		return servers.size();
-	}
+    public static void requestServerInfo() {
+        Debug.verbose("Requesting info from all servers");
+        broadcastMessage(NetworkConfig.getConfig().CHANNEL_INFO_REQUEST, NetworkPlugin.encodeServerInfo());
+    }
 
-	public static void requestServerInfo(String server) {
-		requestServerInfo(Arrays.asList(server));
-	}
-
-	public static void requestServerInfo(final List<String> servers)
-	{
+	public static void requestServerInfo(final List<String> servers) {
 		Debug.verbose("Requesting info from: &a" + servers);
-		Thread thread = new Thread() {
-			public void run()
-			{
-				final long startTime = System.currentTimeMillis();
-
-				NetworkConfig config = NetworkConfig.getConfig();
-					final String requestChannel = config.REQUEST_INFO;
-					final String relayChannel = config.REQUEST_INFO_RELAY;
-					long timeout = config.getRequestTimeout();
-
-				final Set<ServerInfoEvent> events = new HashSet<ServerInfoEvent>();
-
-				SynchronizedListener<MessageEvent> listener = new SyncMessageListener(new EventCallback<MessageEvent>() {
-
-					@Override
-					public boolean onEvent(MessageEvent event) {
-						if(event.getChannel().equals(relayChannel) && servers.contains(event.getSender())) {
-							events.add(new ServerInfoEvent(event.getSender(), event.getMessage(), System.currentTimeMillis() - startTime));
-							return true;
-						}
-						return false;
-					}
-
-				}).register();
-
-				sendEmptyMessage(servers, requestChannel);
-
-				listener.waitFor(servers.size(), timeout).unregister();
-
-				for(ServerInfoEvent event: events)
-					EventEmitter.getEmitter().triggerEvent(event);
-			}
-		};
-		thread.start();
+        sendMessage(servers, NetworkConfig.getConfig().CHANNEL_INFO_REQUEST, NetworkPlugin.encodeServerInfo());
 	}
+
+    public static void requestPlayerList() {
+        Debug.verbose("Requesting playerlist from all servers");
+        broadcastMessage(NetworkConfig.getConfig().CHANNEL_PLAYERLIST_REQUEST, NetworkPlugin.encodePlayerList());
+    }
+
+    public static void requestPlayerList(final List<String> servers) {
+        Debug.verbose("Requesting playerlist from: &a" + servers);
+        sendMessage(servers, NetworkConfig.getConfig().CHANNEL_PLAYERLIST_REQUEST, NetworkPlugin.encodePlayerList());
+    }
 
 	public static boolean isPlayerOnline(String player) {
 		GetPlayersResult result = getNetworkedPlayers(true);
@@ -107,28 +69,28 @@ public class LPRequestUtils {
 		if(server.equals(NetworkPlugin.getServerName())) {
 			NetworkPlugin.broadcastMessage(message);
 		} else {
-			sendMessage(server, NetworkConfig.getConfig().REQUEST_BROADCAST, message);
+			sendMessage(server, NetworkConfig.getConfig().CHANNEL_BROADCAST, message);
 		}
 	}
 
 	public static void broadcastNetworkMessage(String message) {
-		broadcastMessage(NetworkConfig.getConfig().REQUEST_BROADCAST, message);
+		broadcastMessage(NetworkConfig.getConfig().CHANNEL_BROADCAST, message);
 	}
 
 	public static void sendPlayerMessage(String player, String message) {
 		if(NetworkPlugin.isPlayerOnline(player)) {
 			NetworkPlugin.sendMessage(player, message);
 		} else {
-			broadcastMessage(NetworkConfig.getConfig().REQUEST_MESSAGE, player + " " + message);
+			broadcastMessage(NetworkConfig.getConfig().CHANNEL_MESSAGE, player + " " + message);
 		}
 	}
 
 	public static void requestSendAll(String server, String destination) {
-		sendMessage(server, NetworkConfig.getConfig().REQUEST_SENDALL, destination);
+		sendMessage(server, NetworkConfig.getConfig().CHANNEL_SENDALL, destination);
 	}
 
 	public static void requestSendAll(String destination) {
-		broadcastMessage(NetworkConfig.getConfig().REQUEST_SENDALL, destination);
+		broadcastMessage(NetworkConfig.getConfig().CHANNEL_SENDALL, destination);
 	}
 
 	public static GetPlayersResult getNetworkedPlayers(boolean list) {
@@ -156,6 +118,10 @@ public class LPRequestUtils {
 			NetworkPlugin.connect.request(new MessageRequest(servers, channel, message));
 		} catch (UnsupportedEncodingException | RequestException e) {}
 	}
+
+    public static void broadcastEmptyMessage(String channel) {
+        broadcastMessage(channel, "");
+    }
 
 	public static void sendEmptyMessage(String server, String channel) {
 		sendMessage(server, channel, "");

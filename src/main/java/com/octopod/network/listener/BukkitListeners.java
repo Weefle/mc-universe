@@ -49,9 +49,9 @@ public class BukkitListeners implements Listener {
 		String channel;
 
 		if(location == null) {
-			channel = NetworkPlugin.getNetworkConfig().REQUEST_PLAYER_JOIN;
+			channel = NetworkPlugin.getNetworkConfig().CHANNEL_PLAYER_JOIN;
 		} else {
-			channel = NetworkPlugin.getNetworkConfig().REQUEST_PLAYER_REDIRECT;
+			channel = NetworkPlugin.getNetworkConfig().CHANNEL_PLAYER_REDIRECT;
 		} 
 		
 		LPRequestUtils.broadcastMessage(channel, event.getPlayer().getName());	
@@ -64,7 +64,7 @@ public class BukkitListeners implements Listener {
 		Map<String, String> playerMap = PlayerCache.getPlayerMap();
 		
 		String location = playerMap.get(event.getPlayer().getName());
-		String channel = NetworkPlugin.getNetworkConfig().REQUEST_PLAYER_LEAVE;
+		String channel = NetworkPlugin.getNetworkConfig().CHANNEL_PLAYER_LEAVE;
 		
 		if(location != null && location.equals(NetworkPlugin.getServerName())) 
 		{

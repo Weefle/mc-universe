@@ -5,6 +5,7 @@ import com.octopod.network.NetworkPlugin;
 import com.octopod.network.cache.CommandCache;
 import com.octopod.octolib.minecraft.ChatBuilder;
 import com.octopod.octolib.minecraft.ChatElement;
+import com.octopod.octolib.minecraft.ChatUtils;
 import com.octopod.octolib.minecraft.ChatUtils.Color;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -21,7 +22,7 @@ public class CommandHelp extends DocumentedCommand {
 	public boolean exec(CommandSender sender, String label, String[] args) {
 
 		NetworkPlugin.sendMessage(sender, "&8-----------------------------------------------------");
-		NetworkPlugin.sendMessage(sender, new ChatBuilder().appendBlock(new ChatElement("Network Commands").color(Color.AQUA), 320, 2).toLegacy());
+		NetworkPlugin.sendMessage(sender, ChatUtils.toLegacy(new ChatBuilder().appendBlock(new ChatElement("Network Commands").color(Color.AQUA), 320, 2)));
 		NetworkPlugin.sendMessage(sender, "&8-----------------------------------------------------");
 
 		for(DocumentedCommand command: CommandCache.getCommands().values()) {

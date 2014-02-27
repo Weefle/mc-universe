@@ -12,6 +12,7 @@ import com.octopod.network.listener.DebugListener;
 import com.octopod.network.listener.LilyPadListeners;
 import com.octopod.network.listener.NetworkListener;
 import lilypad.client.connect.api.Connect;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -26,11 +27,11 @@ public class NetworkPlugin extends JavaPlugin {
 	//TODO: Add friends list system
 		//TODO: > be able to message friends across servers
 		//TODO: > be able to join the server a friend is on
-	
+
 	public final static String PREFIX = "&8[&bNetwork&8] &f";
 
     protected static boolean connected = false;
-	
+
 	public static Connect connect;
 	public static JavaPlugin self;
 
@@ -42,7 +43,7 @@ public class NetworkPlugin extends JavaPlugin {
     public static boolean isConnected() {
         return connected;
     }
-	
+
 	public void reload() {
 
         disable();
@@ -61,7 +62,7 @@ public class NetworkPlugin extends JavaPlugin {
 
         getEventManager().unregisterAll();
 
-        LPRequestUtils.broadcastMessage(NetworkConfig.getConfig().REQUEST_UNCACHE, getServerName());
+        LPRequestUtils.broadcastMessage(NetworkConfig.getConfig().CHANNEL_UNCACHE, getServerName());
 
     }
 
@@ -150,7 +151,7 @@ public class NetworkPlugin extends JavaPlugin {
 	public void onEnable() {
 		enable(true);
 	}
-	
+
 	@Override
 	public void onDisable() {
 		disable();
@@ -159,7 +160,7 @@ public class NetworkPlugin extends JavaPlugin {
 	public static EventManager getEventManager() {
 		return EventManager.getManager();
 	}
-	
+
 	public static NetworkConfig getNetworkConfig() {
 		return NetworkConfig.getConfig();
 	}
@@ -167,7 +168,7 @@ public class NetworkPlugin extends JavaPlugin {
 	public static void console(String message) {
 		console(message, PREFIX);
 	}
-	
+
 	public static void console(String message, String prefix) {
 		Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + message));
 	}
@@ -180,19 +181,19 @@ public class NetworkPlugin extends JavaPlugin {
 		Player p = Bukkit.getPlayer(player);
 		if(p != null) {sendMessage(p, message);}
 	}
-	
+
 	public static void sendMessage(CommandSender sender, String message) {
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
 	}
-	
+
 	public static void broadcastMessage(String message) {
 		Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', message));
 	}
-	
+
 	public static Player[] getPlayers() {
 		return Bukkit.getOnlinePlayers();
 	}
-	
+
 	public static List<String> getPlayerNames() {
 		List<String> players = new ArrayList<String>();
 		for(Player p: Bukkit.getOnlinePlayers()) {
@@ -200,9 +201,19 @@ public class NetworkPlugin extends JavaPlugin {
 		}
 		return players;
 	}
-	
+
 	public static boolean isPlayerOnline(String player) {
 		return Bukkit.getPlayer(player) != null;
 	}
+
+    public static String encodeServerInfo() {
+        int maxPlayers = NetworkPlugin.self.getServer().getMaxPlayers();
+        String motd = NetworkPlugin.self.getServer().getMotd();
+        return maxPlayers + " " + motd;
+    }
+
+    public static String encodePlayerList() {
+        return StringUtils.join(NetworkPlugin.getPlayerNames(), ",");
+    }
 
 }

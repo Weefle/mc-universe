@@ -25,26 +25,25 @@ public class CommandServerPing extends DocumentedCommand {
 	public boolean exec(CommandSender sender, String label, String[] args) {
 
 		final String server = args[0];
-		
+
 		NetworkPlugin.sendMessage(sender, "&7Attempting to ping the server &b'" + server + "'");
-		
+
 		if(!LPRequestUtils.serverExists(server)) {
 			NetworkPlugin.sendMessage(sender, "&cThis server does not exist.");
 			return true;
 		}
-		
+
 		LPRequestUtils.requestServerInfo(Arrays.asList(server));
 		List<ServerInfoEvent> events = SyncServerInfoListener.waitForExecutions(1, Arrays.asList(server));
 
 		try {
-			long ping = events.get(0).getPing();
-			NetworkPlugin.sendMessage(sender, "&aPing returned successful in " + ping + "ms!");
+			NetworkPlugin.sendMessage(sender, "&aPing returned successful!");
 		} catch (IndexOutOfBoundsException e) {
 			NetworkPlugin.sendMessage(sender, "&cPing timed out! The server isn't running this plugin?");
 		}
-		
+
 		return true;
-		
+
 	}
 
 }

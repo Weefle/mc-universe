@@ -19,9 +19,10 @@ public class PlayerCache {
 
 	public static void importServer(final String server)
 	{
-		LPRequestUtils.requestServerInfo(Arrays.asList(server));
+        /*
+ 		LPRequestUtils.requestServerInfo(Arrays.asList(server));
 		List<ServerInfoEvent> events = SyncServerInfoListener.waitForExecutions(1, Arrays.asList(server));
-		
+
 		if(events.isEmpty()) {
 			Debug.info("Failed to import players from &a" + server);
 		} else {
@@ -34,6 +35,7 @@ public class PlayerCache {
             }
 			Debug.info("Imported &a" + playerCount + "&7 players from &a" + server);
 		}
+        */
 	}
 
     public static void reset() {

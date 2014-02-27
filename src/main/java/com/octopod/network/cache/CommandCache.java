@@ -10,23 +10,30 @@ public class CommandCache {
 
     private CommandCache() {}
 
-	private static Map<String, DocumentedCommand> commandMap = Collections.synchronizedMap(new HashMap<String, DocumentedCommand>());
+	private static Map<String, DocumentedCommand> labelMap = Collections.synchronizedMap(new HashMap<String, DocumentedCommand>());
+    private static Map<Class<? extends DocumentedCommand>, DocumentedCommand> classMap = Collections.synchronizedMap(new HashMap<Class<? extends DocumentedCommand>, DocumentedCommand>());
 
     public static void reset() {
-        commandMap.clear();
+        labelMap.clear();
+        classMap.clear();
     }
-	
+
 	public static DocumentedCommand getCommand(String label) {
-		return commandMap.get(label);
+		return labelMap.get(label);
 	}
 
+    public static DocumentedCommand getCommand(Class<? extends DocumentedCommand> clazz) {
+        return classMap.get(clazz);
+    }
+
 	public static Map<String, DocumentedCommand> getCommands() {
-		return commandMap;
+		return labelMap;
 	}
-	
+
 	public static void registerCommand(DocumentedCommand... commands) {
 		for(DocumentedCommand command: commands) {
-			commandMap.put(command.getLabel(), command);
+			labelMap.put(command.getLabel(), command);
+            classMap.put(command.getClass(), command);
 		}
 	}
 
