@@ -38,7 +38,7 @@ public class CommandServerConnect extends NetworkCommand {
 		}
 
 		//Checks if the message went through before sending them there.
-		if(NetworkPlugin.isServerOnline(server)) {
+		if(!NetworkPlugin.isServerOnline(server)) {
             BukkitUtils.sendMessage(sender, "&cThis server is offline or does not exist.");
 			return true;
 		}

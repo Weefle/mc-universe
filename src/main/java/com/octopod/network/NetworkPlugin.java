@@ -22,6 +22,7 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -182,6 +183,20 @@ public class NetworkPlugin extends JavaPlugin {
         return connect.getSettings().getUsername();
     }
 
+    public static String encodeString(Object... args) {
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < args.length; i++) {
+            String argument = args[i].toString();
+            if(argument.contains(" ")) {
+                sb.append("\"").append(argument.replace("\"", "\\\"")).append("\"");
+            } else {
+                sb.append(argument);
+            }
+            if(i != args.length - 1) sb.append(" ");
+        }
+        return sb.toString();
+    }
+
     /**
      * Encodes this server's information into a message that can be sent across servers.
      * When recieving this message, parse it using my StringUtils class.
@@ -194,7 +209,7 @@ public class NetworkPlugin extends JavaPlugin {
         String serverName = NetworkConfig.getConfig().getServerName();
         int maxPlayers = NetworkPlugin.self.getServer().getMaxPlayers();
         String motd = NetworkPlugin.self.getServer().getMotd();
-        return "\"" + serverName + "\" " + maxPlayers + " \"" + motd + "\"";
+        return encodeString(serverName, maxPlayers, motd);
     }
 
     /**
@@ -203,7 +218,8 @@ public class NetworkPlugin extends JavaPlugin {
      * @return The players online put into a string.
      */
     public static String encodePlayerList() {
-        return StringUtils.join(BukkitUtils.getPlayerNames(), ",");
+        List<String> players = BukkitUtils.getPlayerNames();
+        return encodeString(players.toArray(new String[players.size()]));
     }
 
     /**

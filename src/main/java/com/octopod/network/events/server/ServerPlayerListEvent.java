@@ -1,5 +1,6 @@
 package com.octopod.network.events.server;
 
+import com.octopod.network.NetworkDebug;
 import com.octopod.network.events.Event;
 
 /**
@@ -16,7 +17,7 @@ public class ServerPlayerListEvent extends Event {
         if(encodedList.equals("")) {
             this.players = new String[0];
         } else {
-            this.players = encodedList.split(",");
+            this.players = encodedList.split(" ");
         }
     }
 
