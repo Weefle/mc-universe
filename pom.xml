@@ -31,7 +31,7 @@
 				<version>2.2</version>
 				<configuration>
                     <shadedArtifactAttached>false</shadedArtifactAttached>
-                    <minimizeJar>false</minimizeJar>
+                    <minimizeJar>true</minimizeJar>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
 					<artifactSet>
 						<includes>
