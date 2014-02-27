@@ -38,6 +38,7 @@ public class NetworkConfig {
 	private String CHANNEL_PREFIX;
     private Boolean HUB_ENABLED = false;
     private Integer HUB_PRIORITY = 0;
+    private String SERVER_NAME;
 
 	/**
 	 * Loads the configuration.
@@ -50,7 +51,7 @@ public class NetworkConfig {
 		YamlConfiguration config = new YamlConfiguration();
 
 		//Grabs the default configuration from our resources.
-		InputStream defaultConfig = this.getClass().getClassLoader().getResourceAsStream("config.yml");
+		InputStream defaultConfig = this.getClass().getResourceAsStream("/config.yml");
 
 		try
 		{
@@ -60,14 +61,13 @@ public class NetworkConfig {
 				configFile.getParentFile().mkdirs();
 				configFile.createNewFile();
 
-				FileOutputStream output = new FileOutputStream(configFile);
+                FileOutputStream output = new FileOutputStream(configFile);
+                IOUtils.copy(defaultConfig, output);
+                output.close();
+            }
 
-				IOUtils.copy(defaultConfig, output);
-				output.close();
-			}
-
-			//Loads the file into the configuration
-			config.load(configFile);
+            //Loads the file into the configuration
+            config.load(configFile);
 
 		//Something went wrong, so use the default config.
 		} catch (IOException e) {
@@ -79,6 +79,9 @@ public class NetworkConfig {
 		TIMEOUT =           Long.valueOf(config.getInteger("request-timeout", 500));
 		DEBUG_MODE =        config.getInteger("debug-messages", 0);
 		CHANNEL_PREFIX =    config.getString("channel-prefix", "network");
+        HUB_ENABLED =       config.getBoolean("hub-enabled", false);
+        HUB_PRIORITY =      config.getInteger("hub-priority", 0);
+        SERVER_NAME =       config.getString("name");
 
 		CHANNEL_PLAYER_JOIN = 		CHANNEL_PREFIX + ".player.join";
 		CHANNEL_PLAYER_REDIRECT = 	CHANNEL_PREFIX + ".player.redirect";
@@ -93,10 +96,11 @@ public class NetworkConfig {
         CHANNEL_PLAYERLIST_REQUEST =    CHANNEL_PREFIX + ".playerlist.request";
         CHANNEL_PLAYERLIST_RESPONSE =   CHANNEL_PREFIX + ".playerlist.response";
 
-		CHANNEL_CACHE = 			CHANNEL_PREFIX + ".cache.request";
-		CHANNEL_CACHE_RELAY = 		CHANNEL_PREFIX + ".cache.relay";
 		CHANNEL_UNCACHE = 			CHANNEL_PREFIX + ".uncache.request";
 		CHANNEL_UNCACHE_RELAY =		CHANNEL_PREFIX + ".uncache.relay";
+
+        CHANNEL_HUB =               CHANNEL_PREFIX + ".hub.use";
+        CHANNEL_HUB_REQUEST =       CHANNEL_PREFIX + ".hub.request";
 
 	}
 
@@ -109,6 +113,14 @@ public class NetworkConfig {
 	public void setDebugMode(int i) {DEBUG_MODE = i;}
 
 	public String getRequestPrefix() {return CHANNEL_PREFIX;}
+
+    public String getServerName() {
+        if(SERVER_NAME != null) {
+            return SERVER_NAME;
+        } else {
+            return NetworkPlugin.getUsername();
+        }
+    }
 
 	//These formats use String.format()
 	public String FORMAT_ALERT = 		"&8[&bAlert&8]&6 %s";
@@ -137,17 +149,13 @@ public class NetworkConfig {
         CHANNEL_INFO_REQUEST,
         CHANNEL_INFO_RESPONSE,
 
-	//These channels are used when requesting a server to cache a server's name.
-		CHANNEL_CACHE,
-		CHANNEL_CACHE_RELAY,
-
 	//These channels are used when requestinga server to uncache a server's name.
 		CHANNEL_UNCACHE,
 		CHANNEL_UNCACHE_RELAY,
 
-	//These channels are used when requesting servers to find a player.
-		CHANNEL_FIND,
-		CHANNEL_FIND_RELAY
+        CHANNEL_HUB,
+        CHANNEL_HUB_REQUEST
+
 	;
 
 

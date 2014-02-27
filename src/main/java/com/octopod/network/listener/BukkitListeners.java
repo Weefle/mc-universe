@@ -1,11 +1,12 @@
 package com.octopod.network.listener;
 
-import com.octopod.network.Debug;
-import com.octopod.network.LPRequestUtils;
+import com.octopod.network.util.BukkitUtils;
+import com.octopod.network.util.RequestUtils;
 import com.octopod.network.NetworkPlugin;
-import com.octopod.network.cache.CommandCache;
-import com.octopod.network.cache.PlayerCache;
-import com.octopod.network.commands.DocumentedCommand;
+import com.octopod.network.cache.NetworkCommandCache;
+import com.octopod.network.cache.NetworkHubCache;
+import com.octopod.network.cache.NetworkPlayerCache;
+import com.octopod.network.commands.NetworkCommand;
 import lilypad.client.connect.api.request.RequestException;
 import lilypad.client.connect.api.request.impl.RedirectRequest;
 import org.bukkit.event.EventHandler;
@@ -23,14 +24,14 @@ public class BukkitListeners implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onCommand(PlayerCommandPreprocessEvent event) {
 
-        Map<String, DocumentedCommand> commands = CommandCache.getCommands();
+        Map<String, NetworkCommand> commands = NetworkCommandCache.getCommands();
 
         String[] parsed = event.getMessage().split(" ");
 
         String root = parsed[0];
         String[] args = Arrays.copyOfRange(parsed, 1, parsed.length);
 
-        DocumentedCommand command = commands.get(root);
+        NetworkCommand command = commands.get(root);
 
         if(command != null) {
             if(command.onCommand(event.getPlayer(), root, args)) {
@@ -43,7 +44,7 @@ public class BukkitListeners implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		
-		Map<String, String> playerMap = PlayerCache.getPlayerMap();
+		Map<String, String> playerMap = NetworkPlayerCache.getPlayerMap();
 		
 		String location = playerMap.get(event.getPlayer().getName());		
 		String channel;
@@ -54,21 +55,21 @@ public class BukkitListeners implements Listener {
 			channel = NetworkPlugin.getNetworkConfig().CHANNEL_PLAYER_REDIRECT;
 		} 
 		
-		LPRequestUtils.broadcastMessage(channel, event.getPlayer().getName());	
+		RequestUtils.broadcastMessage(channel, event.getPlayer().getName());
 		
 	}
 	
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent event) {
 		
-		Map<String, String> playerMap = PlayerCache.getPlayerMap();
+		Map<String, String> playerMap = NetworkPlayerCache.getPlayerMap();
 		
 		String location = playerMap.get(event.getPlayer().getName());
 		String channel = NetworkPlugin.getNetworkConfig().CHANNEL_PLAYER_LEAVE;
 		
-		if(location != null && location.equals(NetworkPlugin.getServerName())) 
+		if(location != null && location.equals(NetworkPlugin.getUsername()))
 		{
-			LPRequestUtils.broadcastMessage(channel, event.getPlayer().getName());	
+			RequestUtils.broadcastMessage(channel, event.getPlayer().getName());
 		}
 		
 	}
@@ -76,15 +77,14 @@ public class BukkitListeners implements Listener {
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerKicked(PlayerKickEvent event) {
 
-        if(NetworkPlugin.getServerName() != "core") {
+        String hub = NetworkHubCache.getHub();
+
+        if(hub != null && !hub.equals(NetworkPlugin.getUsername())) {
             event.setCancelled(true);
 
-            try {
-                NetworkPlugin.sendMessage(event.getPlayer(), NetworkPlugin.PREFIX + "&7You've been moved to the hub server: &c\"" + event.getReason() + "\"");
-                NetworkPlugin.connect.request(new RedirectRequest("core", event.getPlayer().getName()));
-            } catch (RequestException e) {
-                e.printStackTrace();
-            }
+            BukkitUtils.sendMessage(event.getPlayer(), NetworkPlugin.PREFIX + "&7You've been moved to the hub server:");
+            BukkitUtils.sendMessage(event.getPlayer(), "&c\"" + event.getReason() + "\"");
+            RequestUtils.request(new RedirectRequest(hub, event.getPlayer().getName()));
         }
 		
 	}

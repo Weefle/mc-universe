@@ -13,7 +13,11 @@ public class ServerPlayerListEvent extends Event {
 
     public ServerPlayerListEvent(String server, String encodedList) {
         this.server = server;
-        this.players = encodedList.split(",");
+        if(encodedList.equals("")) {
+            this.players = new String[0];
+        } else {
+            this.players = encodedList.split(",");
+        }
     }
 
     public String getServer() {

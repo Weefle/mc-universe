@@ -1,6 +1,6 @@
 package com.octopod.network.events;
 
-import com.octopod.network.Debug;
+import com.octopod.network.NetworkDebug;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -8,9 +8,9 @@ import java.util.Iterator;
 import java.util.List;
 
 public class EventEmitter {
-	
+
 	private static EventEmitter emitter = null;
-	
+
 	public static EventEmitter getEmitter() {
 		if(emitter != null) {
 			return emitter;
@@ -19,7 +19,7 @@ public class EventEmitter {
 			return emitter;
 		}
 	}
-	
+
 	public long totalTriggers = 0;
 
 	public void triggerEvent(final Event event) {
@@ -30,10 +30,10 @@ public class EventEmitter {
 			}
 		}.start();
 	}
-	
+
 	private synchronized void trigger(final Event event) {
-		
-		Debug.verbose("Triggering event in thread: &a" + Thread.currentThread().getName());
+
+		NetworkDebug.verbose("Triggering event in thread: &a" + Thread.currentThread().getName());
 
 		List<Object> listeners = new ArrayList<>(EventManager.getManager().getListeners());
 

@@ -1,8 +1,8 @@
 package com.octopod.network;
 
-import com.octopod.network.cache.CommandCache;
-import com.octopod.network.cache.PlayerCache;
-import com.octopod.network.cache.ServerCache;
+import com.octopod.network.cache.NetworkCommandCache;
+import com.octopod.network.cache.NetworkPlayerCache;
+import com.octopod.network.cache.NetworkServerCache;
 import com.octopod.network.commands.*;
 import com.octopod.network.events.EventEmitter;
 import com.octopod.network.events.EventManager;
@@ -11,66 +11,231 @@ import com.octopod.network.listener.BukkitListeners;
 import com.octopod.network.listener.DebugListener;
 import com.octopod.network.listener.LilyPadListeners;
 import com.octopod.network.listener.NetworkListener;
+import com.octopod.network.util.BukkitUtils;
+import com.octopod.network.util.RequestUtils;
 import lilypad.client.connect.api.Connect;
+import lilypad.client.connect.api.request.impl.GetPlayersRequest;
+import lilypad.client.connect.api.request.impl.RedirectRequest;
+import lilypad.client.connect.api.result.StatusCode;
+import lilypad.client.connect.api.result.impl.GetPlayersResult;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class NetworkPlugin extends JavaPlugin {
 
 	//TODO: Add friends list system
-		//TODO: > be able to message friends across servers
-		//TODO: > be able to join the server a friend is on
+	//TODO: > be able to join the server a friend is on
 
-	public final static String PREFIX = "&8[&bNetwork&8] &f";
+	public final static String PREFIX = "&8[&cNet&8] &f";
 
     protected static boolean connected = false;
 
-	public static Connect connect;
-	public static JavaPlugin self;
+	private static Connect connect;
+	public static NetworkPlugin self;
 
 	static LilyPadListeners lilyPadListeners = null;
 	static BukkitListeners bukkitListeners = null;
 	static NetworkListener messageListener = null;
 	static DebugListener debugListener = null;
 
-    public static boolean isConnected() {
+    /**
+     * Gets all the players on the network as a Set.
+     * @return The Set containing all the players, or an empty Set if the request somehow fails.
+     */
+    public static Set<String> getNetworkedPlayers() {
+        GetPlayersResult result = (GetPlayersResult)RequestUtils.request(new GetPlayersRequest(true));
+        if(result.getStatusCode() == StatusCode.SUCCESS) {
+            return result.getPlayers();
+        } else {
+            return new HashSet<>();
+        }
+    }
+
+    /**
+     * Gets if the player is online (on the entire network)
+     * @param player The name of the player.
+     * @return If the player is online.
+     */
+    public static boolean isPlayerOnline(String player) {
+        return getNetworkedPlayers().contains(player);
+    }
+
+    /**
+     * Gets if the server with this username is online.
+     * @param server The username of the server.
+     * @return If the server is online.
+     */
+    public static boolean isServerOnline(String server) {
+        return RequestUtils.sendMessage(server, "", "").getStatusCode() == StatusCode.SUCCESS;
+    }
+
+    public static boolean sendPlayer(String player, String server) {
+        return RequestUtils.request(new RedirectRequest(server, player)).getStatusCode() == StatusCode.SUCCESS;
+    }
+
+    /**
+     * Tells a server to broadcast a raw message.
+     * @param server The name of the server.
+     * @param message The message to send.
+     */
+    public static void broadcastServerMessage(String server, String message) {
+        if(server.equals(NetworkPlugin.getUsername())) {
+            BukkitUtils.broadcastMessage(message);
+        } else {
+            RequestUtils.sendMessage(server, NetworkConfig.getConfig().CHANNEL_BROADCAST, message);
+        }
+    }
+
+    /**
+     * Tells every server (using this plugin) to broadcast a raw message.
+     * @param message The message to send.
+     */
+    public static void broadcastNetworkMessage(String message) {
+        RequestUtils.broadcastMessage(NetworkConfig.getConfig().CHANNEL_BROADCAST, message);
+    }
+
+    /**
+     * Sends a raw message to a player. Works cross-server.
+     * @param player The name of the player.
+     * @param message The message to send.
+     */
+    public static void sendNetworkMessage(String player, String message) {
+        if(BukkitUtils.isPlayerOnline(player)) {
+            BukkitUtils.sendMessage(player, message);
+        } else {
+            RequestUtils.broadcastMessage(NetworkConfig.getConfig().CHANNEL_MESSAGE, player + " \"" + message.replaceAll("\"", "\\\"") + "\"");
+        }
+    }
+
+    /**
+     * Broadcasts a message to all servers telling them to send back their info.
+     * This method should only be called only when absolutely needed, as the info returned never changes.
+     * This might cause messages to be recieved on the CHANNEL_INFO_RESPONSE channel.
+     */
+    public static void requestServerInfo() {
+        NetworkDebug.verbose("Requesting info from all servers");
+        RequestUtils.broadcastMessage(NetworkConfig.getConfig().CHANNEL_INFO_REQUEST, NetworkPlugin.encodeServerInfo());
+    }
+
+    /**
+     * Broadcasts a message to a list of servers telling them to send back their info.
+     * This method should only be called only when absolutely needed, as the info returned never changes.
+     * This might cause messages to be recieved on the CHANNEL_INFO_RESPONSE channel.
+     * @param servers The list of servers to message.
+     */
+    public static void requestServerInfo(List<String> servers) {
+        NetworkDebug.verbose("Requesting info from: &a" + servers);
+        RequestUtils.sendMessage(servers, NetworkConfig.getConfig().CHANNEL_INFO_REQUEST, NetworkPlugin.encodeServerInfo());
+    }
+
+    /**
+     * Broadcasts a message to a list of servers telling them to send back a list of their players.
+     * This method should only be called only when absolutely needed, as the PlayerCache should automatically change it.
+     * This might cause messages to be recieved on the CHANNEL_PLAYERLIST_RESPONSE channel.
+     */
+    public static void requestPlayerList() {
+        NetworkDebug.verbose("Requesting playerlist from all servers");
+        RequestUtils.broadcastMessage(NetworkConfig.getConfig().CHANNEL_PLAYERLIST_REQUEST, NetworkPlugin.encodePlayerList());
+    }
+
+    /**
+     * Returns if LilyPad is connected or not.
+     * @return true, if Lilypad is connected.
+     */
+    public static boolean isLilypadConnected() {
         return connected;
     }
 
-	public void reload() {
-
-        disable();
-        enable(false);
-
+    /**
+     * Returns the LilyPad connection.
+     * @return The LilyPad connection.
+     */
+    public static Connect getConnection() {
+        return connect;
+    }
+    /**
+     * Gets this plugin's event manager, which is used to register custom events.
+     * @return Network's EventManager.
+     */
+    public static EventManager getEventManager() {
+        return EventManager.getManager();
     }
 
-    public void disable() {
+    /**
+     * Gets this plugin's configuration object.
+     * @return The NetworkConfig object.
+     */
+    public static NetworkConfig getNetworkConfig() {
+        return NetworkConfig.getConfig();
+    }
 
-        ServerCache.reset();
-        CommandCache.reset();
-        PlayerCache.reset();
+    /**
+     * Gets this plugin's username on LilyPad.
+     * @return This plugin's username.
+     */
+    public static String getUsername() {
+        return connect.getSettings().getUsername();
+    }
+
+    /**
+     * Encodes this server's information into a message that can be sent across servers.
+     * When recieving this message, parse it using my StringUtils class.
+     * Index 0: The server's name (in the config) or the username.
+     * Index 1: The max players on the server.
+     * Index 2: The server's description (in the config) or the MOTD of the server.
+     * @return This server's information put into a string.
+     */
+    public static String encodeServerInfo() {
+        String serverName = NetworkConfig.getConfig().getServerName();
+        int maxPlayers = NetworkPlugin.self.getServer().getMaxPlayers();
+        String motd = NetworkPlugin.self.getServer().getMotd();
+        return "\"" + serverName + "\" " + maxPlayers + " \"" + motd + "\"";
+    }
+
+    /**
+     * Encodes the players online on this server into a message that can be sent across servers.
+     * When recieving this message, just split on ",".
+     * @return The players online put into a string.
+     */
+    public static String encodePlayerList() {
+        return StringUtils.join(BukkitUtils.getPlayerNames(), ",");
+    }
+
+    /**
+     * Reloads all the listeners, caches, and configurations of this plugin.
+     */
+	public static void reload() {
+        NetworkPlugin plugin = NetworkPlugin.self;
+        plugin.disable();
+        plugin.enable(false);
+    }
+
+    private void disable() {
+
+        NetworkServerCache.reset();
+        NetworkCommandCache.reset();
+        NetworkPlayerCache.reset();
 
         if(lilyPadListeners != null)
             connect.unregisterEvents(lilyPadListeners);
 
         getEventManager().unregisterAll();
 
-        LPRequestUtils.broadcastMessage(NetworkConfig.getConfig().CHANNEL_UNCACHE, getServerName());
+        RequestUtils.broadcastMessage(NetworkConfig.getConfig().CHANNEL_UNCACHE, getUsername());
 
     }
 
-    public void enable(boolean startup) {
+    private void enable(boolean startup) {
 
         connect = this.getServer().getServicesManager().getRegistration(Connect.class).getProvider();
         self = this;
 
+        //Register all the listeners
         messageListener = new NetworkListener();
         lilyPadListeners = new LilyPadListeners();
         bukkitListeners = new BukkitListeners();
@@ -81,27 +246,29 @@ public class NetworkPlugin extends JavaPlugin {
         connect.registerEvents(lilyPadListeners);
         Bukkit.getPluginManager().registerEvents(bukkitListeners, this);
 
+        //Configuration loading
+        NetworkConfig.reloadConfig();
         NetworkConfig config = NetworkConfig.getConfig();
-
-        Debug.info(
-            "Loaded configuration: ",
-            "    " + "Request Timeout: &a" + config.getRequestTimeout() + "ms",
-            "    " + "Request Prefix: &a" + config.getRequestPrefix(),
-            "    " + "Debug Mode: &a" + config.getDebugMode()
+        NetworkDebug.info(
+                "Loaded configuration: ",
+                "    " + "Channel: &a" + config.getRequestPrefix(),
+                "    " + "Hub: &a" + config.isHub()
         );
 
-        CommandCache.registerCommand(
+        NetworkCommandCache.registerCommand(
 
-            new CommandMaster           ("/net"),
-            new CommandHelp             ("/ghelp"),
-            new CommandServerList       ("/glist"),
-            new CommandServerConnect    ("/server"),
-            new CommandAlert            ("/alert"),
-            new CommandServerPing       ("/ping"),
-            new CommandFind             ("/find"),
-            new CommandMessage          ("/msg"),
-            new CommandServerSend       ("/send"),
-            new CommandServerSendAll    ("/sendall")
+                new CommandMaster       ("/net"),
+                new CommandReload       ("/greload"),
+                new CommandHub          ("/core"),
+                new CommandHelp         ("/ghelp"),
+                new CommandServerList   ("/glist"),
+                new CommandServerConnect("/server"),
+                new CommandAlert        ("/alert"),
+                new CommandServerPing   ("/ping"),
+                new CommandFind         ("/find"),
+                new CommandMessage      ("/msg"),
+                new CommandServerSend   ("/send"),
+                new CommandServerSendAll("/sendall")
 
         );
 
@@ -110,15 +277,16 @@ public class NetworkPlugin extends JavaPlugin {
                 new Thread(new Runnable() {
 
                     @Override
-                    public void run() {
-
+                    public void run()
+                    {
                         if(!connect.isConnected()) {
-                            console("Waiting for LilyPad to connect...");
-                            int connectionAttempts = 1;
+                            BukkitUtils.console("Waiting for LilyPad to connect...");
+                            int connectionAttempts = 0;
 
-                            while(!connect.isConnected() && connectionAttempts <= 10) {
+                            //Waits for LilyPad to be connected
+                            while(!connect.isConnected() && connectionAttempts < 10) {
                                 try {
-                                    console("Waiting for LilyPad connection... " + connectionAttempts);
+                                    BukkitUtils.console("Waiting for LilyPad connection... " + connectionAttempts);
                                     synchronized(this) {
                                         wait(1000);
                                     }
@@ -126,22 +294,24 @@ public class NetworkPlugin extends JavaPlugin {
                                 connectionAttempts++;
                             }
 
-                            if(connect.isConnected()) {
-                                NetworkPlugin.connected = true;
-                            } else {
-                                console("&cGave up waiting for LilyPad to connect. Disabling plugin...");
+                            //If LilyPad still isn't connected, then most commands should be disabled.
+                            if(!connect.isConnected())
+                            {
+                                NetworkDebug.info("&cLilypad could not connect!");
                                 Bukkit.getPluginManager().disablePlugin(NetworkPlugin.this);
                                 return;
                             }
                         }
-
+                        NetworkPlugin.connected = true;
                         EventEmitter.getEmitter().triggerEvent(new NetworkConnectedEvent());
-
                     }
 
                 }).start();
             } else {
                 NetworkPlugin.connected = connect.isConnected();
+                if(isLilypadConnected()) {
+                    EventEmitter.getEmitter().triggerEvent(new NetworkConnectedEvent());
+                }
             }
         }
 
@@ -156,64 +326,5 @@ public class NetworkPlugin extends JavaPlugin {
 	public void onDisable() {
 		disable();
 	}
-
-	public static EventManager getEventManager() {
-		return EventManager.getManager();
-	}
-
-	public static NetworkConfig getNetworkConfig() {
-		return NetworkConfig.getConfig();
-	}
-
-	public static void console(String message) {
-		console(message, PREFIX);
-	}
-
-	public static void console(String message, String prefix) {
-		Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + message));
-	}
-
-	public static String getServerName() {
-		return connect.getSettings().getUsername();
-	}
-
-	public static void sendMessage(String player, String message) {
-		Player p = Bukkit.getPlayer(player);
-		if(p != null) {sendMessage(p, message);}
-	}
-
-	public static void sendMessage(CommandSender sender, String message) {
-		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
-	}
-
-	public static void broadcastMessage(String message) {
-		Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', message));
-	}
-
-	public static Player[] getPlayers() {
-		return Bukkit.getOnlinePlayers();
-	}
-
-	public static List<String> getPlayerNames() {
-		List<String> players = new ArrayList<String>();
-		for(Player p: Bukkit.getOnlinePlayers()) {
-			players.add(p.getName());
-		}
-		return players;
-	}
-
-	public static boolean isPlayerOnline(String player) {
-		return Bukkit.getPlayer(player) != null;
-	}
-
-    public static String encodeServerInfo() {
-        int maxPlayers = NetworkPlugin.self.getServer().getMaxPlayers();
-        String motd = NetworkPlugin.self.getServer().getMotd();
-        return maxPlayers + " " + motd;
-    }
-
-    public static String encodePlayerList() {
-        return StringUtils.join(NetworkPlugin.getPlayerNames(), ",");
-    }
 
 }

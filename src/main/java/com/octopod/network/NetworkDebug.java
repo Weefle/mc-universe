@@ -1,8 +1,9 @@
 package com.octopod.network;
 
+import com.octopod.network.util.BukkitUtils;
 import org.bukkit.entity.Player;
 
-public class Debug {
+public class NetworkDebug {
 	
 	/**
 	 * Sends a message to the console and players with the "network.debug" permission.
@@ -15,10 +16,10 @@ public class Debug {
         {
             for(String message: messages) {
 
-                NetworkPlugin.console(message);
-                for(Player player: NetworkPlugin.getPlayers()) {
+                BukkitUtils.console(message);
+                for(Player player: BukkitUtils.getPlayers()) {
                     if(player.hasPermission("network.debug")) {
-                        NetworkPlugin.sendMessage(player, NetworkPlugin.PREFIX + "&7" + message);
+                        BukkitUtils.sendMessage(player, NetworkPlugin.PREFIX + "&7" + message);
                     }
                 }
             }
@@ -37,10 +38,10 @@ public class Debug {
 			for(String message: messages) {
 				message = "&7[D] &7" + message;
 				
-				NetworkPlugin.console(message);
-				for(Player player: NetworkPlugin.getPlayers()) {
+				BukkitUtils.console(message);
+				for(Player player: BukkitUtils.getPlayers()) {
 					if(player.hasPermission("network.debug")) {
-						NetworkPlugin.sendMessage(player, NetworkPlugin.PREFIX + message);
+						BukkitUtils.sendMessage(player, NetworkPlugin.PREFIX + message);
 					}
 				}				
 			}		
@@ -59,10 +60,10 @@ public class Debug {
 			for(String message: messages) {
 				message = "&c[V] &7" + message;
 				
-				NetworkPlugin.console(message);
-				for(Player player: NetworkPlugin.getPlayers()) {
+				BukkitUtils.console(message);
+				for(Player player: BukkitUtils.getPlayers()) {
 					if(player.hasPermission("network.debug.verbose")) {
-						NetworkPlugin.sendMessage(player, NetworkPlugin.PREFIX + message);
+                        BukkitUtils.sendMessage(player, NetworkPlugin.PREFIX + message);
 					}
 				}				
 			}		

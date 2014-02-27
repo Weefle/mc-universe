@@ -1,16 +1,12 @@
 package com.octopod.network.commands;
 
-import com.octopod.network.LPRequestUtils;
+import com.octopod.network.util.BukkitUtils;
 import com.octopod.network.NetworkPermission;
 import com.octopod.network.NetworkPlugin;
-import lilypad.client.connect.api.request.RequestException;
-import lilypad.client.connect.api.request.impl.RedirectRequest;
-import lilypad.client.connect.api.result.StatusCode;
-import lilypad.client.connect.api.result.impl.MessageResult;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class CommandServerConnect extends DocumentedCommand {
+public class CommandServerConnect extends NetworkCommand {
 
     public CommandServerConnect(String root) {
         super(root, "<command> <server>", NetworkPermission.NETWORK_SERVER_CONNECT,
@@ -36,24 +32,18 @@ public class CommandServerConnect extends DocumentedCommand {
 		String server = args[0];
 
 		//Checks if the server they're trying to connect to is this same server
-		if(server.equals(NetworkPlugin.connect.getSettings().getUsername())) {
-			NetworkPlugin.sendMessage(sender, "&cYou are already connected to this server.");
+		if(server.equals(NetworkPlugin.getUsername())) {
+			BukkitUtils.sendMessage(sender, "&cYou are already connected to this server.");
 			return true;
 		}
-
-		//Sends a dummy message request to the server . If it fails, then the server doesn't exist.
-		MessageResult result = LPRequestUtils.sendDummyMessage(server).awaitUninterruptibly();
 
 		//Checks if the message went through before sending them there.
-		if(result.getStatusCode() != StatusCode.SUCCESS) {
-			NetworkPlugin.sendMessage(sender, "&cThis server is offline or does not exist.");
+		if(NetworkPlugin.isServerOnline(server)) {
+            BukkitUtils.sendMessage(sender, "&cThis server is offline or does not exist.");
 			return true;
 		}
 
-		//Attempts to send them to the server
-		try {
-			NetworkPlugin.connect.request(new RedirectRequest(server, player.getName()));
-		} catch (RequestException e) {}
+		NetworkPlugin.sendPlayer(player.getName(), server);
 
 		return true;
 

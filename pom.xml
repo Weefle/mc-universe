@@ -47,6 +47,7 @@
                                 <include>com/octopod/octolib/minecraft/bukkit/BukkitPlayer.class</include>
                                 <include>com/octopod/octolib/minecraft/bukkit/BukkitPlayer.class</include>
                                 <include>com/octopod/octolib/common/IOUtils.class</include>
+                                <include>com/octopod/octolib/common/StringUtils.class</include>
                                 <include>com/octopod/octolib/common/FileUtil.class</include>
                                 <include>com/octopod/octolib/yaml/**.class</include>
 							</includes>

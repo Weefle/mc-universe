@@ -1,7 +1,28 @@
-#=================================
 #Don't change this line!
 version: 0
 #=================================
+#Network Settings
+
+#The prefix the message system will use when sending messages. 
+#Only servers with matching prefixes will recieve messages from this server.
+channel-prefix: 'network'
+
+#=================================
+#Information Settings
+
+name: 'New Server'
+categories: []
+
+#=================================
+#Hub Control Settings
+
+hub-enabled: false
+
+#=================================
+#Advanced Settings
+
+hub-priority: 0
+hub-conflict-resolver: RANDOM
 
 #The amount of time, in ms, to wait for responses from servers.
 #If a server fails to respond, a command involving requests might take as long as the timeout.
@@ -9,15 +30,6 @@ request-timeout: 500
 
 #Whether to show debug messages or not. 1 = enabled, 2 = verbose
 debug-messages: 0
-
-#The prefix the message system will use when sending messages. 
-#Only servers with matching prefixes will recieve messages from this server.
-channel-prefix: 'network'
-
-use-as-hub: false
-#The priority of the hub. The hub order goes from low to high. 
-#Don't use duplicate priorities for different servers. 
-hub-priority: 0
 
 #=================================
 

@@ -1,46 +1,54 @@
 package com.octopod.network;
 
-import org.apache.commons.lang.StringUtils;
+import com.octopod.octolib.common.StringUtils;
 
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 public class ServerInfo {
 
 	public static ServerInfo decode(String encoded, String server) {
 
+        String serverName = server;
+        int maxPlayers = -1;
+        String motd = "";
+
 		try {
-			List<String> args = new LinkedList<String>(Arrays.asList(encoded.split(" ")));
+			List<String> args = StringUtils.parseArgs(encoded);
+
+            serverName = args.get(0);
 
 			//Get max players
-			int maxPlayers = Integer.parseInt(args.get(0));
+			maxPlayers = Integer.parseInt(args.get(1));
 
 			//Get MOTD
-			String motd = StringUtils.join(args.subList(1, args.size() - 1), " ");
+			motd = args.get(2);
+		} catch (Exception e) {}
 
-			return new ServerInfo(server, maxPlayers, motd);
-		} catch (Exception e) {
-			return null;
-		}
+        return new ServerInfo(server, serverName, maxPlayers, motd);
 
 	}
 
 	private String server;
+    private String serverName;
 	private int maxPlayers;
 	private String motd;
 
-	public ServerInfo(String server, int maxPlayers, String motd) {
+	public ServerInfo(String server, String serverName, int maxPlayers, String motd) {
 
 		this.server = server;
+        this.serverName = serverName;
 		this.maxPlayers = maxPlayers;
 		this.motd = motd;
 
 	}
 
 	public String getServerName() {
-		return server;
+		return serverName;
 	}
+
+    public String getUsername() {
+        return server;
+    }
 
 	public String getMotd() {
 		return motd;
