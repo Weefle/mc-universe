@@ -233,6 +233,7 @@ public class NetworkPlugin extends JavaPlugin {
         public String   getDescription()        {return getIndex(2);}
         public Integer  getMaxPlayers()         {return getInt(getIndex(3), 0);}
         public String[] getWhitelistedPlayers() {return getIndex(4).equals("") ? new String[0] : getIndex(4).split(" ");}
+        public Integer  getHubPriority()        {return getInt(getIndex(5), -1);}
 
     }
 
@@ -244,11 +245,12 @@ public class NetworkPlugin extends JavaPlugin {
      */
     public static String encodeServerInfo() {
         return encodeString(
-            NetworkPlugin.getUsername(),
-            NetworkConfig.getServerName(),
-            NetworkPlugin.self.getServer().getMotd(),
-            NetworkPlugin.self.getServer().getMaxPlayers(),
-            StringUtils.implode(BukkitUtils.getWhitelistedPlayerNames(), " ")
+            NetworkPlugin.getUsername(), //Server's username
+            NetworkConfig.getServerName(), //Server's config name
+            NetworkPlugin.self.getServer().getMotd(), //Server's MOTD
+            NetworkPlugin.self.getServer().getMaxPlayers(), //Server's max players
+            StringUtils.implode(BukkitUtils.getWhitelistedPlayerNames(), " "), //Server's whitelisted players
+            NetworkConfig.isHub() ? NetworkConfig.getHubPriority() : -1 //Server's hub priority, or -1 if is not a hub.
         );
     }
 

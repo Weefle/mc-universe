@@ -13,9 +13,6 @@ import java.util.Date;
 public class NetworkConfig {
 
     private final static File configFile = new File("plugins/Network/config.yml");
-    //Grabs the default configuration from our resources.
-
-    private final static InputStream defaultConfigInput = NetworkConfig.class.getClassLoader().getResourceAsStream("/config.yml");
 
     //These formats use String.format()
     public static String FORMAT_ALERT = 		"&8[&bAlert&8]&6 %s";
@@ -30,6 +27,15 @@ public class NetworkConfig {
     private static String  SERVER_NAME = "New Server";
     private static Integer CONNECTION_ATTEMPTS_MAX = 10;
     private static Long    CONNECTION_ATTEMPTS_INTERVAL = 1000L;
+
+    private static boolean nullCheck(Object... objects) {
+        for(Object o: objects) {
+            if(o == null) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     private static void createFile(File file) throws IOException {
         if(!file.exists()) {
@@ -49,9 +55,8 @@ public class NetworkConfig {
         //Backup the old config.yml if it exists
         if(configFile.exists())
         {
-            BukkitUtils.sendMessage(sender, "&eWriting new version of the configuration. A backup will be saved.");
             String fileName = "config-" + new SimpleDateFormat("yyyy-MM-dd-HH-mm-SS").format(new Date()) + ".yml";
-            File backupConfigFile = new File(fileName);
+            File backupConfigFile = new File("plugins/Network/" + fileName);
             createFile(backupConfigFile);
             //Copy the old config to this new backup config.
             writeFile(new FileInputStream(configFile), backupConfigFile);
@@ -76,9 +81,11 @@ public class NetworkConfig {
      * Writes the default configuration (resource) into configFile.
      * Throws various errors.
      * @param sender Who to send the messages to.
-     * @throws Exception
+     * @throws NullPointerException, IOException
      */
     private static void writeDefaultConfig(CommandSender sender) throws NullPointerException, IOException {
+
+        InputStream defaultConfigInput = NetworkConfig.class.getClassLoader().getResourceAsStream("config.yml");
 
         BukkitUtils.sendMessage(sender, "&eWriting default configuration to config.yml.");
 
@@ -105,10 +112,13 @@ public class NetworkConfig {
     public static void reloadConfig() {reloadConfig(Bukkit.getConsoleSender());}
 
 	public static void reloadConfig(CommandSender sender) {
-		//TODO: load a config into the below variables
+
+        BukkitUtils.sendMessage(sender, "&cLoading configuration...");
+
+        InputStream defaultConfigInput = NetworkConfig.class.getClassLoader().getResourceAsStream("config.yml");
 
 		//This is the single YAML configuration we should use.
-		YamlConfiguration config = new YamlConfiguration();
+		YamlConfiguration config;
 
         YamlConfiguration defaultConfig = null;
         if(defaultConfigInput != null)
@@ -119,34 +129,32 @@ public class NetworkConfig {
             //A config.yml doesn't exist, so create a new one.
             if(!configFile.exists()) {
                 writeConfig(sender);
-                config.load(configFile);
-            //Check if the version of the default config is newer.
-            } else {
-                if(defaultConfig != null) {
-                    config.load(configFile);
-                    int version = config.getInteger("version", -1);
-                    int defaultVersion = defaultConfig.getInteger("version");
-                    if(defaultVersion > version) {
-                        writeConfig(sender);
-                        config.load(configFile);
-                    }
-                }
             }
 
-            TIMEOUT =           Long.valueOf(config.getInteger("request-timeout", TIMEOUT.intValue()));
-            DEBUG_MODE =        config.getInteger("debug-messages", DEBUG_MODE);
-            CHANNEL_PREFIX =    config.getString("channel-prefix", "network");
-            HUB_ENABLED =       config.getBoolean("hub-enabled", false);
-            HUB_PRIORITY =      config.getInteger("hub-priority", 0);
-            SERVER_NAME =       config.getString("name");
+            config = new YamlConfiguration(configFile);
 
-            CONNECTION_ATTEMPTS_MAX =       config.getInteger("lilypad-connection");
-            CONNECTION_ATTEMPTS_INTERVAL =  Long.valueOf(config.getInteger("connection-attempts-interval", 1000));
+            //Check if the version of the default config is newer, or the current configuration is missing keys.
+            if(defaultConfig.getInteger("version", 0) > config.getInteger("version", -1) || nullCheck(
+                    TIMEOUT =           Long.valueOf(config.getInteger("request-timeout")),
+                    DEBUG_MODE =        config.getInteger("debug-messages"),
+                    CHANNEL_PREFIX =    config.getString("channel-prefix"),
+                    HUB_ENABLED =       config.getBoolean("hub-enabled"),
+                    HUB_PRIORITY =      config.getInteger("hub-priority"),
+                    SERVER_NAME =       config.getString("name"),
+
+                    CONNECTION_ATTEMPTS_MAX =       config.getInteger("connection-attempts-max"),
+                    CONNECTION_ATTEMPTS_INTERVAL =  Long.valueOf(config.getInteger("connection-attempts-interval", 1000))
+            )) {
+                writeConfig(sender);
+                config.load(configFile);
+            }
 
         //Something errored out while writing/reading the configuration.
         } catch (Exception e) {
             BukkitUtils.sendMessage(sender, "&cTry restarting the server. If that doesn't fix it, report the stacktrace in the console.");
             e.printStackTrace();
+        } finally {
+            IOUtils.closeSilent(defaultConfigInput);
         }
 
 		CHANNEL_PLAYER_JOIN = 		CHANNEL_PREFIX + ".player.join";
@@ -165,8 +173,7 @@ public class NetworkConfig {
 		CHANNEL_UNCACHE = 			CHANNEL_PREFIX + ".uncache.request";
 		CHANNEL_UNCACHE_RELAY =		CHANNEL_PREFIX + ".uncache.relay";
 
-        CHANNEL_HUB =               CHANNEL_PREFIX + ".hub.use";
-        CHANNEL_HUB_REQUEST =       CHANNEL_PREFIX + ".hub.request";
+        BukkitUtils.sendMessage(sender, "&eSuccessfully loaded configuration!");
 
 	}
 
@@ -185,6 +192,14 @@ public class NetworkConfig {
         } else {
             return NetworkPlugin.getUsername();
         }
+    }
+
+    public static Integer getConnectionMaxAttempts() {
+        return CONNECTION_ATTEMPTS_MAX;
+    }
+
+    public static Long getConnectionAttemptInterval() {
+        return CONNECTION_ATTEMPTS_INTERVAL;
     }
 
     //Channel variables
@@ -212,9 +227,6 @@ public class NetworkConfig {
 
 	//These channels are used when requestinga server to uncache a server's name.
 		CHANNEL_UNCACHE,
-		CHANNEL_UNCACHE_RELAY,
-
-        CHANNEL_HUB,
-        CHANNEL_HUB_REQUEST
+		CHANNEL_UNCACHE_RELAY
 	;
 }

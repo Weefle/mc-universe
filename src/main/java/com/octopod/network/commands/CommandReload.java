@@ -1,8 +1,8 @@
 package com.octopod.network.commands;
 
+import com.octopod.network.NetworkConfig;
 import com.octopod.network.NetworkDebug;
 import com.octopod.network.NetworkPermission;
-import com.octopod.network.NetworkPlugin;
 import org.bukkit.command.CommandSender;
 
 /**
@@ -20,8 +20,8 @@ public class CommandReload extends NetworkCommand {
     @Override
     protected boolean exec(CommandSender sender, String label, String[] args) {
 
-        NetworkDebug.info("Reloading plugin...");
-        NetworkPlugin.self.reload();
+        NetworkDebug.info("Reloading config...");
+        NetworkConfig.reloadConfig(sender);
         NetworkDebug.info("Finished reloading!");
         return true;
 

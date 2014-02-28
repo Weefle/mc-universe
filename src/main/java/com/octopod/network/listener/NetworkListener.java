@@ -29,7 +29,6 @@ public class NetworkListener {
 		NetworkDebug.debug("&aSuccessfully connected to LilyPad!");
 		NetworkPlugin.requestServerInfo();
         NetworkPlugin.requestPlayerList();
-        RequestUtils.broadcastEmptyMessage(NetworkConfig.CHANNEL_HUB_REQUEST);
 	}
 
     @EventHandler(runAsync = true)
@@ -52,6 +51,10 @@ public class NetworkListener {
 	public void serverInfoEvent(ServerInfoEvent event) {
 		String server = event.getSender();
 		NetworkServerCache.addServer(server, event.getServerInfo());
+        int hubPriority = event.getServerInfo().getHubPriority();
+        if(hubPriority >= 0) {
+            EventEmitter.getEmitter().triggerEvent(new NetworkHubCacheEvent(server, hubPriority));
+        }
 	}
 
     @EventHandler(runAsync = true)
@@ -87,16 +90,6 @@ public class NetworkListener {
 		NetworkDebug.debug(
                 "&7Message: &a" + sender + "&7 on &b" + channel
         );
-
-        if(channel.equals(NetworkConfig.CHANNEL_HUB)) {
-            EventEmitter.getEmitter().triggerEvent(new NetworkHubCacheEvent(event.getSender(), Integer.valueOf(event.getMessage())));
-        }
-
-        if(channel.equals(NetworkConfig.CHANNEL_HUB_REQUEST)) {
-            if(NetworkConfig.isHub()) {
-                RequestUtils.sendMessage(sender, NetworkConfig.CHANNEL_HUB, NetworkConfig.getHubPriority().toString());
-            }
-        }
 
 		if(channel.equals(NetworkConfig.CHANNEL_SENDALL))
 		{
