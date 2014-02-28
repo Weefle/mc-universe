@@ -1,7 +1,7 @@
 package com.octopod.network.cache;
 
 import com.octopod.network.NetworkDebug;
-import com.octopod.network.ServerInfo;
+import com.octopod.network.NetworkPlugin;
 
 import java.util.*;
 
@@ -13,9 +13,9 @@ public class NetworkServerCache {
         serverMap.clear();
     }
 
-	private static Map<String, ServerInfo> serverMap = Collections.synchronizedMap(new HashMap<String, ServerInfo>());
+	private static Map<String, NetworkPlugin.ServerInfo> serverMap = Collections.synchronizedMap(new HashMap<String, NetworkPlugin.ServerInfo>());
 
-	public static boolean addServer(String server, ServerInfo info) {
+	public static boolean addServer(String server, NetworkPlugin.ServerInfo info) {
         boolean isNew = !serverMap.containsKey(server);
         serverMap.put(server, info);
         if(isNew) {
@@ -40,7 +40,7 @@ public class NetworkServerCache {
 		return serverMap.containsKey(server);
 	}
 
-	public static Map<String, ServerInfo> getServerMap() {
+	public static Map<String, NetworkPlugin.ServerInfo> getServerMap() {
 		return new HashMap<>(serverMap);
 	}
 

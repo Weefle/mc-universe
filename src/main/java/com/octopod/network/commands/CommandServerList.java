@@ -4,7 +4,6 @@ import com.octopod.network.*;
 import com.octopod.network.cache.NetworkPlayerCache;
 import com.octopod.network.cache.NetworkServerCache;
 import com.octopod.network.util.BukkitUtils;
-import com.octopod.network.util.RequestUtils;
 import com.octopod.octolib.minecraft.ChatBuilder;
 import com.octopod.octolib.minecraft.ChatUtils;
 import com.octopod.octolib.minecraft.bukkit.BukkitPlayer;
@@ -28,46 +27,56 @@ public class CommandServerList extends NetworkCommand {
 
 		if(!(sender instanceof Player)) {return false;}
 
-		Map<String, ServerInfo> serverMap = NetworkServerCache.getServerMap();
+		Map<String, NetworkPlugin.ServerInfo> serverMap = NetworkServerCache.getServerMap();
         Map<String, String> playerMap = NetworkPlayerCache.getPlayerMap();
+
+        //A reverse map where the keys are the servernames and the values are the list of players.
         Map<String, List<String>> reverseMap = NetworkPlayerCache.getReverseMap();
 
+        //Gets the size of all players on the network via LilyPad and gets the difference from the total known players.
         int unlistedPlayerCount = NetworkPlugin.getNetworkedPlayers().size() - playerMap.size();
 
         BukkitUtils.sendMessage(sender, "&7Found &a" + serverMap.size() + " &7servers. &b" + playerMap.size() + " players &8(" + unlistedPlayerCount + " unlisted players)");
         BukkitUtils.sendMessage(sender, "&7Hover over the server names for more information.");
 
-		for(Map.Entry<String, ServerInfo> entry: serverMap.entrySet()) {
+		for(Map.Entry<String, NetworkPlugin.ServerInfo> entry: serverMap.entrySet()) {
+
+            NetworkPlugin.ServerInfo serverInfo = entry.getValue();
+
+            //The list of players on this server.
             List<String> playerList = reverseMap.get(entry.getKey());
+
+            //The playerlist shouldn't be null, but just in case:
             int playerCount = playerList == null ? 0 : playerList.size();
+
             //If this server is the server the commandsender is on:
             if(entry.getKey().equals(NetworkPlugin.getUsername()))
             {
-                new ChatBuilder().appendL("    &8[&f" + entry.getKey() + "&8] ").
+                new ChatBuilder().appendL("    &8[&f" + serverInfo.getUsername() + "&8] ").
                     tooltip(ChatUtils.translateColorCodes(
 
-                        entry.getValue().getServerName() + "\n" +
-                        entry.getValue().getMotd() + "\n" +
+                        serverInfo.getServerName() + "\n" +
+                        serverInfo.getDescription() + "\n" +
                         "&8-------------------------------------" + "\n" +
                         "&7You're on this server!"
 
                     , '&')).
-                    append(ChatUtils.translateColorCodes("&b(" + playerCount + ")")).
-                    append(ChatUtils.translateColorCodes("&f <- You are here!")).
+                    appendL("&b(" + playerCount + " &3/ " + serverInfo.getMaxPlayers() + "&b)").appendL("&f <- You are here!").
                     send(new BukkitPlayer(sender));
-
-            } else
+            }
+            //Default case:
+            else
             {
-                new ChatBuilder().appendL("    &8[&a" + entry.getKey() + "&8] ").
+                new ChatBuilder().appendL("    &8[&a" + serverInfo.getUsername() + "&8] ").
                     tooltip(ChatUtils.translateColorCodes(
 
-                        entry.getValue().getServerName() + "\n" +
-                        entry.getValue().getMotd() + "\n" +
+                        serverInfo.getServerName() + "\n" +
+                        serverInfo.getDescription() + "\n" +
                         "&8-------------------------------------" + "\n" +
-                        "&7Click to join the server &a" + entry.getKey() + "&7!"
+                        "&7Click to join the server &a" + serverInfo.getUsername() + "&7!"
 
-                    , '&')).run("/server " + entry.getKey()).
-                    appendL("&b(" + playerCount + ")").
+                    , '&')).run("/server " + serverInfo.getUsername()).
+                    appendL("&b(" + playerCount + " &3/ " + serverInfo.getMaxPlayers() + "&b)").
                     send(new BukkitPlayer(sender));
             }
 		}

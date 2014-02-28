@@ -1,23 +1,22 @@
 package com.octopod.network.events.server;
 
-import com.octopod.network.ServerInfo;
+import com.octopod.network.NetworkPlugin;
 import com.octopod.network.events.Event;
 
 public class ServerInfoEvent extends Event implements Comparable<ServerInfoEvent> {
 
-	ServerInfo serverInfo;
+	NetworkPlugin.ServerInfo serverInfo;
 	String sender;
 
-	public ServerInfoEvent(String server, String encoded) {
-		serverInfo = ServerInfo.decode(encoded, server);
-		sender = server;
+	public ServerInfoEvent(String encoded) {
+		serverInfo = new NetworkPlugin.ServerInfo(encoded);
 	}
 
 	public String getSender() {
-		return sender;
+		return serverInfo.getUsername();
 	}
 
-	public ServerInfo getServerInfo() {
+	public NetworkPlugin.ServerInfo getServerInfo() {
 		return serverInfo;
 	}
 

@@ -3,6 +3,7 @@ package com.octopod.network.util;
 import com.octopod.network.NetworkPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -33,12 +34,24 @@ public class BukkitUtils {
         return Bukkit.getOnlinePlayers();
     }
 
-    public static List<String> getPlayerNames() {
+    public static String[] getPlayerNames() {
         List<String> players = new ArrayList<String>();
-        for(Player p: Bukkit.getOnlinePlayers()) {
+
+        for(Player p: Bukkit.getOnlinePlayers())
             players.add(p.getName());
-        }
-        return players;
+
+        return players.toArray(new String[players.size()]);
+    }
+
+    public static String[] getWhitelistedPlayerNames() {
+        if(!Bukkit.hasWhitelist()) return new String[0];
+
+        List<String> players = new ArrayList<String>();
+
+        for(OfflinePlayer p: Bukkit.getOfflinePlayers())
+            players.add(p.getName());
+
+        return players.toArray(new String[players.size()]);
     }
 
     public static boolean isPlayerOnline(String player) {

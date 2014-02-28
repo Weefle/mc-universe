@@ -13,12 +13,12 @@ import com.octopod.network.listener.LilyPadListeners;
 import com.octopod.network.listener.NetworkListener;
 import com.octopod.network.util.BukkitUtils;
 import com.octopod.network.util.RequestUtils;
+import com.octopod.octolib.common.StringUtils;
 import lilypad.client.connect.api.Connect;
 import lilypad.client.connect.api.request.impl.GetPlayersRequest;
 import lilypad.client.connect.api.request.impl.RedirectRequest;
 import lilypad.client.connect.api.result.StatusCode;
 import lilypad.client.connect.api.result.impl.GetPlayersResult;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -32,6 +32,7 @@ public class NetworkPlugin extends JavaPlugin {
 	//TODO: Add friends list system
 	//TODO: > be able to join the server a friend is on
 
+    //Used before most messages
 	public final static String PREFIX = "&8[&cNet&8] &f";
 
     protected static boolean connected = false;
@@ -183,6 +184,10 @@ public class NetworkPlugin extends JavaPlugin {
         return connect.getSettings().getUsername();
     }
 
+    /**
+     * @param args
+     * @return
+     */
     public static String encodeString(Object... args) {
         StringBuilder sb = new StringBuilder();
         for(int i = 0; i < args.length; i++) {
@@ -198,18 +203,61 @@ public class NetworkPlugin extends JavaPlugin {
     }
 
     /**
+     * The ServerInfo object.
+     * IF YOU EVER CHANGE THIS PROTOCOL, ADD IT TO THE END, DON'T MIX IT UP
+     * Protocol:
+     *  - Username
+     *  - Server name (or username)
+     *  - Description (or MOTD)
+     *  - Max players
+     *  - Whitelisted Players, or nothing if whitelist is off. (space separated)
+     */
+    public static class ServerInfo {
+
+        //Tries to get a String from the index, and returns "" if it doesn't exist.
+        private String getIndex(int n) {
+            try {
+                return arguments.get(n);
+            } catch (IndexOutOfBoundsException e) {
+                return "";
+            }
+        }
+
+        //Tries to get an integer from the screen, but returns 0 if it doesn't
+        private Integer getInt(String n, int def) {
+            try {
+                return Integer.valueOf(n);
+            } catch (NumberFormatException e) {
+                return def;
+            }
+        }
+
+        private List<String> arguments;
+
+        public ServerInfo(String encodedString) {arguments = StringUtils.parseArgs(encodedString);}
+
+        public String   getUsername()           {return getIndex(0);}
+        public String   getServerName()         {return getIndex(1);}
+        public String   getDescription()        {return getIndex(2);}
+        public Integer  getMaxPlayers()         {return getInt(getIndex(3), 0);}
+        public String[] getWhitelistedPlayers() {return getIndex(4).equals("") ? new String[0] : getIndex(4).split(" ");}
+
+    }
+
+    /**
      * Encodes this server's information into a message that can be sent across servers.
      * When recieving this message, parse it using my StringUtils class.
-     * Index 0: The server's name (in the config) or the username.
-     * Index 1: The max players on the server.
-     * Index 2: The server's description (in the config) or the MOTD of the server.
+     * See ServerInfo class above for needed protocol.
      * @return This server's information put into a string.
      */
     public static String encodeServerInfo() {
-        String serverName = NetworkConfig.getConfig().getServerName();
-        int maxPlayers = NetworkPlugin.self.getServer().getMaxPlayers();
-        String motd = NetworkPlugin.self.getServer().getMotd();
-        return encodeString(serverName, maxPlayers, motd);
+        return encodeString(
+            NetworkPlugin.getUsername(),
+            NetworkConfig.getConfig().getServerName(),
+            NetworkPlugin.self.getServer().getMotd(),
+            NetworkPlugin.self.getServer().getMaxPlayers(),
+            StringUtils.implode(BukkitUtils.getWhitelistedPlayerNames(), " ")
+        );
     }
 
     /**
@@ -218,8 +266,7 @@ public class NetworkPlugin extends JavaPlugin {
      * @return The players online put into a string.
      */
     public static String encodePlayerList() {
-        List<String> players = BukkitUtils.getPlayerNames();
-        return encodeString(players.toArray(new String[players.size()]));
+        return encodeString(BukkitUtils.getPlayerNames());
     }
 
     /**

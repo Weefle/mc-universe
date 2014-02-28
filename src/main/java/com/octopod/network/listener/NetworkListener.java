@@ -140,7 +140,7 @@ public class NetworkListener {
 		 */
 		if(channel.equals(config.CHANNEL_INFO_REQUEST))
         {
-            EventEmitter.getEmitter().triggerEvent(new ServerInfoEvent(event.getSender(), event.getMessage()));
+            EventEmitter.getEmitter().triggerEvent(new ServerInfoEvent(event.getMessage()));
             if(!sender.equals(NetworkPlugin.getUsername())) {
                 RequestUtils.sendMessage(sender, config.CHANNEL_INFO_RESPONSE, NetworkPlugin.encodeServerInfo());
             }
@@ -148,7 +148,7 @@ public class NetworkListener {
 
         if(channel.equals(config.CHANNEL_INFO_RESPONSE))
         {
-            EventEmitter.getEmitter().triggerEvent(new ServerInfoEvent(event.getSender(), event.getMessage()));
+            EventEmitter.getEmitter().triggerEvent(new ServerInfoEvent(event.getMessage()));
         }
 
         if(channel.equals(config.CHANNEL_PLAYERLIST_REQUEST))

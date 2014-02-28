@@ -11,6 +11,7 @@ channel-prefix: 'network'
 #Information Settings
 
 name: 'New Server'
+description: ''
 categories: []
 
 #=================================
