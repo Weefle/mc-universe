@@ -89,7 +89,7 @@ public class NetworkPlugin extends JavaPlugin {
         if(server.equals(NetworkPlugin.getUsername())) {
             BukkitUtils.broadcastMessage(message);
         } else {
-            RequestUtils.sendMessage(server, NetworkConfig.getConfig().CHANNEL_BROADCAST, message);
+            RequestUtils.sendMessage(server, NetworkConfig.CHANNEL_BROADCAST, message);
         }
     }
 
@@ -98,7 +98,7 @@ public class NetworkPlugin extends JavaPlugin {
      * @param message The message to send.
      */
     public static void broadcastNetworkMessage(String message) {
-        RequestUtils.broadcastMessage(NetworkConfig.getConfig().CHANNEL_BROADCAST, message);
+        RequestUtils.broadcastMessage(NetworkConfig.CHANNEL_BROADCAST, message);
     }
 
     /**
@@ -110,7 +110,7 @@ public class NetworkPlugin extends JavaPlugin {
         if(BukkitUtils.isPlayerOnline(player)) {
             BukkitUtils.sendMessage(player, message);
         } else {
-            RequestUtils.broadcastMessage(NetworkConfig.getConfig().CHANNEL_MESSAGE, player + " \"" + message.replaceAll("\"", "\\\"") + "\"");
+            RequestUtils.broadcastMessage(NetworkConfig.CHANNEL_MESSAGE, player + " \"" + message.replaceAll("\"", "\\\"") + "\"");
         }
     }
 
@@ -121,7 +121,7 @@ public class NetworkPlugin extends JavaPlugin {
      */
     public static void requestServerInfo() {
         NetworkDebug.verbose("Requesting info from all servers");
-        RequestUtils.broadcastMessage(NetworkConfig.getConfig().CHANNEL_INFO_REQUEST, NetworkPlugin.encodeServerInfo());
+        RequestUtils.broadcastMessage(NetworkConfig.CHANNEL_INFO_REQUEST, NetworkPlugin.encodeServerInfo());
     }
 
     /**
@@ -132,7 +132,7 @@ public class NetworkPlugin extends JavaPlugin {
      */
     public static void requestServerInfo(List<String> servers) {
         NetworkDebug.verbose("Requesting info from: &a" + servers);
-        RequestUtils.sendMessage(servers, NetworkConfig.getConfig().CHANNEL_INFO_REQUEST, NetworkPlugin.encodeServerInfo());
+        RequestUtils.sendMessage(servers, NetworkConfig.CHANNEL_INFO_REQUEST, NetworkPlugin.encodeServerInfo());
     }
 
     /**
@@ -142,7 +142,7 @@ public class NetworkPlugin extends JavaPlugin {
      */
     public static void requestPlayerList() {
         NetworkDebug.verbose("Requesting playerlist from all servers");
-        RequestUtils.broadcastMessage(NetworkConfig.getConfig().CHANNEL_PLAYERLIST_REQUEST, NetworkPlugin.encodePlayerList());
+        RequestUtils.broadcastMessage(NetworkConfig.CHANNEL_PLAYERLIST_REQUEST, NetworkPlugin.encodePlayerList());
     }
 
     /**
@@ -166,14 +166,6 @@ public class NetworkPlugin extends JavaPlugin {
      */
     public static EventManager getEventManager() {
         return EventManager.getManager();
-    }
-
-    /**
-     * Gets this plugin's configuration object.
-     * @return The NetworkConfig object.
-     */
-    public static NetworkConfig getNetworkConfig() {
-        return NetworkConfig.getConfig();
     }
 
     /**
@@ -253,7 +245,7 @@ public class NetworkPlugin extends JavaPlugin {
     public static String encodeServerInfo() {
         return encodeString(
             NetworkPlugin.getUsername(),
-            NetworkConfig.getConfig().getServerName(),
+            NetworkConfig.getServerName(),
             NetworkPlugin.self.getServer().getMotd(),
             NetworkPlugin.self.getServer().getMaxPlayers(),
             StringUtils.implode(BukkitUtils.getWhitelistedPlayerNames(), " ")
@@ -268,6 +260,10 @@ public class NetworkPlugin extends JavaPlugin {
     public static String encodePlayerList() {
         return encodeString(BukkitUtils.getPlayerNames());
     }
+
+
+
+
 
     /**
      * Reloads all the listeners, caches, and configurations of this plugin.
@@ -289,7 +285,7 @@ public class NetworkPlugin extends JavaPlugin {
 
         getEventManager().unregisterAll();
 
-        RequestUtils.broadcastMessage(NetworkConfig.getConfig().CHANNEL_UNCACHE, getUsername());
+        RequestUtils.broadcastMessage(NetworkConfig.CHANNEL_UNCACHE, getUsername());
 
     }
 
@@ -311,11 +307,10 @@ public class NetworkPlugin extends JavaPlugin {
 
         //Configuration loading
         NetworkConfig.reloadConfig();
-        NetworkConfig config = NetworkConfig.getConfig();
         NetworkDebug.info(
                 "Loaded configuration: ",
-                "    " + "Channel: &a" + config.getRequestPrefix(),
-                "    " + "Hub: &a" + config.isHub()
+                "    " + "Channel: &a" + NetworkConfig.getRequestPrefix(),
+                "    " + "Hub: &a" + NetworkConfig.isHub()
         );
 
         NetworkCommandCache.registerCommand(

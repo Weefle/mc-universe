@@ -34,5 +34,5 @@ debug-messages: 0
 
 #=================================
 
-lilypad-connection-attempts-max: 10
-lilypad-connection-attempts-wait: 1000
+connection-attempts-max: 10
+connection-attempts-interval: 1000

@@ -29,7 +29,7 @@ public class NetworkListener {
 		NetworkDebug.debug("&aSuccessfully connected to LilyPad!");
 		NetworkPlugin.requestServerInfo();
         NetworkPlugin.requestPlayerList();
-        RequestUtils.broadcastEmptyMessage(NetworkConfig.getConfig().CHANNEL_HUB_REQUEST);
+        RequestUtils.broadcastEmptyMessage(NetworkConfig.CHANNEL_HUB_REQUEST);
 	}
 
     @EventHandler(runAsync = true)
@@ -88,25 +88,23 @@ public class NetworkListener {
                 "&7Message: &a" + sender + "&7 on &b" + channel
         );
 
-		NetworkConfig config = NetworkPlugin.getNetworkConfig();
-
-        if(channel.equals(config.CHANNEL_HUB)) {
+        if(channel.equals(NetworkConfig.CHANNEL_HUB)) {
             EventEmitter.getEmitter().triggerEvent(new NetworkHubCacheEvent(event.getSender(), Integer.valueOf(event.getMessage())));
         }
 
-        if(channel.equals(config.CHANNEL_HUB_REQUEST)) {
-            if(NetworkConfig.getConfig().isHub()) {
-                RequestUtils.sendMessage(sender, config.CHANNEL_HUB, config.getHubPriority().toString());
+        if(channel.equals(NetworkConfig.CHANNEL_HUB_REQUEST)) {
+            if(NetworkConfig.isHub()) {
+                RequestUtils.sendMessage(sender, NetworkConfig.CHANNEL_HUB, NetworkConfig.getHubPriority().toString());
             }
         }
 
-		if(channel.equals(config.CHANNEL_SENDALL))
+		if(channel.equals(NetworkConfig.CHANNEL_SENDALL))
 		{
             for(String player: BukkitUtils.getPlayerNames())
                 RequestUtils.request(new RedirectRequest(message, player));
 		}
 
-		if(channel.equals(config.CHANNEL_MESSAGE))
+		if(channel.equals(NetworkConfig.CHANNEL_MESSAGE))
 		{
 			List<String> args = StringUtils.parseArgs(message);
 			String player = args.get(0);
@@ -114,22 +112,22 @@ public class NetworkListener {
 			BukkitUtils.sendMessage(player, playerMessage);
 		}
 
-		if(channel.equals(config.CHANNEL_PLAYER_JOIN)) {
+		if(channel.equals(NetworkConfig.CHANNEL_PLAYER_JOIN)) {
 			EventEmitter.getEmitter().triggerEvent(new NetworkPlayerJoinEvent(message, sender));
 		}
 
-		if(channel.equals(config.CHANNEL_PLAYER_LEAVE)) {
+		if(channel.equals(NetworkConfig.CHANNEL_PLAYER_LEAVE)) {
 			EventEmitter.getEmitter().triggerEvent(new NetworkPlayerLeaveEvent(message, sender));
 		}
 
-		if(channel.equals(config.CHANNEL_PLAYER_REDIRECT)) {
+		if(channel.equals(NetworkConfig.CHANNEL_PLAYER_REDIRECT)) {
 			EventEmitter.getEmitter().triggerEvent(new NetworkPlayerRedirectEvent(message, sender));
 		}
 
 		/**
 		 * Alert channels: Broadcasts a message on the server when recieved.
 		 */
-		if(channel.equals(config.CHANNEL_BROADCAST))
+		if(channel.equals(NetworkConfig.CHANNEL_BROADCAST))
 		{
 			BukkitUtils.broadcastMessage(message);
 		}
@@ -138,33 +136,33 @@ public class NetworkListener {
 		 * Info Request: Servers that recieve this message will send back server information.
 		 *  Use synchronized listeners to wait for the server's response.
 		 */
-		if(channel.equals(config.CHANNEL_INFO_REQUEST))
+		if(channel.equals(NetworkConfig.CHANNEL_INFO_REQUEST))
         {
             EventEmitter.getEmitter().triggerEvent(new ServerInfoEvent(event.getMessage()));
             if(!sender.equals(NetworkPlugin.getUsername())) {
-                RequestUtils.sendMessage(sender, config.CHANNEL_INFO_RESPONSE, NetworkPlugin.encodeServerInfo());
+                RequestUtils.sendMessage(sender, NetworkConfig.CHANNEL_INFO_RESPONSE, NetworkPlugin.encodeServerInfo());
             }
         }
 
-        if(channel.equals(config.CHANNEL_INFO_RESPONSE))
+        if(channel.equals(NetworkConfig.CHANNEL_INFO_RESPONSE))
         {
             EventEmitter.getEmitter().triggerEvent(new ServerInfoEvent(event.getMessage()));
         }
 
-        if(channel.equals(config.CHANNEL_PLAYERLIST_REQUEST))
+        if(channel.equals(NetworkConfig.CHANNEL_PLAYERLIST_REQUEST))
         {
             EventEmitter.getEmitter().triggerEvent(new ServerPlayerListEvent(event.getSender(), event.getMessage()));
             if(!sender.equals(NetworkPlugin.getUsername())) {
-                RequestUtils.sendMessage(sender, config.CHANNEL_PLAYERLIST_RESPONSE, NetworkPlugin.encodePlayerList());
+                RequestUtils.sendMessage(sender, NetworkConfig.CHANNEL_PLAYERLIST_RESPONSE, NetworkPlugin.encodePlayerList());
             }
         }
 
-        if(channel.equals(config.CHANNEL_PLAYERLIST_RESPONSE))
+        if(channel.equals(NetworkConfig.CHANNEL_PLAYERLIST_RESPONSE))
         {
             EventEmitter.getEmitter().triggerEvent(new ServerPlayerListEvent(event.getSender(), event.getMessage()));
         }
 
-		if(channel.equals(config.CHANNEL_UNCACHE))
+		if(channel.equals(NetworkConfig.CHANNEL_UNCACHE))
 		{		
 			EventEmitter.getEmitter().triggerEvent(new ServerUncacheEvent(message, sender));
 		}

@@ -12,13 +12,12 @@ public class LilyPadListeners {
 	@EventListener
 	public void messageReceived(MessageEvent event) {
 
-		NetworkConfig config = NetworkConfig.getConfig();
 		String channel = event.getChannel(), username, message;
-		
-		if(!channel.startsWith(config.getRequestPrefix())) {
+
+		if(!channel.startsWith(NetworkConfig.getRequestPrefix())) {
 			return;
 		}
-		
+
 		try {
 			username = event.getSender();
 			message = event.getMessageAsString();
@@ -27,7 +26,7 @@ public class LilyPadListeners {
 		}
 
 		EventEmitter.getEmitter().triggerEvent(new com.octopod.network.events.relays.MessageEvent(username, channel, message));
-		
+
 	}
-	
+
 }

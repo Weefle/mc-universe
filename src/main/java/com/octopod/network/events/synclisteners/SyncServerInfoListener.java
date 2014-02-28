@@ -21,7 +21,7 @@ public class SyncServerInfoListener extends
 	public void executionListener(ServerInfoEvent event) {
 		execute(event);
 	}
-	
+
 	public static List<ServerInfoEvent> waitForExecutions(int expectedExecutions) {
 		return waitForExecutions(expectedExecutions, null, null);
 	}
@@ -52,7 +52,7 @@ public class SyncServerInfoListener extends
 			preExecution.run();
 		}
 		
-		listener.waitFor(expectedExecutions, NetworkConfig.getConfig().getRequestTimeout()).unregister();
+		listener.waitFor(expectedExecutions, NetworkConfig.getRequestTimeout()).unregister();
 
 		return events;
 				

@@ -12,7 +12,7 @@ public class NetworkDebug {
 	 */
 	public static void info(String... messages) 
 	{
-        if(NetworkConfig.getConfig().getDebugMode() >= 0)
+        if(NetworkConfig.getDebugMode() >= 0)
         {
             for(String message: messages) {
 
@@ -33,7 +33,7 @@ public class NetworkDebug {
 	 */	
 	public static void debug(String... messages) 
 	{
-		if(NetworkConfig.getConfig().getDebugMode() >= 1) 
+		if(NetworkConfig.getDebugMode() >= 1)
 		{
 			for(String message: messages) {
 				message = "&7[D] &7" + message;
@@ -55,7 +55,7 @@ public class NetworkDebug {
 	 */		
 	public static void verbose(String... messages) 
 	{
-		if(NetworkConfig.getConfig().getDebugMode() >= 2) 
+		if(NetworkConfig.getDebugMode() >= 2)
 		{
 			for(String message: messages) {
 				message = "&c[V] &7" + message;

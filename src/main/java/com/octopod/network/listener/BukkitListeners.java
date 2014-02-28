@@ -1,5 +1,6 @@
 package com.octopod.network.listener;
 
+import com.octopod.network.NetworkConfig;
 import com.octopod.network.util.BukkitUtils;
 import com.octopod.network.util.RequestUtils;
 import com.octopod.network.NetworkPlugin;
@@ -7,7 +8,6 @@ import com.octopod.network.cache.NetworkCommandCache;
 import com.octopod.network.cache.NetworkHubCache;
 import com.octopod.network.cache.NetworkPlayerCache;
 import com.octopod.network.commands.NetworkCommand;
-import lilypad.client.connect.api.request.RequestException;
 import lilypad.client.connect.api.request.impl.RedirectRequest;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -50,9 +50,9 @@ public class BukkitListeners implements Listener {
 		String channel;
 
 		if(location == null) {
-			channel = NetworkPlugin.getNetworkConfig().CHANNEL_PLAYER_JOIN;
+			channel = NetworkConfig.CHANNEL_PLAYER_JOIN;
 		} else {
-			channel = NetworkPlugin.getNetworkConfig().CHANNEL_PLAYER_REDIRECT;
+			channel = NetworkConfig.CHANNEL_PLAYER_REDIRECT;
 		} 
 		
 		RequestUtils.broadcastMessage(channel, event.getPlayer().getName());
@@ -65,7 +65,7 @@ public class BukkitListeners implements Listener {
 		Map<String, String> playerMap = NetworkPlayerCache.getPlayerMap();
 		
 		String location = playerMap.get(event.getPlayer().getName());
-		String channel = NetworkPlugin.getNetworkConfig().CHANNEL_PLAYER_LEAVE;
+		String channel = NetworkConfig.CHANNEL_PLAYER_LEAVE;
 		
 		if(location != null && location.equals(NetworkPlugin.getUsername()))
 		{

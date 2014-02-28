@@ -36,7 +36,7 @@ public class CommandServerList extends NetworkCommand {
         //Gets the size of all players on the network via LilyPad and gets the difference from the total known players.
         int unlistedPlayerCount = NetworkPlugin.getNetworkedPlayers().size() - playerMap.size();
 
-        BukkitUtils.sendMessage(sender, "&7Found &a" + serverMap.size() + " &7servers. &b" + playerMap.size() + " players &8(" + unlistedPlayerCount + " unlisted players)");
+        BukkitUtils.sendMessage(sender, "&7Found &a" + serverMap.size() + " &7servers. &b" + playerMap.size() + " players &8(~" + unlistedPlayerCount + " unlisted)");
         BukkitUtils.sendMessage(sender, "&7Hover over the server names for more information.");
 
 		for(Map.Entry<String, NetworkPlugin.ServerInfo> entry: serverMap.entrySet()) {
@@ -61,7 +61,7 @@ public class CommandServerList extends NetworkCommand {
                         "&7You're on this server!"
 
                     , '&')).
-                    appendL("&b(" + playerCount + " &3/ " + serverInfo.getMaxPlayers() + "&b)").appendL("&f <- You are here!").
+                    appendL("&b(" + playerCount + ")").appendL("&f <- You are here!").
                     send(new BukkitPlayer(sender));
             }
             //Default case:
@@ -76,7 +76,7 @@ public class CommandServerList extends NetworkCommand {
                         "&7Click to join the server &a" + serverInfo.getUsername() + "&7!"
 
                     , '&')).run("/server " + serverInfo.getUsername()).
-                    appendL("&b(" + playerCount + " &3/ " + serverInfo.getMaxPlayers() + "&b)").
+                    appendL("&b(" + playerCount + ")").
                     send(new BukkitPlayer(sender));
             }
 		}

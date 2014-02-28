@@ -1,87 +1,153 @@
 package com.octopod.network;
 
+import com.octopod.network.util.BukkitUtils;
 import com.octopod.octolib.common.IOUtils;
 import com.octopod.octolib.yaml.YamlConfiguration;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class NetworkConfig {
 
-	/**
-	 * Returns the current config instance,
-	 * or creates a new one if one doesn't exist.
-	 * @return The current NetworkConfig instance, or a new instance.
-	 */
-	public static NetworkConfig getConfig() {
-		if(config != null) {
-			return config;
-		} else {
-			return (config = new NetworkConfig());
-		}
-	}
+    private final static File configFile = new File("plugins/Network/config.yml");
+    //Grabs the default configuration from our resources.
 
-	/**
-	 * Sets the current config to a new NetworkConfig instance.
-	 */
-	public static void reloadConfig() {
-		config = new NetworkConfig();
-	}
+    private final static InputStream defaultConfigInput = NetworkConfig.class.getClassLoader().getResourceAsStream("/config.yml");
 
-	private static NetworkConfig config;
-	private static File configFile = new File("plugins/Network/config.yml");
+    //These formats use String.format()
+    public static String FORMAT_ALERT = 		"&8[&bAlert&8]&6 %s";
+    public static String FORMAT_MSG_SENDER = 	"&8[&b%s&8]&7 [me -> %s]&6 %s";
+    public static String FORMAT_MSG_TARGET = 	"&8[&b%s&8]&7 [%s -> me]&6 %s";
 
-	private Long TIMEOUT;
-	private Integer DEBUG_MODE;
-	private String CHANNEL_PREFIX;
-    private Boolean HUB_ENABLED = false;
-    private Integer HUB_PRIORITY = 0;
-    private String SERVER_NAME;
+	private static Long    TIMEOUT = 500L;
+	private static Integer DEBUG_MODE = 0;
+	private static String  CHANNEL_PREFIX = "network";
+    private static Boolean HUB_ENABLED = false;
+    private static Integer HUB_PRIORITY = 0;
+    private static String  SERVER_NAME = "New Server";
+    private static Integer CONNECTION_ATTEMPTS_MAX = 10;
+    private static Long    CONNECTION_ATTEMPTS_INTERVAL = 1000L;
+
+    private static void createFile(File file) throws IOException {
+        if(!file.exists()) {
+            file.getParentFile().mkdirs();
+            file.createNewFile();
+        }
+    }
+
+    private static void writeFile(InputStream is, File file) throws IOException {
+        FileOutputStream output = new FileOutputStream(file);
+        IOUtils.copy(is, output);
+        output.close();
+    }
+
+    private static void writeConfig(CommandSender sender) throws IOException {
+
+        //Backup the old config.yml if it exists
+        if(configFile.exists())
+        {
+            BukkitUtils.sendMessage(sender, "&eWriting new version of the configuration. A backup will be saved.");
+            String fileName = "config-" + new SimpleDateFormat("yyyy-MM-dd-HH-mm-SS").format(new Date()) + ".yml";
+            File backupConfigFile = new File(fileName);
+            createFile(backupConfigFile);
+            //Copy the old config to this new backup config.
+            writeFile(new FileInputStream(configFile), backupConfigFile);
+            BukkitUtils.sendMessage(sender, "&eBackup saved as " + fileName);
+        }
+        //Generate a new config.yml
+        else
+        {
+            BukkitUtils.sendMessage(sender, "&eWriting new configuration.");
+            try {
+                createFile(configFile);
+            } catch (IOException e) {
+                BukkitUtils.sendMessage(sender, "&cUnable to create a new config.yml file.");
+                throw e;
+            }
+        }
+
+        writeDefaultConfig(sender);
+    }
+
+    /**
+     * Writes the default configuration (resource) into configFile.
+     * Throws various errors.
+     * @param sender Who to send the messages to.
+     * @throws Exception
+     */
+    private static void writeDefaultConfig(CommandSender sender) throws NullPointerException, IOException {
+
+        BukkitUtils.sendMessage(sender, "&eWriting default configuration to config.yml.");
+
+        try {
+            writeFile(defaultConfigInput, configFile);
+        } catch (NullPointerException e) {
+            BukkitUtils.sendMessage(sender, "&cCouldn't find the internal configuration file.");
+            throw e;
+        } catch (FileNotFoundException e) {
+            BukkitUtils.sendMessage(sender, "&cThe config.yml doesn't exist in your folder. If you see this message, I will personally give you 5$");
+            throw e;
+        } catch (IOException e) {
+            BukkitUtils.sendMessage(sender, "&cCouldn't write to the config.yml. Try checking the file's permissions?");
+            throw e;
+        } finally {
+            IOUtils.closeSilent(defaultConfigInput);
+        }
+    }
 
 	/**
 	 * Loads the configuration.
 	 * Each created instance of NetworkConfig will load a new config.
 	 */
-	private NetworkConfig() {
+    public static void reloadConfig() {reloadConfig(Bukkit.getConsoleSender());}
+
+	public static void reloadConfig(CommandSender sender) {
 		//TODO: load a config into the below variables
 
 		//This is the single YAML configuration we should use.
 		YamlConfiguration config = new YamlConfiguration();
 
-		//Grabs the default configuration from our resources.
-		InputStream defaultConfig = this.getClass().getResourceAsStream("/config.yml");
+        YamlConfiguration defaultConfig = null;
+        if(defaultConfigInput != null)
+            defaultConfig = new YamlConfiguration(defaultConfigInput);
 
-		try
-		{
-			if(!configFile.exists()) //Checks the existance of config.yml
-			{
-				//Generate a new config.yml
-				configFile.getParentFile().mkdirs();
-				configFile.createNewFile();
+		try {
 
-                FileOutputStream output = new FileOutputStream(configFile);
-                IOUtils.copy(defaultConfig, output);
-                output.close();
+            //A config.yml doesn't exist, so create a new one.
+            if(!configFile.exists()) {
+                writeConfig(sender);
+                config.load(configFile);
+            //Check if the version of the default config is newer.
+            } else {
+                if(defaultConfig != null) {
+                    config.load(configFile);
+                    int version = config.getInteger("version", -1);
+                    int defaultVersion = defaultConfig.getInteger("version");
+                    if(defaultVersion > version) {
+                        writeConfig(sender);
+                        config.load(configFile);
+                    }
+                }
             }
 
-            //Loads the file into the configuration
-            config.load(configFile);
+            TIMEOUT =           Long.valueOf(config.getInteger("request-timeout", TIMEOUT.intValue()));
+            DEBUG_MODE =        config.getInteger("debug-messages", DEBUG_MODE);
+            CHANNEL_PREFIX =    config.getString("channel-prefix", "network");
+            HUB_ENABLED =       config.getBoolean("hub-enabled", false);
+            HUB_PRIORITY =      config.getInteger("hub-priority", 0);
+            SERVER_NAME =       config.getString("name");
 
-		//Something went wrong, so use the default config.
-		} catch (IOException e) {
-			config.load(defaultConfig);
-		}
+            CONNECTION_ATTEMPTS_MAX =       config.getInteger("lilypad-connection");
+            CONNECTION_ATTEMPTS_INTERVAL =  Long.valueOf(config.getInteger("connection-attempts-interval", 1000));
 
-		IOUtils.closeSilent(defaultConfig);
-
-		TIMEOUT =           Long.valueOf(config.getInteger("request-timeout", 500));
-		DEBUG_MODE =        config.getInteger("debug-messages", 0);
-		CHANNEL_PREFIX =    config.getString("channel-prefix", "network");
-        HUB_ENABLED =       config.getBoolean("hub-enabled", false);
-        HUB_PRIORITY =      config.getInteger("hub-priority", 0);
-        SERVER_NAME =       config.getString("name");
+        //Something errored out while writing/reading the configuration.
+        } catch (Exception e) {
+            BukkitUtils.sendMessage(sender, "&cTry restarting the server. If that doesn't fix it, report the stacktrace in the console.");
+            e.printStackTrace();
+        }
 
 		CHANNEL_PLAYER_JOIN = 		CHANNEL_PREFIX + ".player.join";
 		CHANNEL_PLAYER_REDIRECT = 	CHANNEL_PREFIX + ".player.redirect";
@@ -104,17 +170,16 @@ public class NetworkConfig {
 
 	}
 
-    public Boolean isHub() {return HUB_ENABLED;}
-    public Integer getHubPriority() {return HUB_PRIORITY;}
+    public static Boolean isHub() {return HUB_ENABLED;}
+    public static Integer getHubPriority() {return HUB_PRIORITY;}
 
-	public Long getRequestTimeout() {return TIMEOUT;}
+	public static Long getRequestTimeout() {return TIMEOUT;}
 
-	public Integer getDebugMode() {return DEBUG_MODE;}
-	public void setDebugMode(int i) {DEBUG_MODE = i;}
+	public static Integer getDebugMode() {return DEBUG_MODE;}
 
-	public String getRequestPrefix() {return CHANNEL_PREFIX;}
+	public static String getRequestPrefix() {return CHANNEL_PREFIX;}
 
-    public String getServerName() {
+    public static String getServerName() {
         if(SERVER_NAME != null) {
             return SERVER_NAME;
         } else {
@@ -122,12 +187,8 @@ public class NetworkConfig {
         }
     }
 
-	//These formats use String.format()
-	public String FORMAT_ALERT = 		"&8[&bAlert&8]&6 %s";
-	public String FORMAT_MSG_SENDER = 	"&8[&b%s&8]&7 [me -> %s]&6 %s";
-	public String FORMAT_MSG_TARGET = 	"&8[&b%s&8]&7 [%s -> me]&6 %s";
-
-	public String
+    //Channel variables
+	public static String
 	//Used to tell a server that a player has joined/left/changed servers that the message has been sent from.
 		CHANNEL_PLAYER_JOIN,
 		CHANNEL_PLAYER_REDIRECT,
@@ -155,8 +216,5 @@ public class NetworkConfig {
 
         CHANNEL_HUB,
         CHANNEL_HUB_REQUEST
-
 	;
-
-
 }

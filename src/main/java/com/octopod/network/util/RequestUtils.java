@@ -1,21 +1,14 @@
 package com.octopod.network.util;
 
 import com.octopod.network.NetworkConfig;
-import com.octopod.network.NetworkDebug;
 import com.octopod.network.NetworkPlugin;
 import lilypad.client.connect.api.request.Request;
-import lilypad.client.connect.api.request.RequestException;
-import lilypad.client.connect.api.request.impl.GetPlayersRequest;
 import lilypad.client.connect.api.request.impl.MessageRequest;
-import lilypad.client.connect.api.result.FutureResult;
 import lilypad.client.connect.api.result.Result;
-import lilypad.client.connect.api.result.StatusCode;
-import lilypad.client.connect.api.result.impl.GetPlayersResult;
 import lilypad.client.connect.api.result.impl.MessageResult;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Utilities class to interface with LilyPad.
@@ -31,7 +24,7 @@ public class RequestUtils {
      */
     public static Result request(Request request) {
         try {
-            return NetworkPlugin.getConnection().request(request).awaitUninterruptibly(NetworkConfig.getConfig().getRequestTimeout());
+            return NetworkPlugin.getConnection().request(request).awaitUninterruptibly(NetworkConfig.getRequestTimeout());
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -39,11 +32,11 @@ public class RequestUtils {
     }
 
 	public static void requestSendAll(String server, String destination) {
-		sendMessage(server, NetworkConfig.getConfig().CHANNEL_SENDALL, destination);
+		sendMessage(server, NetworkConfig.CHANNEL_SENDALL, destination);
 	}
 
 	public static void requestSendAll(String destination) {
-		broadcastMessage(NetworkConfig.getConfig().CHANNEL_SENDALL, destination);
+		broadcastMessage(NetworkConfig.CHANNEL_SENDALL, destination);
 	}
 
     public static MessageResult sendMessage(String server, String channel, String message) {
