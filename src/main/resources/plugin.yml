@@ -1,7 +1,6 @@
 name: Network
 main: com.octopod.network.NetworkPlugin
-version: 0.1
-author: Octopod
+version: ${buildNumber}
 softdepend: ['LilyPad-Connect']
 permissions:
     network.server.connect:

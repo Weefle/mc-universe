@@ -33,7 +33,7 @@ public class NetworkPlugin extends JavaPlugin {
 	//TODO: > be able to join the server a friend is on
 
     //Used before most messages
-	public final static String PREFIX = "&8[&cNet&8] &f";
+	public final static String PREFIX = "&8[&6Network&8] &f";
 
     protected static boolean connected = false;
 
@@ -176,6 +176,22 @@ public class NetworkPlugin extends JavaPlugin {
         return connect.getSettings().getUsername();
     }
 
+    public static String getVersion() {
+        return self.getDescription().getVersion();
+    }
+
+    public static int getBuildNumber() {
+        return getBuildNumber(getVersion());
+    }
+
+    public static int getBuildNumber(String version) {
+        try {
+            return Integer.valueOf(version.split("-")[0]);
+        } catch (NullPointerException | NumberFormatException e) {
+            return -1;
+        }
+    }
+
     /**
      * @param args
      * @return
@@ -234,6 +250,7 @@ public class NetworkPlugin extends JavaPlugin {
         public Integer  getMaxPlayers()         {return getInt(getIndex(3), 0);}
         public String[] getWhitelistedPlayers() {return getIndex(4).equals("") ? new String[0] : getIndex(4).split(" ");}
         public Integer  getHubPriority()        {return getInt(getIndex(5), -1);}
+        public String   getPluginVersion()      {return getIndex(6);}
 
     }
 
@@ -250,7 +267,8 @@ public class NetworkPlugin extends JavaPlugin {
             NetworkPlugin.self.getServer().getMotd(), //Server's MOTD
             NetworkPlugin.self.getServer().getMaxPlayers(), //Server's max players
             StringUtils.implode(BukkitUtils.getWhitelistedPlayerNames(), " "), //Server's whitelisted players
-            NetworkConfig.isHub() ? NetworkConfig.getHubPriority() : -1 //Server's hub priority, or -1 if is not a hub.
+            NetworkConfig.isHub() ? NetworkConfig.getHubPriority() : -1, //Server's hub priority, or -1 if is not a hub.
+            NetworkPlugin.getVersion() //Server's plugin version. (<build>-<commit>)
         );
     }
 
@@ -309,11 +327,6 @@ public class NetworkPlugin extends JavaPlugin {
 
         //Configuration loading
         NetworkConfig.reloadConfig();
-        NetworkDebug.info(
-                "Loaded configuration: ",
-                "    " + "Channel: &a" + NetworkConfig.getRequestPrefix(),
-                "    " + "Hub: &a" + NetworkConfig.isHub()
-        );
 
         NetworkCommandCache.registerCommand(
 
@@ -374,6 +387,8 @@ public class NetworkPlugin extends JavaPlugin {
                 }
             }
         }
+
+        NetworkDebug.info("Successfully loaded Network version &6" + getVersion());
 
     }
 

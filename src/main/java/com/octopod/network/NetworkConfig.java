@@ -115,14 +115,16 @@ public class NetworkConfig {
 
         BukkitUtils.sendMessage(sender, "&cLoading configuration...");
 
-        InputStream defaultConfigInput = NetworkConfig.class.getClassLoader().getResourceAsStream("config.yml");
+        InputStream defaultConfigInput = NetworkPlugin.class.getClassLoader().getResourceAsStream("config.yml");
 
 		//This is the single YAML configuration we should use.
 		YamlConfiguration config;
 
         YamlConfiguration defaultConfig = null;
         if(defaultConfigInput != null)
-            defaultConfig = new YamlConfiguration(defaultConfigInput);
+            try {
+                defaultConfig = new YamlConfiguration(defaultConfigInput);
+            } catch (Exception e) {}
 
 		try {
 
@@ -134,7 +136,9 @@ public class NetworkConfig {
             config = new YamlConfiguration(configFile);
 
             //Check if the version of the default config is newer, or the current configuration is missing keys.
-            if(defaultConfig.getInteger("version", 0) > config.getInteger("version", -1) || nullCheck(
+            if (
+                (defaultConfig != null && defaultConfig.getInteger("version", 0) > config.getInteger("version", -1)) ||
+                nullCheck(
                     TIMEOUT =           Long.valueOf(config.getInteger("request-timeout")),
                     DEBUG_MODE =        config.getInteger("debug-messages"),
                     CHANNEL_PREFIX =    config.getString("channel-prefix"),
@@ -144,7 +148,8 @@ public class NetworkConfig {
 
                     CONNECTION_ATTEMPTS_MAX =       config.getInteger("connection-attempts-max"),
                     CONNECTION_ATTEMPTS_INTERVAL =  Long.valueOf(config.getInteger("connection-attempts-interval", 1000))
-            )) {
+                )
+            ) {
                 writeConfig(sender);
                 config.load(configFile);
             }

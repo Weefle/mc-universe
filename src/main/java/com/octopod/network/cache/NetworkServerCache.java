@@ -19,9 +19,9 @@ public class NetworkServerCache {
         boolean isNew = !serverMap.containsKey(server);
         serverMap.put(server, info);
         if(isNew) {
-            NetworkDebug.info("Recieved new info from &a" + server);
+            NetworkDebug.debug("Recieved new info from &a" + server);
         } else {
-            NetworkDebug.info("Recieved updated info from &a" + server);
+            NetworkDebug.debug("Recieved updated info from &a" + server);
         }
         return isNew;
 	}
