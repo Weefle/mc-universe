@@ -19,7 +19,7 @@ public class NetworkDebug {
                 BukkitUtils.console(message);
                 for(Player player: BukkitUtils.getPlayers()) {
                     if(player.hasPermission("network.debug")) {
-                        BukkitUtils.sendMessage(player, NetworkPlugin.PREFIX + "&7" + message);
+                        BukkitUtils.sendMessage(player, "&7" + message);
                     }
                 }
             }
@@ -41,7 +41,7 @@ public class NetworkDebug {
 				BukkitUtils.console(message);
 				for(Player player: BukkitUtils.getPlayers()) {
 					if(player.hasPermission("network.debug")) {
-						BukkitUtils.sendMessage(player, NetworkPlugin.PREFIX + message);
+						BukkitUtils.sendMessage(player, message);
 					}
 				}				
 			}		
@@ -63,7 +63,7 @@ public class NetworkDebug {
 				BukkitUtils.console(message);
 				for(Player player: BukkitUtils.getPlayers()) {
 					if(player.hasPermission("network.debug.verbose")) {
-                        BukkitUtils.sendMessage(player, NetworkPlugin.PREFIX + message);
+                        BukkitUtils.sendMessage(player, message);
 					}
 				}				
 			}		

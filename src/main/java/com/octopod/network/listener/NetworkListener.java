@@ -60,7 +60,7 @@ public class NetworkListener {
         String version = serverInfo.getPluginVersion();
         if(version.equals("") || NetworkPlugin.getBuildNumber(version) < NetworkPlugin.getBuildNumber()) {
             //This server is running an old version of the plugin
-            NetworkDebug.info("&a" + server + "&7 is running an outdated version of Network!");
+            NetworkDebug.info("&a" + server + "&7 is outdated! (&6" + (version.equals("") ? "No Version" : version) + "&7)");
         }
 	}
 
@@ -109,7 +109,7 @@ public class NetworkListener {
 			List<String> args = StringUtils.parseArgs(message);
 			String player = args.get(0);
 			String playerMessage = args.get(1);
-			BukkitUtils.sendMessage(player, playerMessage);
+			BukkitUtils.sendMessage(player, playerMessage, null);
 		}
 
 		if(channel.equals(NetworkConfig.CHANNEL_PLAYER_JOIN)) {

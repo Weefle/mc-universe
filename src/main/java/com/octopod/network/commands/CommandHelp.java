@@ -20,12 +20,12 @@ public class CommandHelp extends NetworkCommand {
 	@Override
 	public boolean exec(CommandSender sender, String label, String[] args) {
 
-        BukkitUtils.sendMessage(sender, "&8-----------------------------------------------------");
-		BukkitUtils.sendMessage(sender, ChatUtils.toLegacy(new ChatBuilder().appendBlock(new ChatElement("Network Commands").color(Color.AQUA), 320, 2)));
-		BukkitUtils.sendMessage(sender, "&8-----------------------------------------------------");
+        BukkitUtils.sendMessage(sender, "&8-----------------------------------------------------", "");
+		BukkitUtils.sendMessage(sender, ChatUtils.toLegacy(new ChatBuilder().appendBlock(new ChatElement("Network Commands").color(Color.AQUA), 320, 2)), "");
+		BukkitUtils.sendMessage(sender, "&8-----------------------------------------------------", "");
 
 		for(NetworkCommand command: NetworkCommandCache.getCommands().values()) {
-			BukkitUtils.sendMessage(sender, "&8[&b" + command.getUsage() + "&8]: &6" + command.getDescription());
+			BukkitUtils.sendMessage(sender, "&8[&b" + command.getUsage() + "&8]: &6" + command.getDescription(), "");
 		}
 
 		return true;

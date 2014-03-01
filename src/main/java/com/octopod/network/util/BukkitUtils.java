@@ -16,16 +16,62 @@ import java.util.List;
  */
 public class BukkitUtils {
 
-
+    /**
+     * Sends a player (by name) a message.
+     * It will automatically be colorized by '&'.
+     * Nothing will be sent if the player is offline.
+     * By default, the message will be prefixed by this plugin's prefix.
+     * @param player The name of the player.
+     * @param message The message to send.
+     */
     public static void sendMessage(String player, String message) {
+        sendMessage(player, message, NetworkPlugin.PREFIX);
+    }
+
+    /**
+     * Sends a player (by name) a message.
+     * It will automatically be colorized by '&'.
+     * Nothing will be sent if the player is offline.
+     * Use prefix to prefix the message with something.
+     * @param player The name of the player.
+     * @param message The message to send.
+     * @param prefix The prefix to put before the message.
+     */
+    public static void sendMessage(String player, String message, String prefix) {
         Player p = Bukkit.getPlayer(player);
-        if(p != null) {sendMessage(p, message);}
+        if(p != null) sendMessage(p, message, prefix);
     }
 
+    /**
+
+     * It will automatically be colorized by '&'.
+     * Nothing will be sent if the player is offline.
+     * By default, the message will be prefixed by this plugin's prefix.
+     * @param sender The CommandSender.
+     * @param message The message to send.
+     */
     public static void sendMessage(CommandSender sender, String message) {
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
+        sendMessage(sender, message, NetworkPlugin.PREFIX);
     }
 
+    /**
+     * Sends a CommandSender (by object) a message.
+     * It will automatically be colorized by '&'.
+     * Nothing will be sent if the player is offline.
+     * Use prefix to prefix the message with something.
+     * @param sender The CommandSender.
+     * @param message The message to send.
+     * @param prefix The prefix to put before the message.
+     */
+    public static void sendMessage(CommandSender sender, String message, String prefix) {
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', (prefix == null ? "" : prefix) + message));
+    }
+
+    /**
+     * Broadcasts a message across the server.
+     * It will automatically be colorized by '&'.
+     * @param message
+     */
     public static void broadcastMessage(String message) {
         Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', message));
     }
@@ -43,6 +89,11 @@ public class BukkitUtils {
         return players.toArray(new String[players.size()]);
     }
 
+    /**
+     * Returns an array of player names that are whitelisted.
+     * If the server doesn't have whitelist enabled, it will return an empty array.
+     * @return
+     */
     public static String[] getWhitelistedPlayerNames() {
         if(!Bukkit.hasWhitelist()) return new String[0];
 

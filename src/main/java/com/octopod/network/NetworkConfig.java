@@ -113,7 +113,7 @@ public class NetworkConfig {
 
 	public static void reloadConfig(CommandSender sender) {
 
-        BukkitUtils.sendMessage(sender, "&cLoading configuration...");
+        BukkitUtils.sendMessage(sender, "&7Loading configuration...");
 
         InputStream defaultConfigInput = NetworkPlugin.class.getClassLoader().getResourceAsStream("config.yml");
 
@@ -156,7 +156,10 @@ public class NetworkConfig {
 
         //Something errored out while writing/reading the configuration.
         } catch (Exception e) {
-            BukkitUtils.sendMessage(sender, "&cTry restarting the server. If that doesn't fix it, report the stacktrace in the console.");
+            BukkitUtils.sendMessage(sender, "&cSomething went wrong while loading Network's configuration.");
+            BukkitUtils.sendMessage(sender, "&cThis can usually happen if the plugin was loaded using unsafe methods.");
+            BukkitUtils.sendMessage(sender, "&cIf a restart doesn't fix it, report the error in the console.");
+            BukkitUtils.sendMessage(sender, "&cThe plugin will continue operating under default values.");
             e.printStackTrace();
         } finally {
             IOUtils.closeSilent(defaultConfigInput);
@@ -178,7 +181,7 @@ public class NetworkConfig {
 		CHANNEL_UNCACHE = 			CHANNEL_PREFIX + ".uncache.request";
 		CHANNEL_UNCACHE_RELAY =		CHANNEL_PREFIX + ".uncache.relay";
 
-        BukkitUtils.sendMessage(sender, "&eSuccessfully loaded configuration!");
+        BukkitUtils.sendMessage(sender, "&7Successfully loaded configuration!");
 
 	}
 

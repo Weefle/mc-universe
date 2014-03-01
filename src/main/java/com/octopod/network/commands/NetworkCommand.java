@@ -1,10 +1,7 @@
 package com.octopod.network.commands;
 
 import com.octopod.network.NetworkPermission;
-import com.octopod.network.NetworkPlugin;
 import com.octopod.network.util.BukkitUtils;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
@@ -49,7 +46,7 @@ public abstract class NetworkCommand {
 
 	public boolean onCommand(CommandSender sender, String label, String[] args) {
 
-        if(!permission.playerHas(sender)) return false;
+        if(!permission.senderHas(sender)) return false;
 
         //If number of arguments matches required for this command
 		if(numArgs() == null || Arrays.asList(numArgs()).contains(args.length)) {

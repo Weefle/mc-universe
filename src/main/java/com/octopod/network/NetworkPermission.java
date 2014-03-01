@@ -4,6 +4,7 @@ import org.bukkit.command.CommandSender;
 
 /**
  * @author Octopod
+ * I don't want to put different permissions in different spots in the code, so just use an enum.
  */
 public enum NetworkPermission {
 
@@ -25,7 +26,7 @@ public enum NetworkPermission {
         this.node = node;
     }
 
-    public boolean playerHas(CommandSender sender) {
+    public boolean senderHas(CommandSender sender) {
         return sender.hasPermission(node);
     }
 
