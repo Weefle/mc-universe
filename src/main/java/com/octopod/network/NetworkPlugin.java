@@ -22,7 +22,6 @@ import lilypad.client.connect.api.result.impl.GetPlayersResult;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,7 +32,7 @@ public class NetworkPlugin extends JavaPlugin {
 	//TODO: > be able to join the server a friend is on
 
     //Used before most messages
-	public final static String PREFIX = "&8[&6Network&8] &f";
+	public final static String PREFIX = "&8[&6Net+&8] &f";
 
     protected static boolean connected = false;
 
@@ -81,16 +80,11 @@ public class NetworkPlugin extends JavaPlugin {
     }
 
     /**
-     * Tells a server to broadcast a raw message.
-     * @param server The name of the server.
+     * Tells a server (using this plugin) to broadcast a raw message.
      * @param message The message to send.
      */
-    public static void broadcastServerMessage(String server, String message) {
-        if(server.equals(NetworkPlugin.getUsername())) {
-            BukkitUtils.broadcastMessage(message);
-        } else {
-            RequestUtils.sendMessage(server, NetworkConfig.CHANNEL_BROADCAST, message);
-        }
+    public static void broadcastNetworkMessage(String server, String message) {
+        RequestUtils.sendMessage(server, NetworkConfig.CHANNEL_BROADCAST, message);
     }
 
     /**
@@ -110,7 +104,7 @@ public class NetworkPlugin extends JavaPlugin {
         if(BukkitUtils.isPlayerOnline(player)) {
             BukkitUtils.sendMessage(player, message);
         } else {
-            RequestUtils.broadcastMessage(NetworkConfig.CHANNEL_MESSAGE, player + " \"" + message.replaceAll("\"", "\\\"") + "\"");
+            RequestUtils.broadcastMessage(NetworkConfig.CHANNEL_MESSAGE, encodeString(player, message));
         }
     }
 
@@ -176,12 +170,12 @@ public class NetworkPlugin extends JavaPlugin {
         return connect.getSettings().getUsername();
     }
 
-    public static String getVersion() {
+    public static String getPluginVersion() {
         return self.getDescription().getVersion();
     }
 
     public static int getBuildNumber() {
-        return getBuildNumber(getVersion());
+        return getBuildNumber(getPluginVersion());
     }
 
     public static int getBuildNumber(String version) {
@@ -268,7 +262,7 @@ public class NetworkPlugin extends JavaPlugin {
             NetworkPlugin.self.getServer().getMaxPlayers(), //Server's max players
             StringUtils.implode(BukkitUtils.getWhitelistedPlayerNames(), " "), //Server's whitelisted players
             NetworkConfig.isHub() ? NetworkConfig.getHubPriority() : -1, //Server's hub priority, or -1 if is not a hub.
-            NetworkPlugin.getVersion() //Server's plugin version. (<build>-<commit>)
+            NetworkPlugin.getPluginVersion() //Server's plugin version. (<build>-<commit>)
         );
     }
 
@@ -388,7 +382,7 @@ public class NetworkPlugin extends JavaPlugin {
             }
         }
 
-        NetworkDebug.info("Successfully loaded Network version &6" + getVersion());
+        NetworkDebug.info("Successfully loaded NetworkPlus version &6" + getPluginVersion());
 
     }
 

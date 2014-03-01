@@ -52,16 +52,17 @@ public class NetworkListener {
 		String server = event.getSender();
         NetworkPlugin.ServerInfo serverInfo = event.getServerInfo();
 		NetworkServerCache.addServer(server, serverInfo);
+
         //priority at least 0 = this server is a hub
         int hubPriority = serverInfo.getHubPriority();
-        if(hubPriority >= 0) {
+        if(hubPriority >= 0)
             EventEmitter.getEmitter().triggerEvent(new NetworkHubCacheEvent(server, hubPriority));
-        }
+
+        //Checks for mismatched plugin versions between servers, and warns the server owners.
         String version = serverInfo.getPluginVersion();
-        if(version.equals("") || NetworkPlugin.getBuildNumber(version) < NetworkPlugin.getBuildNumber()) {
-            //This server is running an old version of the plugin
-            NetworkDebug.info("&a" + server + "&7 is outdated! (&6" + (version.equals("") ? "No Version" : version) + "&7)");
-        }
+        if(!version.equals(NetworkPlugin.getPluginVersion()))
+            NetworkDebug.info("&a" + server + "&7 is running a different version! (&6" + (version.equals("") ? "No Version" : version) + "&7)");
+
 	}
 
     @EventHandler(runAsync = true)

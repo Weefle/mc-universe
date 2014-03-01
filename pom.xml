@@ -2,10 +2,10 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.octopod</groupId>
-	<artifactId>Network</artifactId>
+	<artifactId>networkplus</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
-	<name>Network</name>
+	<name>NetworkPlus</name>
 
 	<url>http://maven.apache.org</url>
 
