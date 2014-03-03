@@ -2,13 +2,15 @@ package com.octopod.network.commands;
 
 import com.octopod.network.NetworkPermission;
 import com.octopod.network.cache.NetworkCommandCache;
+import com.octopod.network.util.BukkitUtils;
+import com.octopod.octolib.minecraft.ChatBuilder;
+import com.octopod.octolib.minecraft.ChatElement;
+import com.octopod.octolib.minecraft.ChatUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class CommandMaster extends NetworkCommand {
 
@@ -30,11 +32,10 @@ public class CommandMaster extends NetworkCommand {
 
         List<String> argList = Arrays.asList(vargs);
 
-
 		if(vargs.length == 0) {
 
-			player.sendMessage(PREFIX + "Welcome to the Nixium Network!");
-			player.sendMessage(PREFIX + "Type /net help to view commands.");
+            show_help(sender, 0);
+            return true;
 
 		} else {
 
@@ -44,7 +45,12 @@ public class CommandMaster extends NetworkCommand {
             if(argList.size() == 1) {
                 args = new String[0];
             } else {
-                args = (String[])new LinkedList(argList).subList(1, argList.size()).toArray(new String[argList.size() - 1]);
+                args = new LinkedList<>(argList).subList(1, argList.size()).toArray(new String[argList.size() - 1]);
+            }
+
+            if(is_numeric(label)) {
+                show_help(sender, Integer.valueOf(label));
+                return true;
             }
 
 			switch(label){
@@ -59,10 +65,48 @@ public class CommandMaster extends NetworkCommand {
 				default:
 					break;
 			}
+
 		}
 
 		return true;
 
 	}
+
+    private boolean is_numeric(String string) {
+        try {
+            Integer.valueOf(string);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    private static int PAGE_SIZE = 5;
+
+    private void show_help(CommandSender sender, int page) {
+
+        List<NetworkCommand> commands = new ArrayList<>(NetworkCommandCache.getCommands().values());
+        Collections.sort(commands, new Comparator<NetworkCommand>() {
+
+            @Override
+            public int compare(NetworkCommand cmd1, NetworkCommand cmd2) {
+                return cmd1.compareTo(cmd2);
+            }
+
+        });
+
+        int startIndex = page * PAGE_SIZE;
+
+        List<NetworkCommand> subList = commands.subList(startIndex, startIndex + PAGE_SIZE);
+
+        BukkitUtils.sendMessage(sender, "&8-----------------------------------------------------", "");
+        BukkitUtils.sendMessage(sender, ChatUtils.toLegacy(new ChatBuilder().appendBlock(new ChatElement("&bNetworkPlus Commands"), 320, 2)), "");
+        BukkitUtils.sendMessage(sender, ChatUtils.toLegacy(new ChatBuilder().appendBlock(new ChatElement("&8Page " + (page + 1)), 320, 2)), "");
+        BukkitUtils.sendMessage(sender, "&8-----------------------------------------------------", "");
+
+        for(NetworkCommand command: subList)
+            BukkitUtils.sendMessage(sender, "&8[&b" + command.getUsage() + "&8]: &6" + command.getDescription(), "");
+
+    }
 
 }

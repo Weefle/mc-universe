@@ -10,7 +10,7 @@ import java.util.Arrays;
  * Extend this class when making commands, and it will automatically be added into the /help command list.
  * @author Octopod
  */
-public abstract class NetworkCommand {
+public abstract class NetworkCommand implements Comparable<NetworkCommand> {
 
 	protected String root, usage, description;
     protected NetworkPermission permission;
@@ -68,5 +68,10 @@ public abstract class NetworkCommand {
         return false;
 
 	}
+
+    @Override
+    public int compareTo(NetworkCommand command) {
+        return this.getLabel().compareTo(command.getLabel());
+    }
 
 }
