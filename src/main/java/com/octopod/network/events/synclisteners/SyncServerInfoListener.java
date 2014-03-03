@@ -9,8 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class SyncServerInfoListener extends
-		SynchronizedListener<ServerInfoEvent> {
+public class SyncServerInfoListener extends SynchronizedListener<ServerInfoEvent> {
 
 	public SyncServerInfoListener(EventCallback<ServerInfoEvent> callback) {
 		super(callback);
@@ -23,14 +22,10 @@ public class SyncServerInfoListener extends
 	}
 
 	public static List<ServerInfoEvent> waitForExecutions(int expectedExecutions) {
-		return waitForExecutions(expectedExecutions, null, null);
+		return collectExecutionsFrom(expectedExecutions, null);
 	}
-	
-	public static List<ServerInfoEvent> waitForExecutions(int expectedExecutions, final List<String> filter) {
-		return waitForExecutions(expectedExecutions, filter, null);
-	}
-	
-	public static List<ServerInfoEvent> waitForExecutions(int expectedExecutions, final List<String> filter, Runnable preExecution) {
+
+	public static List<ServerInfoEvent> collectExecutionsFrom(int expectedExecutions, final List<String> filter) {
 		
 		final List<ServerInfoEvent> events = Collections.synchronizedList(new ArrayList<ServerInfoEvent>());
 
@@ -48,10 +43,6 @@ public class SyncServerInfoListener extends
 
 		SynchronizedListener<ServerInfoEvent> listener = new SyncServerInfoListener(callback).register();
 
-		if(preExecution != null) {
-			preExecution.run();
-		}
-		
 		listener.waitFor(expectedExecutions, NetworkConfig.getRequestTimeout()).unregister();
 
 		return events;
