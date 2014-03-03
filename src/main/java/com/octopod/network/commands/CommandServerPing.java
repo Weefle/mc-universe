@@ -33,7 +33,7 @@ public class CommandServerPing extends NetworkCommand {
 		}
 
 		NetworkPlugin.requestServerInfo(Arrays.asList(server));
-		List<ServerInfoEvent> events = SyncServerInfoListener.waitForExecutions(1, Arrays.asList(server));
+		List<ServerInfoEvent> events = SyncServerInfoListener.collectExecutionsFrom(1, Arrays.asList(server));
 
 		if(events.size() > 0) {
 			BukkitUtils.sendMessage(sender, "&aPing returned successful!");
