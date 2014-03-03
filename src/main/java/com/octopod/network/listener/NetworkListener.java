@@ -60,8 +60,20 @@ public class NetworkListener {
 
         //Checks for mismatched plugin versions between servers, and warns the server owners.
         String version = serverInfo.getPluginVersion();
-        if(!version.equals(NetworkPlugin.getPluginVersion()))
-            NetworkDebug.info("&a" + server + "&7 is running a different version! (&6" + (version.equals("") ? "No Version" : version) + "&7)");
+        if(!version.equals(NetworkPlugin.getPluginVersion())) {
+            int serverBuildNumber = NetworkPlugin.getBuildNumber();
+            int buildNumber = NetworkPlugin.getBuildNumber(version);
+            if(serverBuildNumber > buildNumber) {
+                NetworkDebug.info("&a" + server + "&7 is running &6" + (version.equals("") ? "No Version" : version) + "&7! (older?)");
+            } else
+            if(serverBuildNumber == buildNumber) {
+                NetworkDebug.info("&a" + server + "&7 is running &6" + (version.equals("") ? "No Version" : version) + "&7! (different build?)");
+            } else
+            if(serverBuildNumber < buildNumber) {
+                NetworkDebug.info("&a" + server + "&7 is running &6" + (version.equals("") ? "No Version" : version) + "&7! (newer?)");
+            }
+        }
+
 
 	}
 
@@ -84,7 +96,7 @@ public class NetworkListener {
 
     @EventHandler(runAsync = true)
 	public void playerRedirectEvent(NetworkPlayerRedirectEvent event) {
-		NetworkDebug.debug("&b" + event.getPlayer() + " &7switched servers to &a" + event.getServer());
+		NetworkDebug.debug("&b" + event.getPlayer() + " &7redirected from &a" + event.getFromServer() + "&7 to &a" + event.getServer());
 		NetworkPlayerCache.putPlayer(event.getPlayer(), event.getServer());
 	}
 
@@ -95,16 +107,16 @@ public class NetworkListener {
 		String channel = event.getChannel();
 		String message = event.getMessage();
 
-		NetworkDebug.debug(
-                "&7Message: &a" + sender + "&7 on &b" + channel
-        );
+		NetworkDebug.verbose("&7Message: &a" + sender + "&7 on &b" + channel);
 
+        //Tells the server to send all players on this server to the server specified in 'message'
 		if(channel.equals(NetworkConfig.CHANNEL_SENDALL))
 		{
             for(String player: BukkitUtils.getPlayerNames())
                 RequestUtils.request(new RedirectRequest(message, player));
 		}
 
+        //Tells the server to send a message to a player. Information included in 'message'
 		if(channel.equals(NetworkConfig.CHANNEL_MESSAGE))
 		{
 			List<String> args = StringUtils.parseArgs(message);
@@ -113,21 +125,19 @@ public class NetworkListener {
 			BukkitUtils.sendMessage(player, playerMessage, null);
 		}
 
-		if(channel.equals(NetworkConfig.CHANNEL_PLAYER_JOIN)) {
+        //Tells the server a player has joined the network
+		if(channel.equals(NetworkConfig.CHANNEL_PLAYER_JOIN))
 			EventEmitter.getEmitter().triggerEvent(new NetworkPlayerJoinEvent(message, sender));
-		}
 
-		if(channel.equals(NetworkConfig.CHANNEL_PLAYER_LEAVE)) {
+        //Tells the server a player has left the network
+		if(channel.equals(NetworkConfig.CHANNEL_PLAYER_LEAVE))
 			EventEmitter.getEmitter().triggerEvent(new NetworkPlayerLeaveEvent(message, sender));
-		}
 
-		if(channel.equals(NetworkConfig.CHANNEL_PLAYER_REDIRECT)) {
-			EventEmitter.getEmitter().triggerEvent(new NetworkPlayerRedirectEvent(message, sender));
-		}
+        //Tells the server a player has switched servers on the network
+		if(channel.equals(NetworkConfig.CHANNEL_PLAYER_REDIRECT))
+			EventEmitter.getEmitter().triggerEvent(new NetworkPlayerRedirectEvent(message, NetworkPlayerCache.findPlayer(message), sender));
 
-		/**
-		 * Alert channels: Broadcasts a message on the server when recieved.
-		 */
+		//Tells the server to broadcast a message on the server.
 		if(channel.equals(NetworkConfig.CHANNEL_BROADCAST))
 		{
 			BukkitUtils.broadcastMessage(message);
