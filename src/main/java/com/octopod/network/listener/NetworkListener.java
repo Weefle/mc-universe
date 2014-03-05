@@ -27,8 +27,7 @@ public class NetworkListener {
     @EventHandler(runAsync = true)
 	public void networkConnected(NetworkConnectedEvent event) {
 		NetworkDebug.debug("&aSuccessfully connected to LilyPad!");
-		NetworkPlugin.requestServerInfo();
-        NetworkPlugin.requestPlayerList();
+        NetworkPlugin.scan();
 	}
 
     @EventHandler(runAsync = true)

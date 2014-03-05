@@ -275,6 +275,14 @@ public class NetworkPlugin extends JavaPlugin {
         return encodeString(BukkitUtils.getPlayerNames());
     }
 
+    /**
+     * Requests server information and playerlists from connected servers.
+     */
+    public static void scan() {
+        NetworkPlugin.requestServerInfo();
+        NetworkPlugin.requestPlayerList();
+    }
+
 
 
 
@@ -335,7 +343,8 @@ public class NetworkPlugin extends JavaPlugin {
                 new CommandFind         ("/find"),
                 new CommandMessage      ("/msg"),
                 new CommandServerSend   ("/send"),
-                new CommandServerSendAll("/sendall")
+                new CommandServerSendAll("/sendall"),
+                new CommandScan         ("/gscan")
 
         );
 

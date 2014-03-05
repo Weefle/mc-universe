@@ -9,6 +9,7 @@ import org.bukkit.command.CommandSender;
 public enum NetworkPermission {
 
     NETWORK_ALERT           ("network.alert"),
+    NETWORK_SCAN            ("network.scan"),
     NETWORK_FIND            ("network.find"),
     NETWORK_HELP            ("network.help"),
     NETWORK_MASTER          ("network.main"),
