@@ -22,6 +22,7 @@ public abstract class NetworkCommand implements Comparable<NetworkCommand> {
         this.permission = permission;
 	}
 
+
 	public String getLabel() {
 		return root;
 	}
