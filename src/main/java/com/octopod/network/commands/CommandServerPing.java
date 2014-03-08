@@ -1,5 +1,8 @@
 package com.octopod.network.commands;
 
+import com.octopod.network.NetworkConfig;
+import com.octopod.network.events.EventListener;
+import com.octopod.network.events.SynchronizedListener;
 import com.octopod.network.util.BukkitUtils;
 import com.octopod.network.NetworkPermission;
 import com.octopod.network.NetworkPlugin;
@@ -8,7 +11,6 @@ import com.octopod.network.events.synclisteners.SyncServerInfoListener;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
-import java.util.List;
 
 public class CommandServerPing extends NetworkCommand {
 
@@ -24,6 +26,7 @@ public class CommandServerPing extends NetworkCommand {
 	public boolean exec(CommandSender sender, String label, String[] args) {
 
 		final String server = args[0];
+        final CommandSender fsender = sender;
 
 		BukkitUtils.sendMessage(sender, "&7Attempting to ping the server &b'" + server + "'");
 
@@ -33,11 +36,27 @@ public class CommandServerPing extends NetworkCommand {
 		}
 
 		NetworkPlugin.requestServerInfo(Arrays.asList(server));
-		List<ServerInfoEvent> events = SyncServerInfoListener.collectExecutionsFrom(1, Arrays.asList(server));
 
-		if(events.size() > 0) {
-			BukkitUtils.sendMessage(sender, "&aPing returned successful!");
-		} else {
+        final SyncServerInfoListener listener = new SyncServerInfoListener(new EventListener<ServerInfoEvent>() {
+
+            @Override
+            public boolean onEvent(ServerInfoEvent event)
+            {
+                if(event.getSender().equals(server)) {
+                    BukkitUtils.sendMessage(fsender, "&aPing returned successful!");
+                    return true;
+                }
+                return false;
+            }
+
+        });
+
+        long timeout = NetworkConfig.getRequestTimeout();
+
+        long startTime = System.currentTimeMillis();
+        listener.register().waitFor(timeout, 1);
+
+        if((System.currentTimeMillis() - startTime) >= timeout) {
 			BukkitUtils.sendMessage(sender, "&cPing timed out! The server isn't running this plugin?");
 		}
 

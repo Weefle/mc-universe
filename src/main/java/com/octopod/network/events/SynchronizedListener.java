@@ -2,23 +2,19 @@ package com.octopod.network.events;
 
 public abstract class SynchronizedListener <T extends Event> {
 
-	public interface EventCallback <T extends Event> {
-		public boolean onEvent(T event);
-	}
-
-	private EventCallback<T> callback;
+    private EventListener<T> listener;
 	private final Object lock = new Object();
 	private int executions = 0;
 
-	public SynchronizedListener(EventCallback<T> callback) {
-		this.callback = callback;
+	public SynchronizedListener(EventListener<T> listener) {
+		this.listener = listener;
 	}
 
 	abstract public void executionListener(T event);
 
 	public void execute(T event) {
 		try {
-			if(callback.onEvent(event)) {
+			if(listener.onEvent(event)) {
 				synchronized(lock) {
 					executions++;
 					lock.notify();
@@ -39,8 +35,7 @@ public abstract class SynchronizedListener <T extends Event> {
 		return this;
 	}
 
-	public SynchronizedListener<T> waitFor(int expectedExecutions, long timeout)
-	{
+	public SynchronizedListener<T> waitFor(long timeout, int expectedExecutions) {
 		long startTime = System.currentTimeMillis();
 		try {
 			while(executions < expectedExecutions) {
@@ -54,8 +49,7 @@ public abstract class SynchronizedListener <T extends Event> {
 		return this;
 	}
 
-	public SynchronizedListener<T> waitFor(long timeout)
-	{
+	public SynchronizedListener<T> waitFor(long timeout) {
 		try {
 			synchronized(lock) {
 				lock.wait(timeout);

@@ -28,6 +28,13 @@
                     <include>plugin.yml</include>
                 </includes>
             </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>config.yml</include>
+                </includes>
+            </resource>
         </resources>
         <finalName>Network-0.0.1-SNAPSHOT</finalName>
 		<plugins>
