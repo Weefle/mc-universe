@@ -57,11 +57,13 @@ public class NetworkListener {
         if(hubPriority >= 0)
             EventEmitter.getEmitter().triggerEvent(new NetworkHubCacheEvent(server, hubPriority));
 
-        //Checks for mismatched plugin versions between servers, and warns the server owners.
-        String version = serverInfo.getPluginVersion();
+        if(!NetworkPlugin.self.isTestBuild()) {
+            //Checks for mismatched plugin versions between servers, and warns the server owners.
+            String version = serverInfo.getPluginVersion();
 
-        if(!version.equals(NetworkPlugin.self.getPluginVersion())) {
-            NetworkDebug.info("&a" + server + "&7: Running &6Net+&7 version &6" + (version.equals("") ? "No Version" : version));
+            if(!version.equals("TEST_BUILD") && !version.equals(NetworkPlugin.self.getPluginVersion())) {
+                NetworkDebug.info("&a" + server + "&7: Running &6Net+&7 version &6" + (version.equals("") ? "No Version" : version));
+            }
         }
 
 	}
