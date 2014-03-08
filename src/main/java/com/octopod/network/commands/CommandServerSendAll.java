@@ -35,7 +35,7 @@ public class CommandServerSendAll extends NetworkCommand {
 		}
 
 		//Checks if the server is online before sending them there.
-		if(!NetworkPlugin.isServerOnline(server)) {
+		if(!NetworkPlugin.self.isServerOnline(server)) {
 			BukkitUtils.sendMessage(sender, "&cThis server is offline or does not exist.");
 			return true;
 		}

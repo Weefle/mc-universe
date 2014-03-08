@@ -21,7 +21,7 @@ public class CommandScan extends NetworkCommand {
     @Override
     protected boolean exec(CommandSender sender, String label, String[] args) {
 
-        NetworkPlugin.scan();
+        NetworkPlugin.self.scan();
         return true;
 
     }

@@ -23,7 +23,7 @@ public class CommandReload extends NetworkCommand {
     protected boolean exec(CommandSender sender, String label, String[] args) {
 
         if(Arrays.asList(args).contains("-f")) {
-            NetworkPlugin.reload();
+            NetworkPlugin.self.reload();
         } else {
             NetworkConfig.reloadConfig(sender);
         }

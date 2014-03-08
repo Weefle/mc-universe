@@ -34,9 +34,9 @@ public class CommandHub extends NetworkCommand {
 
         String hub = NetworkHubCache.getHub();
 
-        if(hub != null && !hub.equals(NetworkPlugin.getUsername())) {
+        if(hub != null && !hub.equals(NetworkPlugin.self.getUsername())) {
             BukkitUtils.sendMessage(sender, "&7You've been moved to the hub server &a" + hub + "&7.");
-            NetworkPlugin.sendPlayer(sender.getName(), hub);
+            NetworkPlugin.self.sendPlayer(sender.getName(), hub);
         } else {
             BukkitUtils.sendMessage(sender, "&7You are already on the hub server.");
         }

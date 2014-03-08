@@ -22,7 +22,7 @@ public class CommandAlert extends NetworkCommand {
 
 		String message = StringUtils.join(args, " ");
 
-		NetworkPlugin.broadcastNetworkMessage(String.format(NetworkConfig.FORMAT_ALERT, message));
+		NetworkPlugin.self.broadcastNetworkMessage(String.format(NetworkConfig.FORMAT_ALERT, message));
 
 		return true;
 

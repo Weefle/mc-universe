@@ -34,21 +34,21 @@ public class NetworkPlugin extends JavaPlugin {
     //Used before most messages
 	public final static String PREFIX = "&8[&6Net+&8] &f";
 
-    protected static boolean connected = false;
+    public static NetworkPlugin self;
 
-	private static Connect connect;
-	public static NetworkPlugin self;
+    protected boolean connected = false;
+	private Connect connect;
 
-	static LilyPadListeners lilyPadListeners = null;
-	static BukkitListeners bukkitListeners = null;
-	static NetworkListener messageListener = null;
-	static DebugListener debugListener = null;
+	LilyPadListeners lilyPadListeners = null;
+	BukkitListeners bukkitListeners = null;
+	NetworkListener messageListener = null;
+	DebugListener debugListener = null;
 
     /**
      * Gets all the players on the network as a Set.
      * @return The Set containing all the players, or an empty Set if the request somehow fails.
      */
-    public static Set<String> getNetworkedPlayers() {
+    public Set<String> getNetworkedPlayers() {
         GetPlayersResult result = (GetPlayersResult)RequestUtils.request(new GetPlayersRequest(true));
         if(result.getStatusCode() == StatusCode.SUCCESS) {
             return result.getPlayers();
@@ -62,7 +62,7 @@ public class NetworkPlugin extends JavaPlugin {
      * @param player The name of the player.
      * @return If the player is online.
      */
-    public static boolean isPlayerOnline(String player) {
+    public boolean isPlayerOnline(String player) {
         return getNetworkedPlayers().contains(player);
     }
 
@@ -71,11 +71,11 @@ public class NetworkPlugin extends JavaPlugin {
      * @param server The username of the server.
      * @return If the server is online.
      */
-    public static boolean isServerOnline(String server) {
+    public boolean isServerOnline(String server) {
         return RequestUtils.sendMessage(server, "", "").getStatusCode() == StatusCode.SUCCESS;
     }
 
-    public static boolean sendPlayer(String player, String server) {
+    public boolean sendPlayer(String player, String server) {
         return RequestUtils.request(new RedirectRequest(server, player)).getStatusCode() == StatusCode.SUCCESS;
     }
 
@@ -83,7 +83,7 @@ public class NetworkPlugin extends JavaPlugin {
      * Tells a server (using this plugin) to broadcast a raw message.
      * @param message The message to send.
      */
-    public static void broadcastNetworkMessage(String server, String message) {
+    public void broadcastNetworkMessage(String server, String message) {
         RequestUtils.sendMessage(server, NetworkConfig.CHANNEL_BROADCAST, message);
     }
 
@@ -91,7 +91,7 @@ public class NetworkPlugin extends JavaPlugin {
      * Tells every server (using this plugin) to broadcast a raw message.
      * @param message The message to send.
      */
-    public static void broadcastNetworkMessage(String message) {
+    public void broadcastNetworkMessage(String message) {
         RequestUtils.broadcastMessage(NetworkConfig.CHANNEL_BROADCAST, message);
     }
 
@@ -100,7 +100,7 @@ public class NetworkPlugin extends JavaPlugin {
      * @param player The name of the player.
      * @param message The message to send.
      */
-    public static void sendNetworkMessage(String player, String message) {
+    public void sendNetworkMessage(String player, String message) {
         if(BukkitUtils.isPlayerOnline(player)) {
             BukkitUtils.sendMessage(player, message);
         } else {
@@ -113,9 +113,9 @@ public class NetworkPlugin extends JavaPlugin {
      * This method should only be called only when absolutely needed, as the info returned never changes.
      * This might cause messages to be recieved on the CHANNEL_INFO_RESPONSE channel.
      */
-    public static void requestServerInfo() {
+    public void requestServerInfo() {
         NetworkDebug.verbose("Requesting info from all servers");
-        RequestUtils.broadcastMessage(NetworkConfig.CHANNEL_INFO_REQUEST, NetworkPlugin.encodeServerInfo());
+        RequestUtils.broadcastMessage(NetworkConfig.CHANNEL_INFO_REQUEST, encodeServerInfo());
     }
 
     /**
@@ -124,9 +124,9 @@ public class NetworkPlugin extends JavaPlugin {
      * This might cause messages to be recieved on the CHANNEL_INFO_RESPONSE channel.
      * @param servers The list of servers to message.
      */
-    public static void requestServerInfo(List<String> servers) {
+    public void requestServerInfo(List<String> servers) {
         NetworkDebug.verbose("Requesting info from: &a" + servers);
-        RequestUtils.sendMessage(servers, NetworkConfig.CHANNEL_INFO_REQUEST, NetworkPlugin.encodeServerInfo());
+        RequestUtils.sendMessage(servers, NetworkConfig.CHANNEL_INFO_REQUEST, encodeServerInfo());
     }
 
     /**
@@ -134,16 +134,16 @@ public class NetworkPlugin extends JavaPlugin {
      * This method should only be called only when absolutely needed, as the PlayerCache should automatically change it.
      * This might cause messages to be recieved on the CHANNEL_PLAYERLIST_RESPONSE channel.
      */
-    public static void requestPlayerList() {
+    public void requestPlayerList() {
         NetworkDebug.verbose("Requesting playerlist from all servers");
-        RequestUtils.broadcastMessage(NetworkConfig.CHANNEL_PLAYERLIST_REQUEST, NetworkPlugin.encodePlayerList());
+        RequestUtils.broadcastMessage(NetworkConfig.CHANNEL_PLAYERLIST_REQUEST, encodePlayerList());
     }
 
     /**
      * Returns if LilyPad is connected or not.
      * @return true, if Lilypad is connected.
      */
-    public static boolean isLilypadConnected() {
+    public boolean isLilypadConnected() {
         return connected;
     }
 
@@ -151,14 +151,14 @@ public class NetworkPlugin extends JavaPlugin {
      * Returns the LilyPad connection.
      * @return The LilyPad connection.
      */
-    public static Connect getConnection() {
+    public Connect getConnection() {
         return connect;
     }
     /**
      * Gets this plugin's event manager, which is used to register custom events.
      * @return Network's EventManager.
      */
-    public static EventManager getEventManager() {
+    public EventManager getEventManager() {
         return EventManager.getManager();
     }
 
@@ -166,23 +166,23 @@ public class NetworkPlugin extends JavaPlugin {
      * Gets this plugin's username on LilyPad.
      * @return This plugin's username.
      */
-    public static String getUsername() {
+    public String getUsername() {
         return connect.getSettings().getUsername();
     }
 
-    public static boolean isTestBuild() {
+    public boolean isTestBuild() {
         return getPluginVersion().equals("TEST_BUILD");
     }
 
-    public static String getPluginVersion() {
+    public String getPluginVersion() {
         return self.getDescription().getVersion();
     }
 
-    public static int getBuildNumber() {
+    public int getBuildNumber() {
         return getBuildNumber(getPluginVersion());
     }
 
-    public static int getBuildNumber(String version) {
+    public int getBuildNumber(String version) {
         try {
             return Integer.valueOf(version.split("-")[0]);
         } catch (NullPointerException | NumberFormatException e) {
@@ -194,7 +194,7 @@ public class NetworkPlugin extends JavaPlugin {
      * @param args
      * @return
      */
-    public static String encodeString(Object... args) {
+    public String encodeString(Object... args) {
         StringBuilder sb = new StringBuilder();
         for(int i = 0; i < args.length; i++) {
             String argument = args[i].toString();
@@ -258,15 +258,15 @@ public class NetworkPlugin extends JavaPlugin {
      * See ServerInfo class above for needed protocol.
      * @return This server's information put into a string.
      */
-    public static String encodeServerInfo() {
+    public String encodeServerInfo() {
         return encodeString(
-            NetworkPlugin.getUsername(), //Server's username
+            getUsername(), //Server's username
             NetworkConfig.getServerName(), //Server's config name
-            NetworkPlugin.self.getServer().getMotd(), //Server's MOTD
-            NetworkPlugin.self.getServer().getMaxPlayers(), //Server's max players
+            getServer().getMotd(), //Server's MOTD
+            getServer().getMaxPlayers(), //Server's max players
             StringUtils.implode(BukkitUtils.getWhitelistedPlayerNames(), " "), //Server's whitelisted players
             NetworkConfig.isHub() ? NetworkConfig.getHubPriority() : -1, //Server's hub priority, or -1 if is not a hub.
-            NetworkPlugin.getPluginVersion() //Server's plugin version. (<build>-<commit>)
+            getPluginVersion() //Server's plugin version. (<build>-<commit>)
         );
     }
 
@@ -275,16 +275,16 @@ public class NetworkPlugin extends JavaPlugin {
      * When recieving this message, just split on ",".
      * @return The players online put into a string.
      */
-    public static String encodePlayerList() {
+    public String encodePlayerList() {
         return encodeString(BukkitUtils.getPlayerNames());
     }
 
     /**
      * Requests server information and playerlists from connected servers.
      */
-    public static void scan() {
-        NetworkPlugin.requestServerInfo();
-        NetworkPlugin.requestPlayerList();
+    public void scan() {
+        requestServerInfo();
+        requestPlayerList();
     }
 
 
@@ -294,7 +294,7 @@ public class NetworkPlugin extends JavaPlugin {
     /**
      * Reloads all the listeners, caches, and configurations of this plugin.
      */
-	public static void reload() {
+	public void reload() {
         NetworkPlugin plugin = NetworkPlugin.self;
         plugin.disable();
         plugin.enable(false);
@@ -382,13 +382,13 @@ public class NetworkPlugin extends JavaPlugin {
                                 return;
                             }
                         }
-                        NetworkPlugin.connected = true;
+                        NetworkPlugin.this.connected = true;
                         EventEmitter.getEmitter().triggerEvent(new NetworkConnectedEvent());
                     }
 
                 }).start();
             } else {
-                NetworkPlugin.connected = connect.isConnected();
+                this.connected = connect.isConnected();
                 if(isLilypadConnected()) {
                     EventEmitter.getEmitter().triggerEvent(new NetworkConnectedEvent());
                 }
@@ -400,7 +400,6 @@ public class NetworkPlugin extends JavaPlugin {
         } else {
             NetworkDebug.info("Successfully loaded &fNetworkPlus&7 &6" + getPluginVersion());
         }
-
 
     }
 

@@ -67,7 +67,7 @@ public class BukkitListeners implements Listener {
 		String location = playerMap.get(event.getPlayer().getName());
 		String channel = NetworkConfig.CHANNEL_PLAYER_LEAVE;
 		
-		if(location != null && location.equals(NetworkPlugin.getUsername()))
+		if(location != null && location.equals(NetworkPlugin.self.getUsername()))
 		{
 			RequestUtils.broadcastMessage(channel, event.getPlayer().getName());
 		}
@@ -79,7 +79,7 @@ public class BukkitListeners implements Listener {
 
         String hub = NetworkHubCache.getHub();
 
-        if(hub != null && !hub.equals(NetworkPlugin.getUsername())) {
+        if(hub != null && !hub.equals(NetworkPlugin.self.getUsername())) {
             event.setCancelled(true);
 
             BukkitUtils.sendMessage(event.getPlayer(), NetworkPlugin.PREFIX + "&7You've been moved to the hub server:");

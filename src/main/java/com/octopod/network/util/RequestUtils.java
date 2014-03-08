@@ -24,7 +24,7 @@ public class RequestUtils {
      */
     public static Result request(Request request) {
         try {
-            return NetworkPlugin.getConnection().request(request).awaitUninterruptibly(NetworkConfig.getRequestTimeout());
+            return NetworkPlugin.self.getConnection().request(request).awaitUninterruptibly(NetworkConfig.getRequestTimeout());
         } catch (Exception e) {
             e.printStackTrace();
             return null;

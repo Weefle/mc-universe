@@ -29,20 +29,20 @@ public class CommandServerSend extends NetworkCommand {
 		String server = args[1];
 
 		//Checks if the player is online.
-		if(!NetworkPlugin.isPlayerOnline(player)) {
+		if(!NetworkPlugin.self.isPlayerOnline(player)) {
 			BukkitUtils.sendMessage(sender, "&cThis player is not online.");
 			return true;
 		}
 
 		//Checks if the server is online before sending them there.
-		if(!NetworkPlugin.isServerOnline(server)) {
+		if(!NetworkPlugin.self.isServerOnline(server)) {
 			BukkitUtils.sendMessage(sender, "&cThis server is offline or does not exist.");
 			return true;
 		}
 
 		//Attempts to send them to the server
 		BukkitUtils.sendMessage(sender, "&7Sending &6" + player + " &7to server &b" + server + "&7...");
-		NetworkPlugin.sendPlayer(player, server);
+		NetworkPlugin.self.sendPlayer(player, server);
 
 		return true;
 

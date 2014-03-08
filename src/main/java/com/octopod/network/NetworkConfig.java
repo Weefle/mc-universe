@@ -198,7 +198,7 @@ public class NetworkConfig {
         if(SERVER_NAME != null) {
             return SERVER_NAME;
         } else {
-            return NetworkPlugin.getUsername();
+            return NetworkPlugin.self.getUsername();
         }
     }
 

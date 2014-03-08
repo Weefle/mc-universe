@@ -27,7 +27,7 @@ public class NetworkListener {
     @EventHandler(runAsync = true)
 	public void networkConnected(NetworkConnectedEvent event) {
 		NetworkDebug.debug("&aSuccessfully connected to LilyPad!");
-        NetworkPlugin.scan();
+        NetworkPlugin.self.scan();
 	}
 
     @EventHandler(runAsync = true)
@@ -60,7 +60,7 @@ public class NetworkListener {
         //Checks for mismatched plugin versions between servers, and warns the server owners.
         String version = serverInfo.getPluginVersion();
 
-        if(!version.equals(NetworkPlugin.getPluginVersion())) {
+        if(!version.equals(NetworkPlugin.self.getPluginVersion())) {
             NetworkDebug.info("&a" + server + "&7: Running &6Net+&7 version &6" + (version.equals("") ? "No Version" : version));
         }
 
@@ -139,8 +139,8 @@ public class NetworkListener {
 		if(channel.equals(NetworkConfig.CHANNEL_INFO_REQUEST))
         {
             EventEmitter.getEmitter().triggerEvent(new ServerInfoEvent(event.getMessage()));
-            if(!sender.equals(NetworkPlugin.getUsername())) {
-                RequestUtils.sendMessage(sender, NetworkConfig.CHANNEL_INFO_RESPONSE, NetworkPlugin.encodeServerInfo());
+            if(!sender.equals(NetworkPlugin.self.getUsername())) {
+                RequestUtils.sendMessage(sender, NetworkConfig.CHANNEL_INFO_RESPONSE, NetworkPlugin.self.encodeServerInfo());
             }
         }
 
@@ -152,8 +152,8 @@ public class NetworkListener {
         if(channel.equals(NetworkConfig.CHANNEL_PLAYERLIST_REQUEST))
         {
             EventEmitter.getEmitter().triggerEvent(new ServerPlayerListEvent(event.getSender(), event.getMessage()));
-            if(!sender.equals(NetworkPlugin.getUsername())) {
-                RequestUtils.sendMessage(sender, NetworkConfig.CHANNEL_PLAYERLIST_RESPONSE, NetworkPlugin.encodePlayerList());
+            if(!sender.equals(NetworkPlugin.self.getUsername())) {
+                RequestUtils.sendMessage(sender, NetworkConfig.CHANNEL_PLAYERLIST_RESPONSE, NetworkPlugin.self.encodePlayerList());
             }
         }
 

@@ -32,18 +32,18 @@ public class CommandServerConnect extends NetworkCommand {
 		String server = args[0];
 
 		//Checks if the server they're trying to connect to is this same server
-		if(server.equals(NetworkPlugin.getUsername())) {
+		if(server.equals(NetworkPlugin.self.getUsername())) {
 			BukkitUtils.sendMessage(sender, "&cYou are already connected to this server.");
 			return true;
 		}
 
 		//Checks if the message went through before sending them there.
-		if(!NetworkPlugin.isServerOnline(server)) {
+		if(!NetworkPlugin.self.isServerOnline(server)) {
             BukkitUtils.sendMessage(sender, "&cThis server is offline or does not exist.");
 			return true;
 		}
 
-		NetworkPlugin.sendPlayer(player.getName(), server);
+		NetworkPlugin.self.sendPlayer(player.getName(), server);
 
 		return true;
 
