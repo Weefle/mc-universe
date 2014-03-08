@@ -1,13 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.octopod</groupId>
 	<artifactId>networkplus</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>DEV_BUILD</version>
 
 	<name>NetworkPlus</name>
-
-	<url>http://maven.apache.org</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -18,6 +17,26 @@
         <developerConnection>scm:git:http://git@gitlab.nixium.com:TheOctopod/network.git</developerConnection>
         <url>scm:git:http://gitlab.nixium.com/TheOctopod/network</url>
     </scm>
+
+    <developers>
+        <developer>
+            <id>octopod</id>
+            <name>Octopod</name>
+            <email>gmail: octopodsquad</email>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <contributors>
+        <contributor>
+            <name>MetaSteel</name>
+            <roles>
+                <role>contributor</role>
+            </roles>
+        </contributor>
+    </contributors>
 
 	<build>
         <resources>
@@ -39,6 +58,7 @@
         <finalName>Network-0.0.1-SNAPSHOT</finalName>
 		<plugins>
             <!-- BuildNumber Plugin -->
+            <!--
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>buildnumber-maven-plugin</artifactId>
@@ -62,6 +82,7 @@
                     </items>
                 </configuration>
             </plugin>
+            -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
