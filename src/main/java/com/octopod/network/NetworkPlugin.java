@@ -170,6 +170,10 @@ public class NetworkPlugin extends JavaPlugin {
         return connect.getSettings().getUsername();
     }
 
+    public static boolean isTestBuild() {
+        return getPluginVersion().equals("TEST_BUILD");
+    }
+
     public static String getPluginVersion() {
         return self.getDescription().getVersion();
     }
@@ -391,7 +395,12 @@ public class NetworkPlugin extends JavaPlugin {
             }
         }
 
-        NetworkDebug.info("Successfully loaded NetworkPlus version &6" + getPluginVersion());
+        if(isTestBuild()) {
+            NetworkDebug.info("You are running a test build of &fNetworkPlus&7!");
+        } else {
+            NetworkDebug.info("Successfully loaded &fNetworkPlus&7 &6" + getPluginVersion());
+        }
+
 
     }
 

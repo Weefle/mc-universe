@@ -59,20 +59,10 @@ public class NetworkListener {
 
         //Checks for mismatched plugin versions between servers, and warns the server owners.
         String version = serverInfo.getPluginVersion();
-        if(!version.equals(NetworkPlugin.getPluginVersion())) {
-            int serverBuildNumber = NetworkPlugin.getBuildNumber();
-            int buildNumber = NetworkPlugin.getBuildNumber(version);
-            if(serverBuildNumber > buildNumber) {
-                NetworkDebug.info("&a" + server + "&7 is running &6" + (version.equals("") ? "No Version" : version) + "&7! (older?)");
-            } else
-            if(serverBuildNumber == buildNumber) {
-                NetworkDebug.info("&a" + server + "&7 is running &6" + (version.equals("") ? "No Version" : version) + "&7! (different build?)");
-            } else
-            if(serverBuildNumber < buildNumber) {
-                NetworkDebug.info("&a" + server + "&7 is running &6" + (version.equals("") ? "No Version" : version) + "&7! (newer?)");
-            }
-        }
 
+        if(!version.equals(NetworkPlugin.getPluginVersion())) {
+            NetworkDebug.info("&a" + server + "&7: Running &6Net+&7 version &6" + (version.equals("") ? "No Version" : version));
+        }
 
 	}
 

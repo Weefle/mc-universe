@@ -4,7 +4,7 @@
 
 	<groupId>com.octopod</groupId>
 	<artifactId>networkplus</artifactId>
-	<version>DEV_BUILD</version>
+	<version>TEST_BUILD</version>
 
 	<name>NetworkPlus</name>
 
