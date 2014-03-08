@@ -171,8 +171,7 @@ public class NetworkPlugin extends JavaPlugin {
     }
 
     public static String getPluginVersion() {
-        String version = self.getDescription().getVersion();
-        return version.substring(0, version.length() - 33);
+        return self.getDescription().getVersion();
     }
 
     public static int getBuildNumber() {
