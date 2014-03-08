@@ -25,7 +25,7 @@ public class BukkitUtils {
      * @param message The message to send.
      */
     public static void sendMessage(String player, String message) {
-        sendMessage(player, message, NetworkPlugin.PREFIX);
+        sendMessage(player, message, "");
     }
 
     /**
@@ -51,7 +51,7 @@ public class BukkitUtils {
      * @param message The message to send.
      */
     public static void sendMessage(CommandSender sender, String message) {
-        sendMessage(sender, message, NetworkPlugin.PREFIX);
+        sendMessage(sender, message, "");
     }
 
     /**

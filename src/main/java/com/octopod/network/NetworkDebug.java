@@ -36,7 +36,7 @@ public class NetworkDebug {
 		if(NetworkConfig.getDebugMode() >= 1)
 		{
 			for(String message: messages) {
-				message = "&7[D] &7" + message;
+				message = "&7[i] &7" + message;
 				
 				BukkitUtils.console(message);
 				for(Player player: BukkitUtils.getPlayers()) {
@@ -58,7 +58,7 @@ public class NetworkDebug {
 		if(NetworkConfig.getDebugMode() >= 2)
 		{
 			for(String message: messages) {
-				message = "&c[V] &7" + message;
+				message = "&c[i] &7" + message;
 				
 				BukkitUtils.console(message);
 				for(Player player: BukkitUtils.getPlayers()) {
