@@ -4,7 +4,7 @@
 
 	<groupId>com.octopod</groupId>
 	<artifactId>networkplus</artifactId>
-	<version>DEV_BUILD</version>
+	<version>SNAPSHOT</version>
 
 	<name>NetworkPlus</name>
 
@@ -55,7 +55,7 @@
                 </includes>
             </resource>
         </resources>
-        <finalName>Network-0.0.1-SNAPSHOT</finalName>
+        <finalName>original</finalName>
 		<plugins>
             <!-- BuildNumber Plugin -->
             <!--
@@ -97,6 +97,7 @@
 				<artifactId>maven-shade-plugin</artifactId>
 				<version>2.2</version>
 				<configuration>
+                    <finalName>${project.name}-${project.version}</finalName>
                     <shadedArtifactAttached>false</shadedArtifactAttached>
                     <minimizeJar>true</minimizeJar>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
