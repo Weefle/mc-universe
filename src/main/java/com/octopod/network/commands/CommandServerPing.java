@@ -60,6 +60,8 @@ public class CommandServerPing extends NetworkCommand {
 			BukkitUtils.sendMessage(sender, "&cPing timed out! The server isn't running this plugin?");
 		}
 
+        listener.unregister();
+
 		return true;
 
 	}
