@@ -11,6 +11,7 @@ import com.octopod.network.listener.BukkitListeners;
 import com.octopod.network.listener.DebugListener;
 import com.octopod.network.listener.LilyPadListeners;
 import com.octopod.network.listener.NetworkListener;
+import com.octopod.network.modules.signs.SignPlugin;
 import com.octopod.network.util.BukkitUtils;
 import com.octopod.network.util.RequestUtils;
 import com.octopod.octolib.common.StringUtils;
@@ -22,6 +23,7 @@ import lilypad.client.connect.api.result.impl.GetPlayersResult;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -400,6 +402,8 @@ public class NetworkPlugin extends JavaPlugin {
         } else {
             NetworkDebug.info("Successfully loaded &fNetworkPlus&7 &6" + getPluginVersion());
         }
+
+        new SignPlugin();
 
     }
 

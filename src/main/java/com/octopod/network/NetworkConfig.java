@@ -12,7 +12,7 @@ import java.util.Date;
 
 public class NetworkConfig {
 
-    private final static File configFile = new File("plugins/Network/config.yml");
+    private final static File configFile = new File(NetworkPlugin.self.getDataFolder(), "config.yml");
 
     //These formats use String.format()
     public static String FORMAT_ALERT = 		"&8[&bAlert&8]&6 %s";
