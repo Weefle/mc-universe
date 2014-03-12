@@ -6,6 +6,7 @@ import com.octopod.network.cache.NetworkPlayerCache;
 import com.octopod.network.cache.NetworkServerCache;
 import com.octopod.network.events.EventEmitter;
 import com.octopod.network.events.EventHandler;
+import com.octopod.network.events.EventPriority;
 import com.octopod.network.events.network.NetworkConnectedEvent;
 import com.octopod.network.events.network.NetworkHubCacheEvent;
 import com.octopod.network.events.player.NetworkPlayerJoinEvent;
@@ -24,19 +25,19 @@ import java.util.List;
 
 public class NetworkListener {
 
-    @EventHandler(runAsync = true)
+    @EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
 	public void networkConnected(NetworkConnectedEvent event) {
 		NetworkDebug.debug("&aSuccessfully connected to LilyPad!");
         NetworkPlugin.self.scan();
 	}
 
-    @EventHandler(runAsync = true)
+    @EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
     public void networkHubCache(NetworkHubCacheEvent event) {
         NetworkHubCache.addHub(event.getServer(), event.getPriority());
         NetworkDebug.info("Server &a" + event.getServer() + "&7 registered as hub @ priority &e" + event.getPriority());
     }
 
-    @EventHandler(runAsync = true)
+    @EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
     public void serverPlayerListEvent(ServerPlayerListEvent event) {
         String server = event.getServer();
         String[] players = event.getPlayers();
@@ -46,7 +47,7 @@ public class NetworkListener {
         NetworkDebug.debug("Recieved &b" + players.length + " players &7from &a" + server);
     }
 
-	@EventHandler(runAsync = true)
+	@EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
 	public void serverInfoEvent(ServerInfoEvent event) {
 		String server = event.getSender();
         NetworkPlugin.ServerInfo serverInfo = event.getServerInfo();
@@ -68,30 +69,30 @@ public class NetworkListener {
 
 	}
 
-    @EventHandler(runAsync = true)
+    @EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
 	public void serverUncacheEvent(ServerUncacheEvent event) {
 		NetworkServerCache.removeServer(event.getUncachedServer());
 	}
 
-    @EventHandler(runAsync = true)
+    @EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
 	public void playerJoinEvent(NetworkPlayerJoinEvent event) {
 		NetworkDebug.debug("&b" + event.getPlayer() + " &7joined network through &a" + event.getServer());
 		NetworkPlayerCache.putPlayer(event.getPlayer(), event.getServer());
 	}
 
-    @EventHandler(runAsync = true)
+    @EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
 	public void playerLeaveEvent(NetworkPlayerLeaveEvent event) {
 		NetworkDebug.debug("&b" + event.getPlayer() + " &7left network through &a" + event.getServer());
 		NetworkPlayerCache.removePlayer(event.getPlayer());
 	}
 
-    @EventHandler(runAsync = true)
+    @EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
 	public void playerRedirectEvent(NetworkPlayerRedirectEvent event) {
 		NetworkDebug.debug("&b" + event.getPlayer() + " &7redirected from &a" + event.getFromServer() + "&7 to &a" + event.getServer());
 		NetworkPlayerCache.putPlayer(event.getPlayer(), event.getServer());
 	}
 
-    @EventHandler(runAsync = true)
+    @EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
 	public void messageRecieved(MessageEvent event) {
 
 		String sender = event.getSender();
