@@ -2,8 +2,10 @@ package com.octopod.network.events;
 
 import com.octopod.network.NetworkDebug;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -35,16 +37,38 @@ public class EventEmitter {
 
 		NetworkDebug.verbose("Triggering event in thread: &a" + Thread.currentThread().getName());
 
-		List<Object> listeners = new ArrayList<>(EventManager.getManager().getListeners());
+		for(final EventMethod eventMethod: collectListenersOf(event)) {
 
+            Runnable invoke = new Runnable() {
+                public void run() {
+                    try {
+                        eventMethod.invoke(event);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+
+            if(eventMethod.handler().runAsync()) {
+                new Thread(invoke).start();
+            } else {
+                invoke.run();
+            }
+
+        }
+
+	}
+
+    private List<EventMethod> collectListenersOf(Event event) {
+
+        ArrayList<EventMethod> methods = new ArrayList<>();
+        List<Object> listeners = new ArrayList<>(EventManager.getManager().getListeners());
         Iterator<Object> listener_it = listeners.iterator();
 
         synchronized(listeners) {
             while(listener_it.hasNext()) {
-                final Object listener = listener_it.next();
-                Method[] methods = listener.getClass().getMethods();
-                for(final Method method: methods)
-                {
+                Object listener = listener_it.next();
+                for(Method method: listener.getClass().getMethods()) {
                     EventHandler annotation = method.getAnnotation(EventHandler.class);
                     if(annotation != null)
                     {
@@ -53,29 +77,39 @@ public class EventEmitter {
                             continue;
                         if(!event.getClass().getSimpleName().equals(argTypes[0].getSimpleName()))
                             continue;
-
-                        Runnable invoke = new Runnable() {
-                            public void run() {
-                                try {
-                                    method.invoke(listener, event);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        };
-
-                        if(annotation.runAsync()) {
-                            new Thread(invoke).start();
-                        } else {
-                            invoke.run();
-                        }
-
+                        methods.add(new EventMethod(listener, method, annotation));
                     }
                 }
             }
-
         }
 
-	}
+        Collections.sort(methods);
+        return methods;
+
+    }
+
+    private static class EventMethod implements Comparable<EventMethod>
+    {
+        private Object object;
+        private Method method;
+        private EventHandler annotation;
+
+        protected EventMethod(Object object, Method method, EventHandler annotation) {
+            this.object = object;
+            this.method = method;
+            this.annotation = annotation;
+        }
+
+        public void invoke(Object... args) throws IllegalAccessException, InvocationTargetException {
+            method.invoke(object, args);
+        }
+
+        public EventHandler handler() {return annotation;}
+
+        @Override
+        public int compareTo(EventMethod o) {
+            return Integer.compare(annotation.priority().getPriority(), o.annotation.priority().getPriority());
+        }
+    }
 
 }

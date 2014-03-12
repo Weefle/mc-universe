@@ -11,4 +11,6 @@ public @interface EventHandler {
 	
 	public boolean runAsync() default false;
 
+    public EventPriority priority() default EventPriority.NORMAL;
+
 }
