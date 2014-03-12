@@ -1,6 +1,7 @@
 package com.octopod.network;
 
 import com.octopod.network.util.BukkitUtils;
+import com.octopod.network.util.Util;
 import com.octopod.octolib.common.IOUtils;
 import com.octopod.octolib.yaml.YamlConfiguration;
 import org.bukkit.Bukkit;
@@ -37,41 +38,20 @@ public class NetworkConfig {
         return false;
     }
 
-    private static void createFile(File file) throws IOException {
-        if(!file.exists()) {
-            file.getParentFile().mkdirs();
-            file.createNewFile();
-        }
-    }
-
-    private static void writeFile(InputStream is, File file) throws IOException {
-        FileOutputStream output = new FileOutputStream(file);
-        IOUtils.copy(is, output);
-        output.close();
-    }
-
-    private static void writeConfig(CommandSender sender) throws IOException {
-
+    private static void writeConfig(CommandSender sender) throws IOException
+    {
         //Backup the old config.yml if it exists
         if(configFile.exists())
         {
             String fileName = "config-" + new SimpleDateFormat("yyyy-MM-dd-HH-mm-SS").format(new Date()) + ".yml";
             File backupConfigFile = new File("plugins/Network/" + fileName);
-            createFile(backupConfigFile);
+
             //Copy the old config to this new backup config.
-            writeFile(new FileInputStream(configFile), backupConfigFile);
+            FileInputStream fileInputStream = new FileInputStream(configFile);
+            Util.write(backupConfigFile, fileInputStream);
+            IOUtils.closeSilent(fileInputStream);
+
             BukkitUtils.sendMessage(sender, "&eBackup saved as " + fileName);
-        }
-        //Generate a new config.yml
-        else
-        {
-            BukkitUtils.sendMessage(sender, "&eWriting new configuration.");
-            try {
-                createFile(configFile);
-            } catch (IOException e) {
-                BukkitUtils.sendMessage(sender, "&cUnable to create a new config.yml file.");
-                throw e;
-            }
         }
 
         writeDefaultConfig(sender);
@@ -83,14 +63,14 @@ public class NetworkConfig {
      * @param sender Who to send the messages to.
      * @throws NullPointerException, IOException
      */
-    private static void writeDefaultConfig(CommandSender sender) throws NullPointerException, IOException {
-
+    private static void writeDefaultConfig(CommandSender sender) throws NullPointerException, IOException
+    {
         InputStream defaultConfigInput = NetworkConfig.class.getClassLoader().getResourceAsStream("config.yml");
 
         BukkitUtils.sendMessage(sender, "&eWriting default configuration to config.yml.");
 
         try {
-            writeFile(defaultConfigInput, configFile);
+            Util.write(configFile, defaultConfigInput);
         } catch (NullPointerException e) {
             BukkitUtils.sendMessage(sender, "&cCouldn't find the internal configuration file.");
             throw e;

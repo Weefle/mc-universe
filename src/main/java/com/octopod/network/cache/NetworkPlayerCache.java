@@ -46,4 +46,17 @@ public class NetworkPlayerCache {
         return serverMap;
     }
 
+    public static int totalPlayers(String server) {
+        Map<String, List<String>> reverse = getReverseMap();
+        if(reverse.containsKey(server)) {
+            return reverse.get(server).size();
+        } else {
+            return 0;
+        }
+    }
+
+    public static int totalPlayers() {
+        return playerMap.size();
+    }
+
 }

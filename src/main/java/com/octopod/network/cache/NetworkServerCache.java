@@ -40,6 +40,14 @@ public class NetworkServerCache {
 		return serverMap.containsKey(server);
 	}
 
+    public static NetworkPlugin.ServerInfo getInfo(String server) {
+        if(serverExists(server)) {
+            return serverMap.get(server);
+        } else {
+            return null;
+        }
+    }
+
 	public static Map<String, NetworkPlugin.ServerInfo> getServerMap() {
 		return new HashMap<>(serverMap);
 	}
