@@ -44,7 +44,7 @@ public class NetworkConfig {
         if(configFile.exists())
         {
             String fileName = "config-" + new SimpleDateFormat("yyyy-MM-dd-HH-mm-SS").format(new Date()) + ".yml";
-            File backupConfigFile = new File("plugins/Network/" + fileName);
+            File backupConfigFile = new File(NetworkPlugin.self.getDataFolder(), fileName);
 
             //Copy the old config to this new backup config.
             FileInputStream fileInputStream = new FileInputStream(configFile);
@@ -63,8 +63,8 @@ public class NetworkConfig {
      * @param sender Who to send the messages to.
      * @throws NullPointerException, IOException
      */
-    private static void writeDefaultConfig(CommandSender sender) throws NullPointerException, IOException
-    {
+    private static void writeDefaultConfig(CommandSender sender) throws NullPointerException, IOException {
+
         InputStream defaultConfigInput = NetworkConfig.class.getClassLoader().getResourceAsStream("config.yml");
 
         BukkitUtils.sendMessage(sender, "&eWriting default configuration to config.yml.");
@@ -101,10 +101,9 @@ public class NetworkConfig {
 		YamlConfiguration config;
 
         YamlConfiguration defaultConfig = null;
-        if(defaultConfigInput != null)
-            try {
-                defaultConfig = new YamlConfiguration(defaultConfigInput);
-            } catch (Exception e) {}
+        if(defaultConfigInput != null) try {
+            defaultConfig = new YamlConfiguration(defaultConfigInput);
+        } catch (Exception e) {}
 
 		try {
 
@@ -175,10 +174,10 @@ public class NetworkConfig {
 	public static String getRequestPrefix() {return CHANNEL_PREFIX;}
 
     public static String getServerName() {
-        if(SERVER_NAME != null) {
-            return SERVER_NAME;
-        } else {
+        if(SERVER_NAME == null || SERVER_NAME.equals("")) {
             return NetworkPlugin.self.getUsername();
+        } else {
+            return SERVER_NAME;
         }
     }
 

@@ -1,5 +1,5 @@
 #Don't change this line!
-version: 1
+version: 2
 #=================================
 #Network Settings
 
@@ -10,7 +10,7 @@ channel-prefix: 'network'
 #=================================
 #Information Settings
 
-name: 'New Server'
+name: ''
 description: ''
 categories: []
 
