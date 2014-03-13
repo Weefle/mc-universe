@@ -2,6 +2,7 @@ package com.octopod.network;
 
 import com.octopod.network.util.BukkitUtils;
 import com.octopod.octolib.common.StringUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.libs.com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -27,7 +28,28 @@ public class ServerInfo {
 
     private List<String> arguments;
 
-    public ServerInfo(Object... args)
+    /**
+     * Generates the ServerInfo for this server. It should be only used once on startup/reload.
+     * Also, it should be changed along with the protocol.
+     */
+    public ServerInfo() {
+        this(
+            NetworkPlus.getUsername(), //Server's username
+            NetworkConfig.getServerName(), //Server's config name
+            Bukkit.getServer().getMotd(), //Server's MOTD
+            Bukkit.getServer().getMaxPlayers(), //Server's max players
+            StringUtils.implode(BukkitUtils.getWhitelistedPlayerNames(), " "), //Server's whitelisted players
+            NetworkConfig.isHub() ? NetworkConfig.getHubPriority() : -1, //Server's hub priority, or -1 if is not a hub.
+            NetworkPlus.getPluginVersion() //Server's plugin version. (<build>-<commit>)
+        );
+    }
+
+    /**
+     * Creates a ServerInfo instance by arguments. Should almost never be used,
+     * as Gson will deserialize jsons for ServerInfo objects
+     * @param args
+     */
+    private ServerInfo(Object... args)
     {
         arguments = new ArrayList<>();
         for(Object arg: args) arguments.add(arg.toString());
@@ -57,23 +79,6 @@ public class ServerInfo {
         } catch (NumberFormatException e) {
             return def;
         }
-    }
-
-    /**
-     * Generates the ServerInfo for this server. It should be only used once on startup/reload.
-     * Also, it should be changed along with the protocol.
-     */
-    public static ServerInfo generateServerInfo() {
-        NetworkPlusPlugin plugin = NetworkPlus.getPlugin();
-        return new ServerInfo(
-            plugin.getUsername(), //Server's username
-            NetworkConfig.getServerName(), //Server's config name
-            plugin.getServer().getMotd(), //Server's MOTD
-            plugin.getServer().getMaxPlayers(), //Server's max players
-            StringUtils.implode(BukkitUtils.getWhitelistedPlayerNames(), " "), //Server's whitelisted players
-            NetworkConfig.isHub() ? NetworkConfig.getHubPriority() : -1, //Server's hub priority, or -1 if is not a hub.
-            plugin.getPluginVersion() //Server's plugin version. (<build>-<commit>)
-        );
     }
 
 }
