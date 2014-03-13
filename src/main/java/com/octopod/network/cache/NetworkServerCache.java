@@ -1,7 +1,8 @@
 package com.octopod.network.cache;
 
-import com.octopod.network.NetworkDebug;
-import com.octopod.network.NetworkPlugin;
+import com.octopod.network.NetworkLogger;
+import com.octopod.network.NetworkPlus;
+import com.octopod.network.ServerInfo;
 
 import java.util.*;
 
@@ -13,22 +14,22 @@ public class NetworkServerCache {
         serverMap.clear();
     }
 
-	private static Map<String, NetworkPlugin.ServerInfo> serverMap = Collections.synchronizedMap(new HashMap<String, NetworkPlugin.ServerInfo>());
+	private static Map<String, ServerInfo> serverMap = Collections.synchronizedMap(new HashMap<String, ServerInfo>());
 
-	public static boolean addServer(String server, NetworkPlugin.ServerInfo info) {
+	public static boolean addServer(String server, ServerInfo info) {
         boolean isNew = !serverMap.containsKey(server);
         serverMap.put(server, info);
         if(isNew) {
-            NetworkDebug.debug("Recieved new info from &a" + server);
+            NetworkPlus.getLogger().debug("Recieved new info from &a" + server);
         } else {
-            NetworkDebug.debug("Recieved updated info from &a" + server);
+            NetworkPlus.getLogger().debug("Recieved updated info from &a" + server);
         }
         return isNew;
 	}
 
 	public static boolean removeServer(String server) {
 		if(serverMap.containsKey(server)) {
-            NetworkDebug.debug("&cRemoved server &a" + server + "&c from cache.");
+            NetworkPlus.getLogger().debug("&cRemoved server &a" + server + "&c from cache.");
 			serverMap.remove(server);
             return true;
 		} else {
@@ -40,7 +41,7 @@ public class NetworkServerCache {
 		return serverMap.containsKey(server);
 	}
 
-    public static NetworkPlugin.ServerInfo getInfo(String server) {
+    public static ServerInfo getInfo(String server) {
         if(serverExists(server)) {
             return serverMap.get(server);
         } else {
@@ -48,7 +49,7 @@ public class NetworkServerCache {
         }
     }
 
-	public static Map<String, NetworkPlugin.ServerInfo> getServerMap() {
+	public static Map<String, ServerInfo> getServerMap() {
 		return new HashMap<>(serverMap);
 	}
 

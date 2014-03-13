@@ -1,8 +1,9 @@
 package com.octopod.network.commands;
 
+import com.octopod.network.NetworkPlus;
 import com.octopod.network.util.BukkitUtils;
 import com.octopod.network.NetworkPermission;
-import com.octopod.network.NetworkPlugin;
+import com.octopod.network.NetworkPlusPlugin;
 import org.bukkit.command.CommandSender;
 
 public class CommandServerSend extends NetworkCommand {
@@ -29,20 +30,20 @@ public class CommandServerSend extends NetworkCommand {
 		String server = args[1];
 
 		//Checks if the player is online.
-		if(!NetworkPlugin.self.isPlayerOnline(player)) {
+		if(!NetworkPlus.getInstance().isPlayerOnline(player)) {
 			BukkitUtils.sendMessage(sender, "&cThis player is not online.");
 			return true;
 		}
 
 		//Checks if the server is online before sending them there.
-		if(!NetworkPlugin.self.isServerOnline(server)) {
+		if(!NetworkPlus.getInstance().isServerOnline(server)) {
 			BukkitUtils.sendMessage(sender, "&cThis server is offline or does not exist.");
 			return true;
 		}
 
 		//Attempts to send them to the server
 		BukkitUtils.sendMessage(sender, "&7Sending &6" + player + " &7to server &b" + server + "&7...");
-		NetworkPlugin.self.sendPlayer(player, server);
+        NetworkPlus.getInstance().sendPlayer(player, server);
 
 		return true;
 

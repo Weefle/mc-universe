@@ -36,14 +36,20 @@ public class NetworkPlayerCache {
     public static Map<String, List<String>> getReverseMap() {
         Map<String, List<String>> serverMap = new HashMap<>();
         //Loops through the entries in the map.
-        for(Map.Entry<String, String> e: playerMap.entrySet()) {
-            //Create a new list @ the server (the value) if one doesn't exist
-            if(!serverMap.containsKey(e.getValue()))
-                serverMap.put(e.getValue(), new ArrayList<String>());
-            //Get the list @ the server and add the player's name (the key)
-            serverMap.get(e.getValue()).add(e.getKey());
+        synchronized(playerMap) {
+            for(Map.Entry<String, String> e: playerMap.entrySet()) {
+                //Create a new list @ the server (the value) if one doesn't exist
+                if(!serverMap.containsKey(e.getValue()))
+                    serverMap.put(e.getValue(), new ArrayList<String>());
+                //Get the list @ the server and add the player's name (the key)
+                serverMap.get(e.getValue()).add(e.getKey());
+            }
+            return serverMap;
         }
-        return serverMap;
+    }
+
+    public static Set<String> getPlayers() {
+        return playerMap.keySet();
     }
 
     public static int totalPlayers(String server) {

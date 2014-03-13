@@ -2,7 +2,8 @@ package com.octopod.network.commands;
 
 import com.octopod.network.NetworkConfig;
 import com.octopod.network.NetworkPermission;
-import com.octopod.network.NetworkPlugin;
+import com.octopod.network.NetworkPlus;
+import com.octopod.network.NetworkPlusPlugin;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
@@ -23,7 +24,7 @@ public class CommandReload extends NetworkCommand {
     protected boolean exec(CommandSender sender, String label, String[] args) {
 
         if(Arrays.asList(args).contains("-f")) {
-            NetworkPlugin.self.reload();
+            NetworkPlus.getPlugin().reload();
         } else {
             NetworkConfig.reloadConfig(sender);
         }

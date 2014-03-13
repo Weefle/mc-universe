@@ -1,8 +1,9 @@
 package com.octopod.network.commands;
 
+import com.octopod.network.NetworkPlus;
 import com.octopod.network.util.BukkitUtils;
 import com.octopod.network.NetworkPermission;
-import com.octopod.network.NetworkPlugin;
+import com.octopod.network.NetworkPlusPlugin;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -32,18 +33,18 @@ public class CommandServerConnect extends NetworkCommand {
 		String server = args[0];
 
 		//Checks if the server they're trying to connect to is this same server
-		if(server.equals(NetworkPlugin.self.getUsername())) {
+		if(server.equals(NetworkPlus.getUsername())) {
 			BukkitUtils.sendMessage(sender, "&cYou are already connected to this server.");
 			return true;
 		}
 
 		//Checks if the message went through before sending them there.
-		if(!NetworkPlugin.self.isServerOnline(server)) {
+		if(!NetworkPlus.getInstance().isServerOnline(server)) {
             BukkitUtils.sendMessage(sender, "&cThis server is offline or does not exist.");
 			return true;
 		}
 
-		NetworkPlugin.self.sendPlayer(player.getName(), server);
+		NetworkPlus.getInstance().sendPlayer(player.getName(), server);
 
 		return true;
 

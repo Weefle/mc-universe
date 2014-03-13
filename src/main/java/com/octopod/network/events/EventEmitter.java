@@ -1,12 +1,12 @@
 package com.octopod.network.events;
 
-import com.octopod.network.NetworkDebug;
+import com.octopod.network.NetworkPlus;
+import org.bukkit.Location;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 public class EventEmitter {
@@ -35,25 +35,31 @@ public class EventEmitter {
 
 	private synchronized void trigger(final Event event) {
 
-		NetworkDebug.verbose("Triggering event in thread: &a" + Thread.currentThread().getName());
+		NetworkPlus.getLogger().verbose("Triggering event in thread: &a" + Thread.currentThread().getName());
 
-		for(final EventMethod eventMethod: collectListenersOf(event)) {
+		List<EventMethod> methods = collectListenersOf(event);
 
-            Runnable invoke = new Runnable() {
-                public void run() {
-                    try {
-                        eventMethod.invoke(event);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+        synchronized(methods) {
+            for(final EventMethod eventMethod: methods) {
+
+                Runnable invoke = new Runnable() {
+                    public void run() {
+                        try {
+                            eventMethod.invoke(event);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
-            };
+                };
 
-            if(eventMethod.handler().runAsync()) {
-                new Thread(invoke).start();
-            } else {
-                invoke.run();
+                if(eventMethod.handler().runAsync()) {
+                    new Thread(invoke).start();
+                } else {
+                    invoke.run();
+                }
+
             }
+
 
         }
 
@@ -61,13 +67,11 @@ public class EventEmitter {
 
     private List<EventMethod> collectListenersOf(Event event) {
 
-        ArrayList<EventMethod> methods = new ArrayList<>();
         List<Object> listeners = new ArrayList<>(EventManager.getManager().getListeners());
-        Iterator<Object> listener_it = listeners.iterator();
 
         synchronized(listeners) {
-            while(listener_it.hasNext()) {
-                Object listener = listener_it.next();
+            ArrayList<EventMethod> methods = new ArrayList<>();
+            for(Object listener: listeners) {
                 for(Method method: listener.getClass().getMethods()) {
                     EventHandler annotation = method.getAnnotation(EventHandler.class);
                     if(annotation != null)
@@ -81,11 +85,25 @@ public class EventEmitter {
                     }
                 }
             }
+            Collections.sort(methods);
+            return methods;
         }
 
-        Collections.sort(methods);
-        return methods;
+    }
 
+    public Location forward(Location playerLoc)
+    {
+        double
+            x = playerLoc.getX(),
+            y = playerLoc.getY(),
+            z = playerLoc.getZ(),
+            yaw = playerLoc.getYaw();
+
+        double
+            sin = Math.sin(Math.toRadians(yaw)),
+            cos = Math.cos(Math.toRadians(yaw));
+
+        return new Location(playerLoc.getWorld(), x - sin, y, z + cos);
     }
 
     private static class EventMethod implements Comparable<EventMethod>

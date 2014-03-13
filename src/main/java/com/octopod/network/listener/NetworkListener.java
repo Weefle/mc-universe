@@ -18,23 +18,22 @@ import com.octopod.network.events.server.ServerPlayerListEvent;
 import com.octopod.network.events.server.ServerUncacheEvent;
 import com.octopod.network.util.BukkitUtils;
 import com.octopod.network.util.RequestUtils;
-import com.octopod.octolib.common.StringUtils;
 import lilypad.client.connect.api.request.impl.RedirectRequest;
-
-import java.util.List;
 
 public class NetworkListener {
 
+    private NetworkLogger logger = NetworkPlus.getLogger();
+
     @EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
 	public void networkConnected(NetworkConnectedEvent event) {
-		NetworkDebug.debug("&aSuccessfully connected to LilyPad!");
-        NetworkPlugin.self.scan();
+        logger.debug("&aSuccessfully connected to LilyPad!");
+        NetworkPlus.getPlugin().scan();
 	}
 
     @EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
     public void networkHubCache(NetworkHubCacheEvent event) {
         NetworkHubCache.addHub(event.getServer(), event.getPriority());
-        NetworkDebug.info("Server &a" + event.getServer() + "&7 registered as hub @ priority &e" + event.getPriority());
+        logger.info("Server &a" + event.getServer() + "&7 registered as hub @ priority &e" + event.getPriority());
     }
 
     @EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
@@ -44,13 +43,13 @@ public class NetworkListener {
         for(String player: players) {
             NetworkPlayerCache.putPlayer(player, server);
         }
-        NetworkDebug.debug("Recieved &b" + players.length + " players &7from &a" + server);
+        logger.debug("Recieved &b" + players.length + " players &7from &a" + server);
     }
 
 	@EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
 	public void serverInfoEvent(ServerInfoEvent event) {
 		String server = event.getSender();
-        NetworkPlugin.ServerInfo serverInfo = event.getServerInfo();
+        ServerInfo serverInfo = event.getServerInfo();
 		NetworkServerCache.addServer(server, serverInfo);
 
         //priority at least 0 = this server is a hub
@@ -58,12 +57,12 @@ public class NetworkListener {
         if(hubPriority >= 0)
             EventEmitter.getEmitter().triggerEvent(new NetworkHubCacheEvent(server, hubPriority));
 
-        if(!NetworkPlugin.self.isTestBuild()) {
+        if(!NetworkPlus.isTestBuild()) {
             //Checks for mismatched plugin versions between servers, and warns the server owners.
             String version = serverInfo.getPluginVersion();
 
-            if(!version.equals("TEST_BUILD") && !version.equals(NetworkPlugin.self.getPluginVersion())) {
-                NetworkDebug.info("&a" + server + "&7: Running &6Net+&7 version &6" + (version.equals("") ? "No Version" : version));
+            if(!version.equals("TEST_BUILD") && !version.equals(NetworkPlus.getPluginVersion())) {
+                logger.info("&a" + server + "&7: Running &6Net+&7 version &6" + (version.equals("") ? "No Version" : version));
             }
         }
 
@@ -76,19 +75,19 @@ public class NetworkListener {
 
     @EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
 	public void playerJoinEvent(NetworkPlayerJoinEvent event) {
-		NetworkDebug.debug("&b" + event.getPlayer() + " &7joined network through &a" + event.getServer());
+        logger.debug("&b" + event.getPlayer() + " &7joined network through &a" + event.getServer());
 		NetworkPlayerCache.putPlayer(event.getPlayer(), event.getServer());
 	}
 
     @EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
 	public void playerLeaveEvent(NetworkPlayerLeaveEvent event) {
-		NetworkDebug.debug("&b" + event.getPlayer() + " &7left network through &a" + event.getServer());
+        logger.debug("&b" + event.getPlayer() + " &7left network through &a" + event.getServer());
 		NetworkPlayerCache.removePlayer(event.getPlayer());
 	}
 
     @EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
 	public void playerRedirectEvent(NetworkPlayerRedirectEvent event) {
-		NetworkDebug.debug("&b" + event.getPlayer() + " &7redirected from &a" + event.getFromServer() + "&7 to &a" + event.getServer());
+        logger.debug("&b" + event.getPlayer() + " &7redirected from &a" + event.getFromServer() + "&7 to &a" + event.getServer());
 		NetworkPlayerCache.putPlayer(event.getPlayer(), event.getServer());
 	}
 
@@ -99,7 +98,7 @@ public class NetworkListener {
 		String channel = event.getChannel();
 		String message = event.getMessage();
 
-		NetworkDebug.verbose("&7Message: &a" + sender + "&7 on &b" + channel);
+        logger.verbose("&7Message: &a" + sender + "&7 on &b" + channel);
 
         //Tells the server to send all players on this server to the server specified in 'message'
 		if(channel.equals(NetworkConfig.CHANNEL_SENDALL))
@@ -111,10 +110,7 @@ public class NetworkListener {
         //Tells the server to send a message to a player. Information included in 'message'
 		if(channel.equals(NetworkConfig.CHANNEL_MESSAGE))
 		{
-			List<String> args = StringUtils.parseArgs(message);
-			String player = args.get(0);
-			String playerMessage = args.get(1);
-			BukkitUtils.sendMessage(player, playerMessage, null);
+			NetworkPlus.gson().fromJson(message, PreparedPlayerMessage.class).send();
 		}
 
         //Tells the server a player has joined the network
@@ -141,28 +137,42 @@ public class NetworkListener {
 		 */
 		if(channel.equals(NetworkConfig.CHANNEL_INFO_REQUEST))
         {
-            EventEmitter.getEmitter().triggerEvent(new ServerInfoEvent(event.getMessage()));
-            if(!sender.equals(NetworkPlugin.self.getUsername())) {
-                RequestUtils.sendMessage(sender, NetworkConfig.CHANNEL_INFO_RESPONSE, NetworkPlugin.self.encodeServerInfo());
+            EventEmitter.getEmitter().triggerEvent(
+                    new ServerInfoEvent(NetworkPlus.gson().fromJson(message, ServerInfo.class))
+            );
+            if(!sender.equals(NetworkPlus.getUsername())) {
+                RequestUtils.sendMessage(sender, NetworkConfig.CHANNEL_INFO_RESPONSE,
+                        NetworkPlus.gson().toJson(BukkitUtils.getPlayerNames())
+                );
             }
         }
 
         if(channel.equals(NetworkConfig.CHANNEL_INFO_RESPONSE))
         {
-            EventEmitter.getEmitter().triggerEvent(new ServerInfoEvent(event.getMessage()));
+            EventEmitter.getEmitter().triggerEvent(
+                    new ServerInfoEvent(NetworkPlus.gson().fromJson(message, ServerInfo.class))
+            );
         }
+
+        //Playerlist Request
 
         if(channel.equals(NetworkConfig.CHANNEL_PLAYERLIST_REQUEST))
         {
-            EventEmitter.getEmitter().triggerEvent(new ServerPlayerListEvent(event.getSender(), event.getMessage()));
-            if(!sender.equals(NetworkPlugin.self.getUsername())) {
-                RequestUtils.sendMessage(sender, NetworkConfig.CHANNEL_PLAYERLIST_RESPONSE, NetworkPlugin.self.encodePlayerList());
+            EventEmitter.getEmitter().triggerEvent(
+                    new ServerPlayerListEvent(event.getSender(), NetworkPlus.gson().fromJson(message, String[].class))
+            );
+            if(!sender.equals(NetworkPlus.getUsername())) {
+                RequestUtils.sendMessage(sender, NetworkConfig.CHANNEL_PLAYERLIST_RESPONSE,
+                        NetworkPlus.gson().toJson(NetworkPlus.getServerInfo())
+                );
             }
         }
 
         if(channel.equals(NetworkConfig.CHANNEL_PLAYERLIST_RESPONSE))
         {
-            EventEmitter.getEmitter().triggerEvent(new ServerPlayerListEvent(event.getSender(), event.getMessage()));
+            EventEmitter.getEmitter().triggerEvent(
+                    new ServerPlayerListEvent(event.getSender(), NetworkPlus.gson().fromJson(message, String[].class))
+            );
         }
 
 		if(channel.equals(NetworkConfig.CHANNEL_UNCACHE))

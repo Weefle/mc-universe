@@ -1,10 +1,10 @@
 package com.octopod.network.commands;
 
 import com.octopod.network.NetworkPermission;
-import com.octopod.network.NetworkPlugin;
+import com.octopod.network.NetworkPlus;
+import com.octopod.network.NetworkPlusPlugin;
 import com.octopod.network.cache.NetworkHubCache;
 import com.octopod.network.util.BukkitUtils;
-import lilypad.client.connect.api.request.RequestException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -34,9 +34,9 @@ public class CommandHub extends NetworkCommand {
 
         String hub = NetworkHubCache.getHub();
 
-        if(hub != null && !hub.equals(NetworkPlugin.self.getUsername())) {
+        if(hub != null && !hub.equals(NetworkPlus.getUsername())) {
             BukkitUtils.sendMessage(sender, "&7You've been moved to the hub server &a" + hub + "&7.");
-            NetworkPlugin.self.sendPlayer(sender.getName(), hub);
+            NetworkPlus.getInstance().sendPlayer(sender.getName(), hub);
         } else {
             BukkitUtils.sendMessage(sender, "&7You are already on the hub server.");
         }

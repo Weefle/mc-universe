@@ -1,7 +1,7 @@
 package com.octopod.network.util;
 
 import com.octopod.network.NetworkConfig;
-import com.octopod.network.NetworkPlugin;
+import com.octopod.network.NetworkPlus;
 import lilypad.client.connect.api.request.Request;
 import lilypad.client.connect.api.request.impl.MessageRequest;
 import lilypad.client.connect.api.result.Result;
@@ -24,7 +24,7 @@ public class RequestUtils {
      */
     public static Result request(Request request) {
         try {
-            return NetworkPlugin.self.getConnection().request(request).awaitUninterruptibly(NetworkConfig.getRequestTimeout());
+            return NetworkPlus.getConnection().request(request).awaitUninterruptibly(NetworkConfig.getRequestTimeout());
         } catch (Exception e) {
             e.printStackTrace();
             return null;

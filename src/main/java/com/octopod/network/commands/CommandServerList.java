@@ -27,21 +27,21 @@ public class CommandServerList extends NetworkCommand {
 
 		if(!(sender instanceof Player)) {return false;}
 
-		Map<String, NetworkPlugin.ServerInfo> serverMap = NetworkServerCache.getServerMap();
+		Map<String, ServerInfo> serverMap = NetworkServerCache.getServerMap();
         Map<String, String> playerMap = NetworkPlayerCache.getPlayerMap();
 
         //A reverse map where the keys are the servernames and the values are the list of players.
         Map<String, List<String>> reverseMap = NetworkPlayerCache.getReverseMap();
 
         //Gets the size of all players on the network via LilyPad and gets the difference from the total known players.
-        int unlistedPlayerCount = NetworkPlugin.self.getNetworkedPlayers().size() - playerMap.size();
+        int unlistedPlayerCount = NetworkPlus.getInstance().getNetworkedPlayers().size() - playerMap.size();
 
         BukkitUtils.sendMessage(sender, "&7Found &a" + serverMap.size() + " &7servers. &b" + playerMap.size() + " players &8(~" + unlistedPlayerCount + " unlisted)", null);
         BukkitUtils.sendMessage(sender, "&7Hover over the server names for more information.", null);
 
-		for(Map.Entry<String, NetworkPlugin.ServerInfo> entry: serverMap.entrySet()) {
+		for(Map.Entry<String, ServerInfo> entry: serverMap.entrySet()) {
 
-            NetworkPlugin.ServerInfo serverInfo = entry.getValue();
+            ServerInfo serverInfo = entry.getValue();
 
             //The list of players on this server.
             List<String> playerList = reverseMap.get(entry.getKey());
@@ -50,7 +50,7 @@ public class CommandServerList extends NetworkCommand {
             int playerCount = playerList == null ? 0 : playerList.size();
 
             //If this server is the server the commandsender is on:
-            if(entry.getKey().equals(NetworkPlugin.self.getUsername()))
+            if(entry.getKey().equals(NetworkPlus.getUsername()))
             {
                 new ChatBuilder().appendL("    &8[&f" + serverInfo.getUsername() + "&8] ").
                     tooltip(ChatUtils.translateColorCodes(

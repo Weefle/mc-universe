@@ -1,9 +1,10 @@
 package com.octopod.network.commands;
 
+import com.octopod.network.NetworkPlus;
 import com.octopod.network.util.BukkitUtils;
 import com.octopod.network.util.RequestUtils;
 import com.octopod.network.NetworkPermission;
-import com.octopod.network.NetworkPlugin;
+import com.octopod.network.NetworkPlusPlugin;
 import org.bukkit.command.CommandSender;
 
 public class CommandServerSendAll extends NetworkCommand {
@@ -35,7 +36,7 @@ public class CommandServerSendAll extends NetworkCommand {
 		}
 
 		//Checks if the server is online before sending them there.
-		if(!NetworkPlugin.self.isServerOnline(server)) {
+		if(!NetworkPlus.getInstance().isServerOnline(server)) {
 			BukkitUtils.sendMessage(sender, "&cThis server is offline or does not exist.");
 			return true;
 		}

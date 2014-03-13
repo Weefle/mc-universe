@@ -1,9 +1,10 @@
 package com.octopod.network.listener;
 
 import com.octopod.network.NetworkConfig;
+import com.octopod.network.NetworkPlus;
+import com.octopod.network.NetworkPlusPlugin;
 import com.octopod.network.util.BukkitUtils;
 import com.octopod.network.util.RequestUtils;
-import com.octopod.network.NetworkPlugin;
 import com.octopod.network.cache.NetworkCommandCache;
 import com.octopod.network.cache.NetworkHubCache;
 import com.octopod.network.cache.NetworkPlayerCache;
@@ -67,7 +68,7 @@ public class BukkitListeners implements Listener {
 		String location = playerMap.get(event.getPlayer().getName());
 		String channel = NetworkConfig.CHANNEL_PLAYER_LEAVE;
 		
-		if(location != null && location.equals(NetworkPlugin.self.getUsername()))
+		if(location != null && location.equals(NetworkPlus.getUsername()))
 		{
 			RequestUtils.broadcastMessage(channel, event.getPlayer().getName());
 		}
@@ -79,10 +80,10 @@ public class BukkitListeners implements Listener {
 
         String hub = NetworkHubCache.getHub();
 
-        if(hub != null && !hub.equals(NetworkPlugin.self.getUsername())) {
+        if(hub != null && !hub.equals(NetworkPlus.getUsername())) {
             event.setCancelled(true);
 
-            BukkitUtils.sendMessage(event.getPlayer(), NetworkPlugin.PREFIX + "&7You've been moved to the hub server:");
+            BukkitUtils.sendMessage(event.getPlayer(), NetworkPlus.prefix() + "&7You've been moved to the hub server:");
             BukkitUtils.sendMessage(event.getPlayer(), "&c\"" + event.getReason() + "\"");
             RequestUtils.request(new RedirectRequest(hub, event.getPlayer().getName()));
         }

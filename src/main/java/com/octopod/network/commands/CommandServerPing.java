@@ -1,11 +1,11 @@
 package com.octopod.network.commands;
 
 import com.octopod.network.NetworkConfig;
+import com.octopod.network.NetworkPlus;
+import com.octopod.network.NetworkPlusPlugin;
 import com.octopod.network.events.EventListener;
-import com.octopod.network.events.SynchronizedListener;
 import com.octopod.network.util.BukkitUtils;
 import com.octopod.network.NetworkPermission;
-import com.octopod.network.NetworkPlugin;
 import com.octopod.network.events.server.ServerInfoEvent;
 import com.octopod.network.events.synclisteners.SyncServerInfoListener;
 import org.bukkit.command.CommandSender;
@@ -30,12 +30,12 @@ public class CommandServerPing extends NetworkCommand {
 
 		BukkitUtils.sendMessage(sender, "&7Attempting to ping the server &b'" + server + "'");
 
-		if(!NetworkPlugin.self.isServerOnline(server)) {
+		if(!NetworkPlus.getInstance().isServerOnline(server)) {
 			BukkitUtils.sendMessage(sender, "&cThis server does not exist.");
 			return true;
 		}
 
-		NetworkPlugin.self.requestServerInfo(Arrays.asList(server));
+        NetworkPlus.getInstance().requestServerInfo(Arrays.asList(server));
 
         final SyncServerInfoListener listener = new SyncServerInfoListener(new EventListener<ServerInfoEvent>() {
 

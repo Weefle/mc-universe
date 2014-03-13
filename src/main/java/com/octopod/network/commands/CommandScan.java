@@ -1,7 +1,8 @@
 package com.octopod.network.commands;
 
 import com.octopod.network.NetworkPermission;
-import com.octopod.network.NetworkPlugin;
+import com.octopod.network.NetworkPlus;
+import com.octopod.network.NetworkPlusPlugin;
 import org.bukkit.command.CommandSender;
 
 /**
@@ -21,7 +22,7 @@ public class CommandScan extends NetworkCommand {
     @Override
     protected boolean exec(CommandSender sender, String label, String[] args) {
 
-        NetworkPlugin.self.scan();
+        NetworkPlus.getPlugin().scan();
         return true;
 
     }

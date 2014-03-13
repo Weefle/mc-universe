@@ -1,6 +1,7 @@
 package com.octopod.network.commands;
 
-import com.octopod.network.NetworkPlugin;
+import com.octopod.network.NetworkPlus;
+import com.octopod.network.NetworkPlusPlugin;
 import com.octopod.network.NetworkConfig;
 import com.octopod.network.NetworkPermission;
 import org.apache.commons.lang.StringUtils;
@@ -22,7 +23,7 @@ public class CommandAlert extends NetworkCommand {
 
 		String message = StringUtils.join(args, " ");
 
-		NetworkPlugin.self.broadcastNetworkMessage(String.format(NetworkConfig.FORMAT_ALERT, message));
+		NetworkPlus.getInstance().broadcastNetworkMessage(String.format(NetworkConfig.FORMAT_ALERT, message));
 
 		return true;
 
