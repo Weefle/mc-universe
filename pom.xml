@@ -161,7 +161,7 @@
 					<options>
                         <option>-dontshrink</option>
 						<option>-keep class **</option>
-                        <option>-keepnames class com.octopod.network.NetworkPlugin</option>
+                        <option>-keepnames class com.octopod.network.NetworkPlusPlugin</option>
 						<option>-keepattributes **</option>
 					</options>
 					<libs>
