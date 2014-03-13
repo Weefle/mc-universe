@@ -1,6 +1,7 @@
 package com.octopod.network.util;
 
-import com.octopod.network.NetworkPlugin;
+import com.octopod.network.NetworkPlus;
+import com.octopod.network.NetworkPlusPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -15,6 +16,10 @@ import java.util.List;
  *         Last updated on 2/26/14
  */
 public class BukkitUtils {
+
+    public static String colorize(String string) {
+        return ChatColor.translateAlternateColorCodes('&', string);
+    }
 
     /**
      * Sends a player (by name) a message.
@@ -64,7 +69,7 @@ public class BukkitUtils {
      * @param prefix The prefix to put before the message.
      */
     public static void sendMessage(CommandSender sender, String message, String prefix) {
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', (prefix == null ? "" : prefix) + message));
+        sender.sendMessage(colorize((prefix == null ? "" : prefix) + message));
     }
 
     /**
@@ -73,7 +78,7 @@ public class BukkitUtils {
      * @param message
      */
     public static void broadcastMessage(String message) {
-        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', message));
+        Bukkit.broadcastMessage(colorize(message));
     }
 
     public static Player[] getPlayers() {
@@ -81,7 +86,7 @@ public class BukkitUtils {
     }
 
     public static String[] getPlayerNames() {
-        List<String> players = new ArrayList<String>();
+        List<String> players = new ArrayList<>();
 
         for(Player p: Bukkit.getOnlinePlayers())
             players.add(p.getName());
@@ -97,7 +102,7 @@ public class BukkitUtils {
     public static String[] getWhitelistedPlayerNames() {
         if(!Bukkit.hasWhitelist()) return new String[0];
 
-        List<String> players = new ArrayList<String>();
+        List<String> players = new ArrayList<>();
 
         for(OfflinePlayer p: Bukkit.getOfflinePlayers())
             players.add(p.getName());
@@ -110,11 +115,11 @@ public class BukkitUtils {
     }
 
     public static void console(String message) {
-        console(message, NetworkPlugin.PREFIX);
+        console(message, NetworkPlus.prefix());
     }
 
     public static void console(String message, String prefix) {
-        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + message));
+        Bukkit.getConsoleSender().sendMessage(colorize(prefix + message));
     }
 
 }
