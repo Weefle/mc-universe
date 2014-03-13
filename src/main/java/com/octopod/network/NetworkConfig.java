@@ -13,7 +13,7 @@ import java.util.Date;
 
 public class NetworkConfig {
 
-    private final static File configFile = new File(NetworkPlugin.self.getDataFolder(), "config.yml");
+    private final static File configFile = new File(NetworkPlus.getDataFolder(), "config.yml");
 
     //These formats use String.format()
     public static String FORMAT_ALERT = 		"&8[&bAlert&8]&6 %s";
@@ -44,7 +44,7 @@ public class NetworkConfig {
         if(configFile.exists())
         {
             String fileName = "config-" + new SimpleDateFormat("yyyy-MM-dd-HH-mm-SS").format(new Date()) + ".yml";
-            File backupConfigFile = new File(NetworkPlugin.self.getDataFolder(), fileName);
+            File backupConfigFile = new File(NetworkPlus.getDataFolder(), fileName);
 
             //Copy the old config to this new backup config.
             FileInputStream fileInputStream = new FileInputStream(configFile);
@@ -95,7 +95,7 @@ public class NetworkConfig {
 
         BukkitUtils.sendMessage(sender, "&7Loading configuration...");
 
-        InputStream defaultConfigInput = NetworkPlugin.class.getClassLoader().getResourceAsStream("config.yml");
+        InputStream defaultConfigInput = NetworkPlusPlugin.class.getClassLoader().getResourceAsStream("config.yml");
 
 		//This is the single YAML configuration we should use.
 		YamlConfiguration config;
@@ -175,7 +175,7 @@ public class NetworkConfig {
 
     public static String getServerName() {
         if(SERVER_NAME == null || SERVER_NAME.equals("")) {
-            return NetworkPlugin.self.getUsername();
+            return NetworkPlus.getUsername();
         } else {
             return SERVER_NAME;
         }
