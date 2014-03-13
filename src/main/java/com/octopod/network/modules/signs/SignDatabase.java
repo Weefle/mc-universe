@@ -1,7 +1,8 @@
 package com.octopod.network.modules.signs;
 
+import com.octopod.network.NetworkLogger;
+import com.octopod.network.NetworkPlus;
 import org.bukkit.Location;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,44 +14,50 @@ import java.util.Map;
  */
 public class SignDatabase {
 
-    public static SignDatabase decode(String json) {
-        Gson gson = new Gson();
-        return gson.fromJson(json, SignDatabase.class);
-    }
-
-    public static String encode(SignDatabase config) {
-        Gson gson = new Gson();
-        return gson.toJson(config);
-    }
+    private NetworkLogger logger = NetworkPlus.getLogger();
 
     private boolean isLocationUsed(Location loc) {
-        for(SignLocationList locs: signMap.values()) {
-            if(locs.contains(loc)) return true;
+        for(ArrayList<SignLocation> locs: servers.values()) {
+            if(locs.contains(new SignLocation(loc))) return true;
         }
         return false;
     }
 
-    private HashMap<String, SignLocationList> signMap = new HashMap<>();
+    private HashMap<String, ArrayList<SignLocation>> servers = new HashMap<>();
+
+    public int totalSigns() {
+        int count = 0;
+        for(ArrayList<SignLocation> locs: servers.values()) {
+            count += locs.size();
+        }
+        return count;
+    }
 
     public void addSign(String server, Location loc) {
         if(isLocationUsed(loc)) return;
-        if(!signMap.containsKey(server))
-            signMap.put(server, new SignLocationList());
+        if(!servers.containsKey(server))
+            servers.put(server, new ArrayList<SignLocation>());
 
-        signMap.get(server).add(loc);
+        servers.get(server).add(new SignLocation(loc));
+        logger.info("&6Net+ &7sign registered @ &e" + new SignLocation(loc) + "&7!");
     }
 
     public String getSign(Location loc) {
-        for(Map.Entry<String, SignLocationList> e: signMap.entrySet()) {
-            if(e.getValue().contains(loc)) return e.getKey();
+        for(Map.Entry<String, ArrayList<SignLocation>> e: servers.entrySet()) {
+            if(e.getValue().contains(new SignLocation(loc))) return e.getKey();
         }
         return null;
     }
 
+    public ArrayList<SignLocation> getSigns(String server) {
+        return servers.get(server);
+    }
+
     public void removeSign(Location loc) {
-        for(SignLocationList locs: signMap.values()) {
-            if(locs.contains(loc)) {
-                locs.remove(loc);
+        for(ArrayList<SignLocation> locs: servers.values()) {
+            if(locs.contains(new SignLocation(loc))) {
+                locs.remove(new SignLocation(loc));
+                logger.info("&6Net+ &7sign unregistered @ &e" + new SignLocation(loc) + "&7!");
                 break;
             }
         }

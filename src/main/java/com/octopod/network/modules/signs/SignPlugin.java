@@ -1,9 +1,13 @@
 package com.octopod.network.modules.signs;
 
-import com.octopod.network.NetworkDebug;
-import com.octopod.network.NetworkPlugin;
+import com.octopod.network.NetworkPlus;
+import com.octopod.network.NetworkPlusPlugin;
+import com.octopod.network.util.Util;
 import com.octopod.octolib.common.IOUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.block.Sign;
+import org.bukkit.event.block.SignChangeEvent;
 
 import java.io.*;
 
@@ -14,16 +18,36 @@ import java.io.*;
 public class SignPlugin {
 
     public static SignPlugin self;
-    private static final File databaseFile = new File(NetworkPlugin.self.getDataFolder(), "signs.db");
+    private static final File databaseFile = new File(NetworkPlus.getDataFolder(), "Signs/signs.db");
     private static SignDatabase database;
+
+    public void updateSign(SignChangeEvent event, SignFormat format) {
+        event.setLine(0, format.getLine(0));
+        event.setLine(1, format.getLine(1));
+        event.setLine(2, format.getLine(2));
+        event.setLine(3, format.getLine(3));
+    }
+
+    public void updateSign(SignLocation loc, SignFormat format) {
+        Location location = loc.toLocation();
+        try {
+            Sign sign = (Sign)location.getBlock().getState();
+            sign.setLine(0, format.getLine(0));
+            sign.setLine(1, format.getLine(1));
+            sign.setLine(2, format.getLine(2));
+            sign.setLine(3, format.getLine(3));
+            sign.update();
+        } catch (Exception e) {
+            database.removeSign(location);
+        }
+    }
 
     public SignPlugin() {
 
         self = this;
 
         if(!databaseFile.exists()) {
-            database = new SignDatabase();
-            save();
+            reset();
         } else {
             try {
                 FileInputStream is = new FileInputStream(databaseFile);
@@ -31,17 +55,24 @@ public class SignPlugin {
                 int ch;
                 while((ch = is.read()) != -1) sb.append((char)ch);
                 IOUtils.closeSilent(is);
-                database = SignDatabase.decode(sb.toString());
-            } catch (IOException e) {
-                database = new SignDatabase();
-                save();
+                database = NetworkPlus.gson().fromJson(sb.toString(), SignDatabase.class);
+            } catch (Exception e) {
+                NetworkPlus.getLogger().info("An error has occured while deserializing signs.db!");
+                reset();
             }
         }
 
-        Bukkit.getPluginManager().registerEvents(new SignBukkitListener(), NetworkPlugin.self);
+        Bukkit.getPluginManager().registerEvents(new SignBukkitListener(), NetworkPlus.getPlugin());
+        NetworkPlus.getEventManager().registerListener(new SignNetworkListener());
 
-        NetworkDebug.info("&6Net+Sign &7module loaded.");
+        NetworkPlus.getLogger().info("&6Net+sign &7module loaded. " + "&a" + database.totalSigns() + "&7 sign(s) found.");
 
+    }
+
+    public void reset() {
+        NetworkPlus.getLogger().info("Resetting &6Net+sign &7database...");
+        database = new SignDatabase();
+        save();
     }
 
     public SignDatabase getDatabase() {
@@ -49,20 +80,11 @@ public class SignPlugin {
     }
 
     public void save() {
-        write(databaseFile, SignDatabase.encode(database));
-    }
-
-    private void write(File file, String text) {
         try {
-            if(!file.exists()) {
-                file.getParentFile().mkdirs();
-                file.createNewFile();
-            }
-            FileOutputStream output = new FileOutputStream(file);
-            IOUtils.copy(new ByteArrayInputStream(text.getBytes()), output);
-            IOUtils.closeSilent(output);
+            Util.write(databaseFile, NetworkPlus.gson().toJson(database));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 }
