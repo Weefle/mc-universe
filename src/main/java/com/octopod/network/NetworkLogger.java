@@ -3,14 +3,14 @@ package com.octopod.network;
 import com.octopod.network.util.BukkitUtils;
 import org.bukkit.entity.Player;
 
-public class NetworkDebug {
+public class NetworkLogger {
 	
 	/**
 	 * Sends a message to the console and players with the "network.debug" permission.
 	 * Players will see messages sent using this method regardless of what the debug option is.
 	 * @param messages An array of messages to send.
 	 */
-	public static void info(String... messages) 
+	public void info(String... messages)
 	{
         if(NetworkConfig.getDebugMode() >= 0)
         {
@@ -31,7 +31,7 @@ public class NetworkDebug {
 	 * Players will see messages sent using this method if the debug option is at least 1.
 	 * @param messages An array of messages to send.
 	 */	
-	public static void debug(String... messages) 
+	public void debug(String... messages)
 	{
 		if(NetworkConfig.getDebugMode() >= 1)
 		{
@@ -53,7 +53,7 @@ public class NetworkDebug {
 	 * Players will see messages sent using this method if the debug option is at least 2.
 	 * @param messages An array of messages to send.
 	 */		
-	public static void verbose(String... messages) 
+	public void verbose(String... messages)
 	{
 		if(NetworkConfig.getDebugMode() >= 2)
 		{
