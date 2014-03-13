@@ -1,5 +1,6 @@
 package com.octopod.network;
 
+import com.octopod.network.util.BukkitUtils;
 import com.octopod.octolib.common.StringUtils;
 import org.bukkit.craftbukkit.libs.com.google.gson.Gson;
 
@@ -56,6 +57,23 @@ public class ServerInfo {
         } catch (NumberFormatException e) {
             return def;
         }
+    }
+
+    /**
+     * Generates the ServerInfo for this server. It should be only used once on startup/reload.
+     * Also, it should be changed along with the protocol.
+     */
+    public static ServerInfo generateServerInfo() {
+        NetworkPlusPlugin plugin = NetworkPlus.getPlugin();
+        return new ServerInfo(
+            plugin.getUsername(), //Server's username
+            NetworkConfig.getServerName(), //Server's config name
+            plugin.getServer().getMotd(), //Server's MOTD
+            plugin.getServer().getMaxPlayers(), //Server's max players
+            StringUtils.implode(BukkitUtils.getWhitelistedPlayerNames(), " "), //Server's whitelisted players
+            NetworkConfig.isHub() ? NetworkConfig.getHubPriority() : -1, //Server's hub priority, or -1 if is not a hub.
+            plugin.getPluginVersion() //Server's plugin version. (<build>-<commit>)
+        );
     }
 
 }
