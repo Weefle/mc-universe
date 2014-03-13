@@ -1,5 +1,6 @@
 package com.octopod.network.listener;
 
+import com.google.gson.JsonSyntaxException;
 import com.octopod.network.*;
 import com.octopod.network.cache.NetworkHubCache;
 import com.octopod.network.cache.NetworkPlayerCache;
@@ -137,42 +138,60 @@ public class NetworkListener {
 		 */
 		if(channel.equals(NetworkConfig.CHANNEL_INFO_REQUEST))
         {
-            EventEmitter.getEmitter().triggerEvent(
-                    new ServerInfoEvent(NetworkPlus.gson().fromJson(message, ServerInfo.class))
-            );
-            if(!sender.equals(NetworkPlus.getUsername())) {
-                RequestUtils.sendMessage(sender, NetworkConfig.CHANNEL_INFO_RESPONSE,
-                        NetworkPlus.gson().toJson(BukkitUtils.getPlayerNames())
+            try {
+                EventEmitter.getEmitter().triggerEvent(
+                        new ServerInfoEvent(NetworkPlus.gson().fromJson(message, ServerInfo.class))
                 );
+            } catch (JsonSyntaxException e) {
+                NetworkPlus.getLogger().info("Server &a" + sender + " &7has sent an invalid ServerInfo.");
+            } finally {
+                if(!sender.equals(NetworkPlus.getUsername())) {
+                    RequestUtils.sendMessage(sender, NetworkConfig.CHANNEL_INFO_RESPONSE,
+                            NetworkPlus.gson().toJson(BukkitUtils.getPlayerNames())
+                    );
+                }
             }
         }
 
         if(channel.equals(NetworkConfig.CHANNEL_INFO_RESPONSE))
         {
-            EventEmitter.getEmitter().triggerEvent(
-                    new ServerInfoEvent(NetworkPlus.gson().fromJson(message, ServerInfo.class))
-            );
+            try {
+                EventEmitter.getEmitter().triggerEvent(
+                        new ServerInfoEvent(NetworkPlus.gson().fromJson(message, ServerInfo.class))
+                );
+            } catch (JsonSyntaxException e) {
+                NetworkPlus.getLogger().info("Server &a" + sender + " &7has sent an invalid ServerInfo.");
+            }
         }
 
         //Playerlist Request
 
         if(channel.equals(NetworkConfig.CHANNEL_PLAYERLIST_REQUEST))
         {
-            EventEmitter.getEmitter().triggerEvent(
-                    new ServerPlayerListEvent(event.getSender(), NetworkPlus.gson().fromJson(message, String[].class))
-            );
-            if(!sender.equals(NetworkPlus.getUsername())) {
-                RequestUtils.sendMessage(sender, NetworkConfig.CHANNEL_PLAYERLIST_RESPONSE,
-                        NetworkPlus.gson().toJson(NetworkPlus.getServerInfo())
+            try {
+                EventEmitter.getEmitter().triggerEvent(
+                        new ServerPlayerListEvent(event.getSender(), NetworkPlus.gson().fromJson(message, String[].class))
                 );
+            } catch (JsonSyntaxException e) {
+                NetworkPlus.getLogger().info("Server &a" + sender + " &7has sent an invalid ServerInfo.");
+            } finally {
+                if(!sender.equals(NetworkPlus.getUsername())) {
+                    RequestUtils.sendMessage(sender, NetworkConfig.CHANNEL_PLAYERLIST_RESPONSE,
+                            NetworkPlus.gson().toJson(NetworkPlus.getServerInfo())
+                    );
+                }
             }
         }
 
         if(channel.equals(NetworkConfig.CHANNEL_PLAYERLIST_RESPONSE))
         {
-            EventEmitter.getEmitter().triggerEvent(
-                    new ServerPlayerListEvent(event.getSender(), NetworkPlus.gson().fromJson(message, String[].class))
-            );
+            try {
+                EventEmitter.getEmitter().triggerEvent(
+                        new ServerPlayerListEvent(event.getSender(), NetworkPlus.gson().fromJson(message, String[].class))
+                );
+            } catch (JsonSyntaxException e) {
+                NetworkPlus.getLogger().info("Server &a" + sender + " &7has sent an invalid ServerInfo.");
+            }
         }
 
 		if(channel.equals(NetworkConfig.CHANNEL_UNCACHE))
