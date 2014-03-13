@@ -127,15 +127,7 @@ public class NetworkPlusPlugin extends JavaPlugin {
         instance = this;
 
         //Sets this server's ServerInfo instance
-        serverInfo = new ServerInfo(
-            getUsername(), //Server's username
-            NetworkConfig.getServerName(), //Server's config name
-            getServer().getMotd(), //Server's MOTD
-            getServer().getMaxPlayers(), //Server's max players
-            StringUtils.implode(BukkitUtils.getWhitelistedPlayerNames(), " "), //Server's whitelisted players
-            NetworkConfig.isHub() ? NetworkConfig.getHubPriority() : -1, //Server's hub priority, or -1 if is not a hub.
-            getPluginVersion() //Server's plugin version. (<build>-<commit>)
-        );
+        serverInfo = new ServerInfo();
 
         //Register all the listeners
         messageListener = new NetworkListener();
