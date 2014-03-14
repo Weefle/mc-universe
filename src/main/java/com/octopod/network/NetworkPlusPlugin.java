@@ -4,16 +4,12 @@ import com.octopod.network.cache.NetworkCommandCache;
 import com.octopod.network.cache.NetworkPlayerCache;
 import com.octopod.network.cache.NetworkServerCache;
 import com.octopod.network.commands.*;
-import com.octopod.network.events.EventEmitter;
-import com.octopod.network.events.network.NetworkConnectedEvent;
+import com.octopod.network.connection.LilypadConnection;
+import com.octopod.network.connection.NetworkConnection;
 import com.octopod.network.listener.BukkitListeners;
 import com.octopod.network.listener.DebugListener;
-import com.octopod.network.listener.LilyPadListeners;
 import com.octopod.network.listener.NetworkListener;
 import com.octopod.network.modules.signs.SignPlugin;
-import com.octopod.network.util.BukkitUtils;
-import com.octopod.octolib.common.StringUtils;
-import lilypad.client.connect.api.Connect;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -38,11 +34,10 @@ public class NetworkPlusPlugin extends JavaPlugin {
     private NetworkLogger logger;
 
     /**
-     * The current instance of the LilyPad connection.
+     * The current instance of the NetworkPlus connection.
      */
-	private Connect connect;
+	private NetworkConnection connection;
 
-	LilyPadListeners lilyPadListeners = null;
 	BukkitListeners bukkitListeners = null;
 	NetworkListener messageListener = null;
 	DebugListener debugListener = null;
@@ -52,7 +47,7 @@ public class NetworkPlusPlugin extends JavaPlugin {
      * @return This server's username.
      */
     public String getUsername() {
-        return getConnection().getSettings().getUsername();
+        return connection.getUsername();
     }
 
     /**
@@ -73,8 +68,8 @@ public class NetworkPlusPlugin extends JavaPlugin {
      * Returns the LilyPad connection.
      * @return The LilyPad connection.
      */
-    public Connect getConnection() {
-        return connect;
+    public NetworkConnection getConnection() {
+        return connection;
     }
 
     /**
@@ -97,6 +92,11 @@ public class NetworkPlusPlugin extends JavaPlugin {
         NetworkPlus.getInstance().requestPlayerList();
     }
 
+    public void disablePlugin() {
+        this.onDisable();
+        Bukkit.getPluginManager().disablePlugin(this);
+    }
+
     /**
      * Reloads all the listeners, caches, and configurations of this plugin.
      */
@@ -112,9 +112,6 @@ public class NetworkPlusPlugin extends JavaPlugin {
         NetworkCommandCache.reset();
         NetworkPlayerCache.reset();
 
-        if(lilyPadListeners != null)
-            connect.unregisterEvents(lilyPadListeners);
-
         NetworkPlus.getEventManager().unregisterAll();
         NetworkPlus.getInstance().requestUncache(getUsername());
 
@@ -124,19 +121,16 @@ public class NetworkPlusPlugin extends JavaPlugin {
 
         instance = this;
         new NetworkPlus(this);
-
-        connect = this.getServer().getServicesManager().getRegistration(Connect.class).getProvider();
+        connection = new LilypadConnection(this);
         logger = new NetworkLogger();
 
         //Register all the listeners
         messageListener = new NetworkListener();
-        lilyPadListeners = new LilyPadListeners();
         bukkitListeners = new BukkitListeners();
         debugListener = new DebugListener();
 
         NetworkPlus.getEventManager().registerListener(messageListener);
         NetworkPlus.getEventManager().registerListener(debugListener);
-        connect.registerEvents(lilyPadListeners);
         Bukkit.getPluginManager().registerEvents(bukkitListeners, this);
 
         //Configuration loading
@@ -162,47 +156,6 @@ public class NetworkPlusPlugin extends JavaPlugin {
                 new CommandScan         ("/gscan")
 
         );
-
-        if(connect != null) {
-            if(startup) {
-                new Thread(new Runnable() {
-
-                    @Override
-                    public void run()
-                    {
-                        if(!connect.isConnected()) {
-                            BukkitUtils.console("Waiting for LilyPad to connect...");
-                            int connectionAttempts = 0;
-
-                            //Waits for LilyPad to be connected
-                            while(!connect.isConnected() && connectionAttempts < 10) {
-                                try {
-                                    BukkitUtils.console("Waiting for LilyPad connection... " + connectionAttempts);
-                                    synchronized(this) {
-                                        wait(1000);
-                                    }
-                                } catch (InterruptedException e) {}
-                                connectionAttempts++;
-                            }
-
-                            //If LilyPad still isn't connected, then most commands should be disabled.
-                            if(!connect.isConnected())
-                            {
-                                NetworkPlus.getLogger().info("&cLilypad could not connect!");
-                                Bukkit.getPluginManager().disablePlugin(NetworkPlusPlugin.this);
-                                return;
-                            }
-                        }
-                        EventEmitter.getEmitter().triggerEvent(new NetworkConnectedEvent());
-                    }
-
-                }).start();
-            } else {
-                if(isConnected()) {
-                    EventEmitter.getEmitter().triggerEvent(new NetworkConnectedEvent());
-                }
-            }
-        }
 
         if(NetworkPlus.isTestBuild()) {
             NetworkPlus.getLogger().info("You are running a test build of &fNetworkPlus&7!");

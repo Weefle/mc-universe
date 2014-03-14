@@ -2,17 +2,11 @@ package com.octopod.network;
 
 import com.google.gson.Gson;
 import com.octopod.network.cache.NetworkPlayerCache;
+import com.octopod.network.connection.NetworkConnection;
 import com.octopod.network.events.EventManager;
 import com.octopod.network.util.BukkitUtils;
-import com.octopod.network.util.RequestUtils;
-import lilypad.client.connect.api.Connect;
-import lilypad.client.connect.api.request.impl.GetPlayersRequest;
-import lilypad.client.connect.api.request.impl.RedirectRequest;
-import lilypad.client.connect.api.result.StatusCode;
-import lilypad.client.connect.api.result.impl.GetPlayersResult;
 
 import java.io.File;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -73,7 +67,7 @@ public class NetworkPlus {
      * @return This plugin's username.
      */
     public static String getUsername() {
-        return getConnection().getSettings().getUsername();
+        return getConnection().getUsername();
     }
 
     public static boolean isTestBuild() {
@@ -94,7 +88,7 @@ public class NetworkPlus {
         return plugin.getServerInfo();
     }
 
-    public static Connect getConnection() {
+    public static NetworkConnection getConnection() {
         if(!isLoaded()) return null;
         return plugin.getConnection();
     }
@@ -128,13 +122,8 @@ public class NetworkPlus {
      * Gets all the players on the network as a Set.
      * @return The Set containing all the players, or an empty Set if the request somehow fails.
      */
-    public Set<String> getNetworkedPlayers() {
-        GetPlayersResult result = (GetPlayersResult)RequestUtils.request(new GetPlayersRequest(true));
-        if(result.getStatusCode() == StatusCode.SUCCESS) {
-            return result.getPlayers();
-        } else {
-            return new HashSet<>();
-        }
+    public List<String> getNetworkedPlayers() {
+        return getConnection().getPlayers();
     }
 
     /**
@@ -164,15 +153,35 @@ public class NetworkPlus {
      * @return If the server is online.
      */
     public boolean isServerOnline(String server) {
-        return RequestUtils.sendMessage(server, "", "").getStatusCode() == StatusCode.SUCCESS;
+        return getConnection().serverExists(server);
+    }
+
+    public boolean sendPlayer(String player, String server) {
+        return getConnection().sendPlayer(player, server);
+    }
+
+    public void sendAllPlayers(String serverFrom, String server) {
+        sendMessage(serverFrom, NetworkConfig.getChannel("SENDALL"), server);
+    }
+
+    public void sendAllPlayers(String server) {
+        broadcastMessage(NetworkConfig.getChannel("SENDALL"), server);
     }
 
     //=========================================================================================//
     //  Request methods
     //=========================================================================================//
 
-    public boolean sendPlayer(String player, String server) {
-        return RequestUtils.request(new RedirectRequest(server, player)).getStatusCode() == StatusCode.SUCCESS;
+    public void sendMessage(String server, String channel, String message) {
+        getConnection().sendMessage(server, channel, message);
+    }
+
+    public void sendMessage(List<String> servers, String channel, String message) {
+        getConnection().sendMessage(servers, channel, message);
+    }
+
+    public void broadcastMessage(String channel, String message) {
+        getConnection().broadcastMessage(channel, message);
     }
 
     /**
@@ -180,7 +189,7 @@ public class NetworkPlus {
      * @param message The message to send.
      */
     public void broadcastNetworkMessage(String server, String message) {
-        RequestUtils.sendMessage(server, NetworkConfig.getChannel("BROADCAST"), message);
+        sendMessage(server, NetworkConfig.getChannel("BROADCAST"), message);
     }
 
     /**
@@ -188,11 +197,12 @@ public class NetworkPlus {
      * @param message The message to send.
      */
     public void broadcastNetworkMessage(String message) {
-        RequestUtils.broadcastMessage(NetworkConfig.getChannel("BROADCAST"), message);
+        broadcastMessage(NetworkConfig.getChannel("BROADCAST"), message);
     }
 
     /**
      * Sends a raw message to a player. Works cross-server.
+     * The message will just be sent locally if the player is online on this server.
      * @param player The name of the player.
      * @param message The message to send.
      */
@@ -200,7 +210,7 @@ public class NetworkPlus {
         if(BukkitUtils.isPlayerOnline(player)) {
             BukkitUtils.sendMessage(player, message);
         } else {
-            RequestUtils.broadcastMessage(NetworkConfig.getChannel("MESSAGE"), gson().toJson(new PreparedPlayerMessage(player, message)));
+            broadcastMessage(NetworkConfig.getChannel("MESSAGE"), gson().toJson(new PreparedPlayerMessage(player, message)));
         }
     }
 
@@ -211,7 +221,7 @@ public class NetworkPlus {
      */
     public void requestServerInfo() {
         getLogger().verbose("Requesting info from all servers");
-        RequestUtils.broadcastMessage(NetworkConfig.getChannel("INFO_REQUEST"), gson().toJson(getServerInfo()));
+        broadcastMessage(NetworkConfig.getChannel("INFO_REQUEST"), gson().toJson(getServerInfo()));
     }
 
     /**
@@ -222,7 +232,7 @@ public class NetworkPlus {
      */
     public void requestServerInfo(List<String> servers) {
         getLogger().verbose("Requesting info from: &a" + servers);
-        RequestUtils.sendMessage(servers, NetworkConfig.getChannel("INFO_REQUEST"), gson().toJson(getServerInfo()));
+        sendMessage(servers, NetworkConfig.getChannel("INFO_REQUEST"), gson().toJson(getServerInfo()));
     }
 
     /**
@@ -232,7 +242,7 @@ public class NetworkPlus {
      */
     public void requestPlayerList() {
         getLogger().verbose("Requesting playerlist from all servers");
-        RequestUtils.broadcastMessage(NetworkConfig.getChannel("PLAYERLIST_REQUEST"), gson().toJson(BukkitUtils.getPlayerNames()));
+        broadcastMessage(NetworkConfig.getChannel("PLAYERLIST_REQUEST"), gson().toJson(BukkitUtils.getPlayerNames()));
     }
 
     /**
@@ -240,6 +250,6 @@ public class NetworkPlus {
      * @param server
      */
     public void requestUncache(String server) {
-        RequestUtils.broadcastMessage(NetworkConfig.getChannel("UNCACHE"), server);
+        broadcastMessage(NetworkConfig.getChannel("UNCACHE"), server);
     }
 }

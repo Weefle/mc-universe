@@ -2,14 +2,11 @@ package com.octopod.network.listener;
 
 import com.octopod.network.NetworkConfig;
 import com.octopod.network.NetworkPlus;
-import com.octopod.network.NetworkPlusPlugin;
 import com.octopod.network.util.BukkitUtils;
-import com.octopod.network.util.RequestUtils;
 import com.octopod.network.cache.NetworkCommandCache;
 import com.octopod.network.cache.NetworkHubCache;
 import com.octopod.network.cache.NetworkPlayerCache;
 import com.octopod.network.commands.NetworkCommand;
-import lilypad.client.connect.api.request.impl.RedirectRequest;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -54,9 +51,9 @@ public class BukkitListeners implements Listener {
 			channel = NetworkConfig.getChannel("PLAYER_JOIN");
 		} else {
 			channel = NetworkConfig.getChannel("PLAYER_REDIRECT");
-		} 
-		
-		RequestUtils.broadcastMessage(channel, event.getPlayer().getName());
+		}
+
+        NetworkPlus.getInstance().broadcastMessage(channel, event.getPlayer().getName());
 		
 	}
 	
@@ -70,7 +67,7 @@ public class BukkitListeners implements Listener {
 		
 		if(location != null && location.equals(NetworkPlus.getUsername()))
 		{
-			RequestUtils.broadcastMessage(channel, event.getPlayer().getName());
+			NetworkPlus.getInstance().broadcastMessage(channel, event.getPlayer().getName());
 		}
 		
 	}
@@ -85,7 +82,7 @@ public class BukkitListeners implements Listener {
 
             BukkitUtils.sendMessage(event.getPlayer(), NetworkPlus.prefix() + "&7You've been moved to the hub server:");
             BukkitUtils.sendMessage(event.getPlayer(), "&c\"" + event.getReason() + "\"");
-            RequestUtils.request(new RedirectRequest(hub, event.getPlayer().getName()));
+            NetworkPlus.getInstance().sendPlayer(event.getPlayer().getName(), hub);
         }
 		
 	}

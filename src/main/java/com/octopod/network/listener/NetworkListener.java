@@ -18,8 +18,6 @@ import com.octopod.network.events.server.ServerInfoEvent;
 import com.octopod.network.events.server.ServerPlayerListEvent;
 import com.octopod.network.events.server.ServerUncacheEvent;
 import com.octopod.network.util.BukkitUtils;
-import com.octopod.network.util.RequestUtils;
-import lilypad.client.connect.api.request.impl.RedirectRequest;
 
 public class NetworkListener {
 
@@ -101,11 +99,13 @@ public class NetworkListener {
 
         logger.verbose("&7Message: &a" + sender + "&7 on &b" + channel);
 
+        NetworkPlus networkPlus = NetworkPlus.getInstance();
+
         //Tells the server to send all players on this server to the server specified in 'message'
 		if(channel.equals(NetworkConfig.getChannel("SENDALL")))
 		{
             for(String player: BukkitUtils.getPlayerNames())
-                RequestUtils.request(new RedirectRequest(message, player));
+                networkPlus.sendPlayer(player, message);
 		}
 
         //Tells the server to send a message to a player. Information included in 'message'
@@ -151,7 +151,7 @@ public class NetworkListener {
             //Send back the message if it's a request
             if(channel.equals(NetworkConfig.getChannel("INFO_REQUEST"))) {
                 if(!sender.equals(NetworkPlus.getUsername())) {
-                    RequestUtils.sendMessage(sender, NetworkConfig.getChannel("INFO_RESPONSE"),
+                    networkPlus.sendMessage(sender, NetworkConfig.getChannel("INFO_RESPONSE"),
                             NetworkPlus.gson().toJson(NetworkPlus.getServerInfo())
                     );
                 }
@@ -174,7 +174,7 @@ public class NetworkListener {
 
             if(channel.equals(NetworkConfig.getChannel("PLAYERLIST_REQUEST"))) {
                 if(!sender.equals(NetworkPlus.getUsername())) {
-                    RequestUtils.sendMessage(sender, NetworkConfig.getChannel("PLAYERLIST_RESPONSE"),
+                    networkPlus.sendMessage(sender, NetworkConfig.getChannel("PLAYERLIST_RESPONSE"),
                             NetworkPlus.gson().toJson(BukkitUtils.getPlayerNames())
                     );
                 }
