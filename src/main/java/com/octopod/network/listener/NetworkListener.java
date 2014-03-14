@@ -51,7 +51,7 @@ public class NetworkListener {
 	public void serverInfoEvent(ServerInfoEvent event) {
 		String server = event.getSender();
         ServerInfo serverInfo = event.getServerInfo();
-		NetworkServerCache.addServer(server, serverInfo);
+		NetworkServerCache.addServer(serverInfo);
 
         //priority at least 0 = this server is a hub
         int hubPriority = serverInfo.getHubPriority();
@@ -102,32 +102,32 @@ public class NetworkListener {
         logger.verbose("&7Message: &a" + sender + "&7 on &b" + channel);
 
         //Tells the server to send all players on this server to the server specified in 'message'
-		if(channel.equals(NetworkConfig.CHANNEL_SENDALL))
+		if(channel.equals(NetworkConfig.getChannel("SENDALL")))
 		{
             for(String player: BukkitUtils.getPlayerNames())
                 RequestUtils.request(new RedirectRequest(message, player));
 		}
 
         //Tells the server to send a message to a player. Information included in 'message'
-		if(channel.equals(NetworkConfig.CHANNEL_MESSAGE))
+		if(channel.equals(NetworkConfig.getChannel("MESSAGE")))
 		{
 			NetworkPlus.gson().fromJson(message, PreparedPlayerMessage.class).send();
 		}
 
         //Tells the server a player has joined the network
-		if(channel.equals(NetworkConfig.CHANNEL_PLAYER_JOIN))
+		if(channel.equals(NetworkConfig.getChannel("PLAYER_JOIN")))
 			EventEmitter.getEmitter().triggerEvent(new NetworkPlayerJoinEvent(message, sender));
 
         //Tells the server a player has left the network
-		if(channel.equals(NetworkConfig.CHANNEL_PLAYER_LEAVE))
+		if(channel.equals(NetworkConfig.getChannel("PLAYER_LEAVE")))
 			EventEmitter.getEmitter().triggerEvent(new NetworkPlayerLeaveEvent(message, sender));
 
         //Tells the server a player has switched servers on the network
-		if(channel.equals(NetworkConfig.CHANNEL_PLAYER_REDIRECT))
+		if(channel.equals(NetworkConfig.getChannel("PLAYER_REDIRECT")))
 			EventEmitter.getEmitter().triggerEvent(new NetworkPlayerRedirectEvent(message, NetworkPlayerCache.findPlayer(message), sender));
 
 		//Tells the server to broadcast a message on the server.
-		if(channel.equals(NetworkConfig.CHANNEL_BROADCAST))
+		if(channel.equals(NetworkConfig.getChannel("BROADCAST")))
 		{
 			BukkitUtils.broadcastMessage(message);
 		}
@@ -136,65 +136,52 @@ public class NetworkListener {
 		 * Info Request: Servers that recieve this message will send back server information.
 		 *  Use synchronized listeners to wait for the server's response.
 		 */
-		if(channel.equals(NetworkConfig.CHANNEL_INFO_REQUEST))
+		if(channel.equals(NetworkConfig.getChannel("INFO_REQUEST")) || channel.equals(NetworkConfig.getChannel("INFO_RESPONSE")))
         {
             try {
-                EventEmitter.getEmitter().triggerEvent(
-                        new ServerInfoEvent(NetworkPlus.gson().fromJson(message, ServerInfo.class))
-                );
-            } catch (JsonSyntaxException e) {
-                NetworkPlus.getLogger().info("Server &a" + sender + " &7has sent an invalid ServerInfo.");
-            } finally {
-                if(!sender.equals(NetworkPlus.getUsername())) {
-                    RequestUtils.sendMessage(sender, NetworkConfig.CHANNEL_INFO_RESPONSE,
-                            NetworkPlus.gson().toJson(BukkitUtils.getPlayerNames())
-                    );
-                }
-            }
-        }
-
-        if(channel.equals(NetworkConfig.CHANNEL_INFO_RESPONSE))
-        {
-            try {
+                ServerInfo info = NetworkPlus.gson().fromJson(message, ServerInfo.class);
+                if(info == null) throw new NullPointerException("Server '" + sender + "' gave us a null serverinfo, json: " + message);
                 EventEmitter.getEmitter().triggerEvent(
                         new ServerInfoEvent(NetworkPlus.gson().fromJson(message, ServerInfo.class))
                 );
             } catch (JsonSyntaxException e) {
                 NetworkPlus.getLogger().info("Server &a" + sender + " &7has sent an invalid ServerInfo.");
             }
-        }
 
-        //Playerlist Request
-
-        if(channel.equals(NetworkConfig.CHANNEL_PLAYERLIST_REQUEST))
-        {
-            try {
-                EventEmitter.getEmitter().triggerEvent(
-                        new ServerPlayerListEvent(event.getSender(), NetworkPlus.gson().fromJson(message, String[].class))
-                );
-            } catch (JsonSyntaxException e) {
-                NetworkPlus.getLogger().info("Server &a" + sender + " &7has sent an invalid ServerInfo.");
-            } finally {
+            //Send back the message if it's a request
+            if(channel.equals(NetworkConfig.getChannel("INFO_REQUEST"))) {
                 if(!sender.equals(NetworkPlus.getUsername())) {
-                    RequestUtils.sendMessage(sender, NetworkConfig.CHANNEL_PLAYERLIST_RESPONSE,
+                    RequestUtils.sendMessage(sender, NetworkConfig.getChannel("INFO_RESPONSE"),
                             NetworkPlus.gson().toJson(NetworkPlus.getServerInfo())
                     );
                 }
             }
         }
 
-        if(channel.equals(NetworkConfig.CHANNEL_PLAYERLIST_RESPONSE))
+        //Playerlist Request
+
+        if(channel.equals(NetworkConfig.getChannel("PLAYERLIST_REQUEST")) || channel.equals(NetworkConfig.getChannel("PLAYERLIST_RESPONSE")))
         {
             try {
+                String[] players = NetworkPlus.gson().fromJson(message, String[].class);
+                if(players == null) throw new NullPointerException("Server '" + sender + "' gave us a null playerlist, json: " + message);
                 EventEmitter.getEmitter().triggerEvent(
-                        new ServerPlayerListEvent(event.getSender(), NetworkPlus.gson().fromJson(message, String[].class))
+                        new ServerPlayerListEvent(event.getSender(), players)
                 );
             } catch (JsonSyntaxException e) {
-                NetworkPlus.getLogger().info("Server &a" + sender + " &7has sent an invalid ServerInfo.");
+                NetworkPlus.getLogger().info("Server &a" + sender + " &7has sent an invalid playerlist.");
+            }
+
+            if(channel.equals(NetworkConfig.getChannel("PLAYERLIST_REQUEST"))) {
+                if(!sender.equals(NetworkPlus.getUsername())) {
+                    RequestUtils.sendMessage(sender, NetworkConfig.getChannel("PLAYERLIST_RESPONSE"),
+                            NetworkPlus.gson().toJson(BukkitUtils.getPlayerNames())
+                    );
+                }
             }
         }
 
-		if(channel.equals(NetworkConfig.CHANNEL_UNCACHE))
+		if(channel.equals(NetworkConfig.getChannel("UNCACHE")))
 		{		
 			EventEmitter.getEmitter().triggerEvent(new ServerUncacheEvent(message, sender));
 		}

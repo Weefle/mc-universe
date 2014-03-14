@@ -3,9 +3,7 @@ package com.octopod.network;
 import com.octopod.network.util.BukkitUtils;
 import com.octopod.octolib.common.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.libs.com.google.gson.Gson;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,7 +24,7 @@ import java.util.List;
  */
 public class ServerInfo {
 
-    private List<String> arguments;
+    private List<Object> arguments;
 
     /**
      * Generates the ServerInfo for this server. It should be only used once on startup/reload.
@@ -38,7 +36,7 @@ public class ServerInfo {
             NetworkConfig.getServerName(), //Server's config name
             Bukkit.getServer().getMotd(), //Server's MOTD
             Bukkit.getServer().getMaxPlayers(), //Server's max players
-            StringUtils.implode(BukkitUtils.getWhitelistedPlayerNames(), " "), //Server's whitelisted players
+            BukkitUtils.getWhitelistedPlayerNames(), //Server's whitelisted players
             NetworkConfig.isHub() ? NetworkConfig.getHubPriority() : -1, //Server's hub priority, or -1 if is not a hub.
             NetworkPlus.getPluginVersion() //Server's plugin version. (<build>-<commit>)
         );
@@ -51,34 +49,43 @@ public class ServerInfo {
      */
     private ServerInfo(Object... args)
     {
-        arguments = new ArrayList<>();
-        for(Object arg: args) arguments.add(arg.toString());
+        arguments = Arrays.asList(args);
     }
 
     public String   getUsername()           {return getIndex(0);}
     public String   getServerName()         {return getIndex(1);}
     public String   getDescription()        {return getIndex(2);}
-    public Integer  getMaxPlayers()         {return getInt(getIndex(3), 0);}
-    public String[] getWhitelistedPlayers() {return getIndex(4).equals("") ? new String[0] : getIndex(4).split(" ");}
-    public Integer  getHubPriority()        {return getInt(getIndex(5), -1);}
+    public Integer  getMaxPlayers()         {return getInt(3, 0);}
+    public String[] getWhitelistedPlayers() {return get(4, new String[0], String[].class);}
+    public Integer  getHubPriority()        {return getInt(5, -1);}
     public String   getPluginVersion()      {return getIndex(6);}
 
     //Tries to get a String from the index, and returns "" if it doesn't exist.
     private String getIndex(int n) {
         try {
-            return arguments.get(n);
+            return arguments.get(n).toString();
         } catch (IndexOutOfBoundsException e) {
             return "";
         }
     }
 
-    //Tries to get an integer from the screen, but returns 0 if it doesn't
-    private Integer getInt(String n, int def) {
+    private <T> T get(int n, T def, Class<T> type) {
         try {
-            return Integer.valueOf(n);
-        } catch (NumberFormatException e) {
+            return (T)arguments.get(n);
+        } catch (Exception e) {
             return def;
         }
+    }
+
+    //Tries to get an integer from the screen, but returns 0 if it doesn't
+    private Integer getInt(int n, int def) {
+        Object o = arguments.get(n);
+        if(!(o instanceof Integer)) return def;
+        return (Integer)o;
+    }
+
+    public String toString() {
+        return NetworkPlus.gson().toJson(this);
     }
 
 }

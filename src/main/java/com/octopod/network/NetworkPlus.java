@@ -22,6 +22,11 @@ import java.util.Set;
  */
 public class NetworkPlus {
 
+    public NetworkPlus(NetworkPlusPlugin plugin) {
+        instance = this;
+        this.plugin = plugin;
+    }
+
     /**
      * A prefix to use before server messages.
      * TODO: add this to NetworkConfig
@@ -175,7 +180,7 @@ public class NetworkPlus {
      * @param message The message to send.
      */
     public void broadcastNetworkMessage(String server, String message) {
-        RequestUtils.sendMessage(server, NetworkConfig.CHANNEL_BROADCAST, message);
+        RequestUtils.sendMessage(server, NetworkConfig.getChannel("BROADCAST"), message);
     }
 
     /**
@@ -183,7 +188,7 @@ public class NetworkPlus {
      * @param message The message to send.
      */
     public void broadcastNetworkMessage(String message) {
-        RequestUtils.broadcastMessage(NetworkConfig.CHANNEL_BROADCAST, message);
+        RequestUtils.broadcastMessage(NetworkConfig.getChannel("BROADCAST"), message);
     }
 
     /**
@@ -195,7 +200,7 @@ public class NetworkPlus {
         if(BukkitUtils.isPlayerOnline(player)) {
             BukkitUtils.sendMessage(player, message);
         } else {
-            RequestUtils.broadcastMessage(NetworkConfig.CHANNEL_MESSAGE, gson().toJson(new PreparedPlayerMessage(player, message)));
+            RequestUtils.broadcastMessage(NetworkConfig.getChannel("MESSAGE"), gson().toJson(new PreparedPlayerMessage(player, message)));
         }
     }
 
@@ -206,7 +211,7 @@ public class NetworkPlus {
      */
     public void requestServerInfo() {
         getLogger().verbose("Requesting info from all servers");
-        RequestUtils.broadcastMessage(NetworkConfig.CHANNEL_INFO_REQUEST, gson().toJson(getServerInfo()));
+        RequestUtils.broadcastMessage(NetworkConfig.getChannel("INFO_REQUEST"), gson().toJson(getServerInfo()));
     }
 
     /**
@@ -217,7 +222,7 @@ public class NetworkPlus {
      */
     public void requestServerInfo(List<String> servers) {
         getLogger().verbose("Requesting info from: &a" + servers);
-        RequestUtils.sendMessage(servers, NetworkConfig.CHANNEL_INFO_REQUEST, gson().toJson(getServerInfo()));
+        RequestUtils.sendMessage(servers, NetworkConfig.getChannel("INFO_REQUEST"), gson().toJson(getServerInfo()));
     }
 
     /**
@@ -227,7 +232,7 @@ public class NetworkPlus {
      */
     public void requestPlayerList() {
         getLogger().verbose("Requesting playerlist from all servers");
-        RequestUtils.broadcastMessage(NetworkConfig.CHANNEL_PLAYERLIST_REQUEST, gson().toJson(BukkitUtils.getPlayerNames()));
+        RequestUtils.broadcastMessage(NetworkConfig.getChannel("PLAYERLIST_REQUEST"), gson().toJson(BukkitUtils.getPlayerNames()));
     }
 
     /**
@@ -235,6 +240,6 @@ public class NetworkPlus {
      * @param server
      */
     public void requestUncache(String server) {
-        RequestUtils.broadcastMessage(NetworkConfig.CHANNEL_UNCACHE, server);
+        RequestUtils.broadcastMessage(NetworkConfig.getChannel("UNCACHE"), server);
     }
 }

@@ -122,12 +122,11 @@ public class NetworkPlusPlugin extends JavaPlugin {
 
     private void enable(boolean startup) {
 
+        instance = this;
+        new NetworkPlus(this);
+
         connect = this.getServer().getServicesManager().getRegistration(Connect.class).getProvider();
         logger = new NetworkLogger();
-        instance = this;
-
-        //Sets this server's ServerInfo instance
-        serverInfo = new ServerInfo();
 
         //Register all the listeners
         messageListener = new NetworkListener();
@@ -142,6 +141,9 @@ public class NetworkPlusPlugin extends JavaPlugin {
 
         //Configuration loading
         NetworkConfig.reloadConfig();
+
+        //Sets this server's ServerInfo instance
+        serverInfo = new ServerInfo();
 
         NetworkCommandCache.registerCommand(
 

@@ -32,11 +32,11 @@ public class RequestUtils {
     }
 
 	public static void requestSendAll(String server, String destination) {
-		sendMessage(server, NetworkConfig.CHANNEL_SENDALL, destination);
+		sendMessage(server, NetworkConfig.getChannel("SENDALL"), destination);
 	}
 
 	public static void requestSendAll(String destination) {
-		broadcastMessage(NetworkConfig.CHANNEL_SENDALL, destination);
+		broadcastMessage(NetworkConfig.getChannel("SENDALL"), destination);
 	}
 
     public static MessageResult sendMessage(String server, String channel, String message) {

@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 
 public class NetworkConfig {
 
@@ -25,9 +26,11 @@ public class NetworkConfig {
 	private static String  CHANNEL_PREFIX = "network";
     private static Boolean HUB_ENABLED = false;
     private static Integer HUB_PRIORITY = 0;
-    private static String  SERVER_NAME = "New Server";
+    private static String  SERVER_NAME = "";
     private static Integer CONNECTION_ATTEMPTS_MAX = 10;
     private static Long    CONNECTION_ATTEMPTS_INTERVAL = 1000L;
+
+    private static HashMap<String, String> CHANNELS = new HashMap<>();
 
     private static boolean nullCheck(Object... objects) {
         for(Object o: objects) {
@@ -144,25 +147,41 @@ public class NetworkConfig {
             IOUtils.closeSilent(defaultConfigInput);
         }
 
-		CHANNEL_PLAYER_JOIN = 		CHANNEL_PREFIX + ".player.join";
-		CHANNEL_PLAYER_REDIRECT = 	CHANNEL_PREFIX + ".player.redirect";
-		CHANNEL_PLAYER_LEAVE = 		CHANNEL_PREFIX + ".player.leave";
-		CHANNEL_SENDALL = 			CHANNEL_PREFIX + ".sendall";
-		CHANNEL_MESSAGE = 			CHANNEL_PREFIX + ".message";
-		CHANNEL_BROADCAST = 		CHANNEL_PREFIX + ".broadcast";
+        BukkitUtils.sendMessage(sender, "TIMEOUT: &a" + TIMEOUT);
+        BukkitUtils.sendMessage(sender, "DEBUG_MODE: &a" + DEBUG_MODE);
+        BukkitUtils.sendMessage(sender, "CHANNEL_PREFIX: &a\"" + "\"");
+        BukkitUtils.sendMessage(sender, "HUB_ENABLED: &a" + HUB_ENABLED);
+        BukkitUtils.sendMessage(sender, "HUB_PRIORITY: &a" + HUB_PRIORITY);
+        BukkitUtils.sendMessage(sender, "SERVER_NAME: &a\"" + getServerName() + "\"");
 
-		CHANNEL_INFO_RESPONSE =     CHANNEL_PREFIX + ".info";
-        CHANNEL_INFO_REQUEST =      CHANNEL_PREFIX + ".info.request";
+        addChannel("PLAYER_JOIN",           "player.join");
+        addChannel("PLAYER_REDIRECT",       "player.redirect");
+        addChannel("PLAYER_LEAVE",          "player.leave");
 
-        CHANNEL_PLAYERLIST_REQUEST =    CHANNEL_PREFIX + ".playerlist.request";
-        CHANNEL_PLAYERLIST_RESPONSE =   CHANNEL_PREFIX + ".playerlist.response";
+        addChannel("SENDALL",               "sendall");
+        addChannel("MESSAGE",               "message");
+        addChannel("BROADCAST",             "broadcast");
 
-		CHANNEL_UNCACHE = 			CHANNEL_PREFIX + ".uncache.request";
-		CHANNEL_UNCACHE_RELAY =		CHANNEL_PREFIX + ".uncache.relay";
+        addChannel("INFO_REQUEST",          "info.request");
+        addChannel("INFO_RESPONSE",         "info");
+
+        addChannel("PLAYERLIST_REQUEST",    "playerlist.request");
+        addChannel("PLAYERLIST_RESPONSE",   "playerlist.response");
+
+        addChannel("UNCACHE",               "uncache.request");
+        addChannel("UNCACHE_RESPONSE",      "uncache.relay");
 
         BukkitUtils.sendMessage(sender, "&7Successfully loaded configuration!");
 
 	}
+
+    private static void addChannel(String name, String channel) {
+        CHANNELS.put(name.toUpperCase(), CHANNEL_PREFIX + "." + channel.toLowerCase());
+    }
+
+    public static String getChannel(String name) {
+        return CHANNELS.get(name.toUpperCase());
+    }
 
     public static Boolean isHub() {return HUB_ENABLED;}
     public static Integer getHubPriority() {return HUB_PRIORITY;}
@@ -174,7 +193,7 @@ public class NetworkConfig {
 	public static String getRequestPrefix() {return CHANNEL_PREFIX;}
 
     public static String getServerName() {
-        if(SERVER_NAME == null || SERVER_NAME.equals("")) {
+        if(SERVER_NAME.equals("")) {
             return NetworkPlus.getUsername();
         } else {
             return SERVER_NAME;
@@ -189,31 +208,4 @@ public class NetworkConfig {
         return CONNECTION_ATTEMPTS_INTERVAL;
     }
 
-    //Channel variables
-	public static String
-	//Used to tell a server that a player has joined/left/changed servers that the message has been sent from.
-		CHANNEL_PLAYER_JOIN,
-		CHANNEL_PLAYER_REDIRECT,
-		CHANNEL_PLAYER_LEAVE,
-
-	//Used to tell a server to send all players on the server to another server.
-		CHANNEL_SENDALL,
-
-	//Used to tell a server to send a player a message.
-		CHANNEL_MESSAGE,
-
-	//Used to tell a server to broadcast a message.
-		CHANNEL_BROADCAST,
-
-        CHANNEL_PLAYERLIST_REQUEST,
-        CHANNEL_PLAYERLIST_RESPONSE,
-
-	//These channels are used when requesting information from servers.
-        CHANNEL_INFO_REQUEST,
-        CHANNEL_INFO_RESPONSE,
-
-	//These channels are used when requestinga server to uncache a server's name.
-		CHANNEL_UNCACHE,
-		CHANNEL_UNCACHE_RELAY
-	;
 }

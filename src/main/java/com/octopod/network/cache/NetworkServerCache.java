@@ -3,6 +3,7 @@ package com.octopod.network.cache;
 import com.octopod.network.NetworkLogger;
 import com.octopod.network.NetworkPlus;
 import com.octopod.network.ServerInfo;
+import com.octopod.network.util.BukkitUtils;
 
 import java.util.*;
 
@@ -16,13 +17,13 @@ public class NetworkServerCache {
 
 	private static Map<String, ServerInfo> serverMap = Collections.synchronizedMap(new HashMap<String, ServerInfo>());
 
-	public static boolean addServer(String server, ServerInfo info) {
-        boolean isNew = !serverMap.containsKey(server);
-        serverMap.put(server, info);
+	public static boolean addServer(ServerInfo info) {
+        boolean isNew = !serverMap.containsKey(info.getUsername());
+        serverMap.put(info.getUsername(), info);
         if(isNew) {
-            NetworkPlus.getLogger().debug("Recieved new info from &a" + server);
+            NetworkPlus.getLogger().debug("Recieved new info from &a" + info.getUsername());
         } else {
-            NetworkPlus.getLogger().debug("Recieved updated info from &a" + server);
+            NetworkPlus.getLogger().debug("Recieved updated info from &a" + info.getUsername());
         }
         return isNew;
 	}
