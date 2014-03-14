@@ -34,7 +34,7 @@ public class CommandServerList extends NetworkCommand {
         Map<String, List<String>> reverseMap = NetworkPlayerCache.getReverseMap();
 
         //Gets the size of all players on the network via LilyPad and gets the difference from the total known players.
-        int unlistedPlayerCount = NetworkPlus.getInstance().getNetworkedPlayers().size() - playerMap.size();
+        int unlistedPlayerCount = NetworkPlus.getNetworkedPlayers().size() - playerMap.size();
 
         BukkitUtils.sendMessage(sender, "&7Found &a" + serverMap.size() + " &7servers. &b" + playerMap.size() + " players &8(~" + unlistedPlayerCount + " unlisted)", null);
         BukkitUtils.sendMessage(sender, "&7Hover over the server names for more information.", null);

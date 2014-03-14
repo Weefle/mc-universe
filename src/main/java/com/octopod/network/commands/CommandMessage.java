@@ -25,22 +25,21 @@ public class CommandMessage extends NetworkCommand {
 
 		if(args.length <= 1 || !(cmdsender instanceof Player)) return false;
 
-        NetworkPlus networkPlus = NetworkPlus.getInstance();
-
 		String sender = cmdsender.getName();
 		String target = args[0];
 		String message = StringUtils.join(Arrays.asList(args).subList(1, args.length), " ");
 		String server = NetworkPlus.getUsername();
 
+        String formatTarget = String.format(NetworkConfig.FORMAT_MSG_TARGET, server, sender, message);
+        String formatSender = String.format(NetworkConfig.FORMAT_MSG_SENDER, server, target, message);
+
 		//Checks if the player is online on the network
-		if(networkPlus.isPlayerOnline(target)) {
-            networkPlus.sendNetworkMessage(target, String.format(NetworkConfig.FORMAT_MSG_TARGET, server, sender, message));
+		if(NetworkPlus.isPlayerOnline(target)) {
+            NetworkPlus.sendNetworkMessage(target, formatTarget);
+            NetworkPlus.sendNetworkMessage(sender, formatSender);
 		} else {
 			BukkitUtils.sendMessage(sender, "&cThis player is not online.");
-			return true;
 		}
-
-        networkPlus.sendNetworkMessage(sender, String.format(NetworkConfig.FORMAT_MSG_SENDER, server, target, message));
 
 		return true;
 

@@ -38,12 +38,12 @@ public class CommandServerConnect extends NetworkCommand {
 		}
 
 		//Checks if the message went through before sending them there.
-		if(!NetworkPlus.getInstance().isServerOnline(server)) {
+		if(!NetworkPlus.isServerOnline(server)) {
             BukkitUtils.sendMessage(sender, "&cThis server is offline or does not exist.");
 			return true;
 		}
 
-		NetworkPlus.getInstance().sendPlayer(player.getName(), server);
+		NetworkPlus.sendPlayer(player.getName(), server);
 
 		return true;
 

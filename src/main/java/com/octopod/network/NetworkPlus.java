@@ -122,7 +122,7 @@ public class NetworkPlus {
      * Gets all the players on the network as a Set.
      * @return The Set containing all the players, or an empty Set if the request somehow fails.
      */
-    public List<String> getNetworkedPlayers() {
+    public static List<String> getNetworkedPlayers() {
         return getConnection().getPlayers();
     }
 
@@ -130,7 +130,7 @@ public class NetworkPlus {
      * Gets all the players on the network according to the cache.
      * @return The Set containing all the players.
      */
-    public Set<String> getCachedPlayers() {
+    public static Set<String> getCachedPlayers() {
         return NetworkPlayerCache.getPlayers();
     }
 
@@ -139,7 +139,7 @@ public class NetworkPlus {
      * @param player The name of the player.
      * @return If the player is online.
      */
-    public boolean isPlayerOnline(String player) {
+    public static boolean isPlayerOnline(String player) {
         return getNetworkedPlayers().contains(player);
     }
 
@@ -152,19 +152,19 @@ public class NetworkPlus {
      * @param server The username of the server.
      * @return If the server is online.
      */
-    public boolean isServerOnline(String server) {
+    public static boolean isServerOnline(String server) {
         return getConnection().serverExists(server);
     }
 
-    public boolean sendPlayer(String player, String server) {
+    public static boolean sendPlayer(String player, String server) {
         return getConnection().sendPlayer(player, server);
     }
 
-    public void sendAllPlayers(String serverFrom, String server) {
+    public static void sendAllPlayers(String serverFrom, String server) {
         sendMessage(serverFrom, NetworkConfig.getChannel("SENDALL"), server);
     }
 
-    public void sendAllPlayers(String server) {
+    public static void sendAllPlayers(String server) {
         broadcastMessage(NetworkConfig.getChannel("SENDALL"), server);
     }
 
@@ -172,15 +172,15 @@ public class NetworkPlus {
     //  Request methods
     //=========================================================================================//
 
-    public void sendMessage(String server, String channel, String message) {
+    public static void sendMessage(String server, String channel, String message) {
         getConnection().sendMessage(server, channel, message);
     }
 
-    public void sendMessage(List<String> servers, String channel, String message) {
+    public static void sendMessage(List<String> servers, String channel, String message) {
         getConnection().sendMessage(servers, channel, message);
     }
 
-    public void broadcastMessage(String channel, String message) {
+    public static void broadcastMessage(String channel, String message) {
         getConnection().broadcastMessage(channel, message);
     }
 
@@ -188,7 +188,7 @@ public class NetworkPlus {
      * Tells a server (using this plugin) to broadcast a raw message.
      * @param message The message to send.
      */
-    public void broadcastNetworkMessage(String server, String message) {
+    public static void broadcastNetworkMessage(String server, String message) {
         sendMessage(server, NetworkConfig.getChannel("BROADCAST"), message);
     }
 
@@ -196,7 +196,7 @@ public class NetworkPlus {
      * Tells every server (using this plugin) to broadcast a raw message.
      * @param message The message to send.
      */
-    public void broadcastNetworkMessage(String message) {
+    public static void broadcastNetworkMessage(String message) {
         broadcastMessage(NetworkConfig.getChannel("BROADCAST"), message);
     }
 
@@ -206,7 +206,7 @@ public class NetworkPlus {
      * @param player The name of the player.
      * @param message The message to send.
      */
-    public void sendNetworkMessage(String player, String message) {
+    public static void sendNetworkMessage(String player, String message) {
         if(BukkitUtils.isPlayerOnline(player)) {
             BukkitUtils.sendMessage(player, message);
         } else {
@@ -219,7 +219,7 @@ public class NetworkPlus {
      * This method should only be called only when absolutely needed, as the info returned never changes.
      * This might cause messages to be recieved on the CHANNEL_INFO_RESPONSE channel.
      */
-    public void requestServerInfo() {
+    public static void requestServerInfo() {
         getLogger().verbose("Requesting info from all servers");
         broadcastMessage(NetworkConfig.getChannel("INFO_REQUEST"), gson().toJson(getServerInfo()));
     }
@@ -230,7 +230,7 @@ public class NetworkPlus {
      * This might cause messages to be recieved on the CHANNEL_INFO_RESPONSE channel.
      * @param servers The list of servers to message.
      */
-    public void requestServerInfo(List<String> servers) {
+    public static void requestServerInfo(List<String> servers) {
         getLogger().verbose("Requesting info from: &a" + servers);
         sendMessage(servers, NetworkConfig.getChannel("INFO_REQUEST"), gson().toJson(getServerInfo()));
     }
@@ -240,7 +240,7 @@ public class NetworkPlus {
      * This method should only be called only when absolutely needed, as the PlayerCache should automatically change it.
      * This might cause messages to be recieved on the CHANNEL_PLAYERLIST_RESPONSE channel.
      */
-    public void requestPlayerList() {
+    public static void requestPlayerList() {
         getLogger().verbose("Requesting playerlist from all servers");
         broadcastMessage(NetworkConfig.getChannel("PLAYERLIST_REQUEST"), gson().toJson(BukkitUtils.getPlayerNames()));
     }
@@ -249,7 +249,7 @@ public class NetworkPlus {
      * Broadcasts a message telling every server to uncache a server.
      * @param server
      */
-    public void requestUncache(String server) {
+    public static void requestUncache(String server) {
         broadcastMessage(NetworkConfig.getChannel("UNCACHE"), server);
     }
 }

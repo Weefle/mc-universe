@@ -41,10 +41,10 @@ public class CommandServerSendAll extends NetworkCommand {
 
 		if(from == null) {
 			BukkitUtils.sendMessage(sender, "&7Sending all players to server &6" + server + "&7...");
-			NetworkPlus.getInstance().sendAllPlayers(server);
+			NetworkPlus.sendAllPlayers(server);
 		} else {
 			BukkitUtils.sendMessage(sender, "&7Sending all players from server &6" + from + "&7 to server &6 " + server + "&7...");
-            NetworkPlus.getInstance().sendAllPlayers(from, server);
+            NetworkPlus.sendAllPlayers(from, server);
 		}
 
 		return true;

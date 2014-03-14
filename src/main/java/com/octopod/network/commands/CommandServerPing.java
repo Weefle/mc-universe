@@ -29,12 +29,12 @@ public class CommandServerPing extends NetworkCommand {
 
 		BukkitUtils.sendMessage(sender, "&7Attempting to ping the server &b'" + server + "'");
 
-		if(!NetworkPlus.getInstance().isServerOnline(server)) {
+		if(!NetworkPlus.isServerOnline(server)) {
 			BukkitUtils.sendMessage(sender, "&cThis server does not exist.");
 			return true;
 		}
 
-        NetworkPlus.getInstance().requestServerInfo(Arrays.asList(server));
+        NetworkPlus.requestServerInfo(Arrays.asList(server));
 
         final SyncServerInfoListener listener = new SyncServerInfoListener(new EventListener<ServerInfoEvent>() {
 

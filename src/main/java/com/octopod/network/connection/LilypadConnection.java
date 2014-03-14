@@ -33,8 +33,10 @@ public class LilypadConnection extends NetworkConnection {
     /**
      * A nested class for Lilypad's listeners, which will just redirect to our event system.
      */
-    private static class Listener
+    public static class Listener
     {
+        private Listener() {}
+
         @EventListener
         public void messageReceived(MessageEvent event) {
 

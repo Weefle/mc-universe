@@ -150,13 +150,11 @@ public class NetworkListener {
 
         logger.verbose("&7Message: &a" + sender + "&7 on &b" + channel);
 
-        NetworkPlus networkPlus = NetworkPlus.getInstance();
-
         //Tells the server to send all players on this server to the server specified in 'message'
 		if(channel.equals(NetworkConfig.getChannel("SENDALL")))
 		{
             for(String player: BukkitUtils.getPlayerNames())
-                networkPlus.sendPlayer(player, message);
+                NetworkPlus.sendPlayer(player, message);
 		}
 
         //Tells the server to send a message to a player. Information included in 'message'
@@ -202,7 +200,7 @@ public class NetworkListener {
             //Send back the message if it's a request
             if(channel.equals(NetworkConfig.getChannel("INFO_REQUEST"))) {
                 if(!sender.equals(NetworkPlus.getUsername())) {
-                    networkPlus.sendMessage(sender, NetworkConfig.getChannel("INFO_RESPONSE"),
+                    NetworkPlus.sendMessage(sender, NetworkConfig.getChannel("INFO_RESPONSE"),
                             NetworkPlus.gson().toJson(NetworkPlus.getServerInfo())
                     );
                 }
@@ -225,7 +223,7 @@ public class NetworkListener {
 
             if(channel.equals(NetworkConfig.getChannel("PLAYERLIST_REQUEST"))) {
                 if(!sender.equals(NetworkPlus.getUsername())) {
-                    networkPlus.sendMessage(sender, NetworkConfig.getChannel("PLAYERLIST_RESPONSE"),
+                    NetworkPlus.sendMessage(sender, NetworkConfig.getChannel("PLAYERLIST_RESPONSE"),
                             NetworkPlus.gson().toJson(BukkitUtils.getPlayerNames())
                     );
                 }

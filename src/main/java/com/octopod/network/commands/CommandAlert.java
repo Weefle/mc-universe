@@ -23,7 +23,7 @@ public class CommandAlert extends NetworkCommand {
 
 		String message = StringUtils.join(args, " ");
 
-		NetworkPlus.getInstance().broadcastNetworkMessage(String.format(NetworkConfig.FORMAT_ALERT, message));
+		NetworkPlus.broadcastNetworkMessage(String.format(NetworkConfig.FORMAT_ALERT, message));
 
 		return true;
 

@@ -39,9 +39,7 @@ public class SignLocation {
         if(!(o instanceof SignLocation))
             return false;
         SignLocation loc = (SignLocation)o;
-        if(loc.X() == x && loc.Y() == y && loc.Z() == z && loc.World().equals(world))
-            return true;
-        return false;
+        return (loc.X() == x && loc.Y() == y && loc.Z() == z && loc.World().equals(world));
     }
 
     @Override

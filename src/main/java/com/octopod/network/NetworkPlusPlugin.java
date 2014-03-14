@@ -100,8 +100,8 @@ public class NetworkPlusPlugin extends JavaPlugin {
      * Requests server information and playerlists from connected servers.
      */
     public void scan() {
-        NetworkPlus.getInstance().requestServerInfo();
-        NetworkPlus.getInstance().requestPlayerList();
+        NetworkPlus.requestServerInfo();
+        NetworkPlus.requestPlayerList();
     }
 
     public void disablePlugin() {
@@ -114,22 +114,24 @@ public class NetworkPlusPlugin extends JavaPlugin {
      */
 	public void reload() {
         NetworkPlusPlugin plugin = NetworkPlusPlugin.instance;
-        plugin.disable();
-        plugin.enable(false);
+        plugin.onDisable();
+        plugin.onEnable();
     }
 
-    private void disable() {
+    @Override
+    public void onDisable() {
 
         NetworkServerCache.reset();
         NetworkCommandCache.reset();
         NetworkPlayerCache.reset();
 
         NetworkPlus.getEventManager().unregisterAll();
-        NetworkPlus.getInstance().requestUncache(getUsername());
+        NetworkPlus.requestUncache(getUsername());
 
     }
 
-    private void enable(boolean startup) {
+	@Override
+	public void onEnable() {
 
         instance = this;
 
@@ -177,16 +179,7 @@ public class NetworkPlusPlugin extends JavaPlugin {
 
         new SignPlugin();
 
-    }
-
-	@Override
-	public void onEnable() {
-		enable(true);
 	}
 
-	@Override
-	public void onDisable() {
-		disable();
-	}
 
 }

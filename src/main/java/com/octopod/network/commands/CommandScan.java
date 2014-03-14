@@ -2,7 +2,6 @@ package com.octopod.network.commands;
 
 import com.octopod.network.NetworkPermission;
 import com.octopod.network.NetworkPlus;
-import com.octopod.network.NetworkPlusPlugin;
 import org.bukkit.command.CommandSender;
 
 /**
