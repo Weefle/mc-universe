@@ -81,6 +81,10 @@ public class BukkitUtils {
         Bukkit.broadcastMessage(colorize(message));
     }
 
+    public static Player getPlayer(String player) {
+        return Bukkit.getPlayer(player);
+    }
+
     public static Player[] getPlayers() {
         return Bukkit.getOnlinePlayers();
     }
