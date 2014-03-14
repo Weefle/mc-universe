@@ -32,9 +32,9 @@ public class SignBukkitListener implements Listener {
             String server = event.getLine(1);
 
             if(NetworkPlus.isServerOnline(server)) {
-                SignPlugin.self.getDatabase().addSign(server, loc);
-                SignPlugin.self.save();
-                SignPlugin.self.updateSign(event, new SignFormat(server));
+                SignPlugin.instance.getDatabase().addSign(server, loc);
+                SignPlugin.instance.saveDatabase();
+                SignPlugin.instance.updateSign(event, new SignFormat(server));
             } else {
                 logger.info("&7Server &a'" + server + "'&7 doesn't exist or isn't online!");
             }
@@ -47,13 +47,13 @@ public class SignBukkitListener implements Listener {
     public void onBlockBreak(BlockBreakEvent event) {
 
         Location loc = event.getBlock().getLocation();
-        SignDatabase db = SignPlugin.self.getDatabase();
+        SignDatabase db = SignPlugin.instance.getDatabase();
         if(db.getSign(loc) != null) {
             if(!event.getPlayer().hasPermission("network.sign.remove")) {
                 event.setCancelled(true);
             } else {
                 db.removeSign(loc);
-                SignPlugin.self.save();
+                SignPlugin.instance.saveDatabase();
             }
         }
 
@@ -65,7 +65,7 @@ public class SignBukkitListener implements Listener {
         if(event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 
             Location loc = event.getClickedBlock().getLocation();
-            SignDatabase db = SignPlugin.self.getDatabase();
+            SignDatabase db = SignPlugin.instance.getDatabase();
             if(db.getSign(loc) != null) {
                 NetworkCommandCache.getCommand(CommandServerConnect.class).onCommand(event.getPlayer(), "", new String[] {db.getSign(loc)});
             }

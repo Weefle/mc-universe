@@ -6,6 +6,7 @@ import org.bukkit.Location;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -47,6 +48,10 @@ public class SignDatabase {
             if(e.getValue().contains(new SignLocation(loc))) return e.getKey();
         }
         return null;
+    }
+
+    public Map<String, ArrayList<SignLocation>> getSignMap() {
+        return servers;
     }
 
     public ArrayList<SignLocation> getSigns(String server) {

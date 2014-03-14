@@ -9,6 +9,9 @@ import org.bukkit.block.Sign;
 import org.bukkit.event.block.SignChangeEvent;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Octopod
@@ -16,18 +19,47 @@ import java.io.*;
  */
 public class SignPlugin {
 
-    public static SignPlugin self;
+    /**
+     * The file to use for sign location storage.
+     */
     private static final File databaseFile = new File(NetworkPlus.getDataFolder(), "Signs/signs.db");
+
+    /**
+     * The current SignPlugin instance.
+     */
+    public static SignPlugin instance;
+
+    /**
+     * The current SignDatabase instance.
+     */
     private static SignDatabase database;
 
-    public void updateSign(SignChangeEvent event, SignFormat format) {
+    public static void resetDatabase() {
+        NetworkPlus.getLogger().info("Resetting &6NetSign &7database...");
+        database = new SignDatabase();
+        saveDatabase();
+    }
+
+    public static SignDatabase getDatabase() {
+        return database;
+    }
+
+    public static void saveDatabase() {
+        try {
+            Util.write(databaseFile, NetworkPlus.gson().toJson(database));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void updateSign(SignChangeEvent event, SignFormat format) {
         event.setLine(0, format.getLine(0));
         event.setLine(1, format.getLine(1));
         event.setLine(2, format.getLine(2));
         event.setLine(3, format.getLine(3));
     }
 
-    public void updateSign(SignLocation loc, SignFormat format) {
+    public static void updateSign(SignLocation loc, SignFormat format) {
         Location location = loc.toLocation();
         try {
             Sign sign = (Sign)location.getBlock().getState();
@@ -41,12 +73,24 @@ public class SignPlugin {
         }
     }
 
+    public static void updateAllSigns() {
+        for(Map.Entry<String, ArrayList<SignLocation>> e: getDatabase().getSignMap().entrySet()) {
+
+            String server = e.getKey();
+            SignFormat format = new SignFormat(server);
+            List<SignLocation> signLocations = e.getValue();
+
+            for(SignLocation signLocation: signLocations)
+                updateSign(signLocation, format);
+        }
+    }
+
     public SignPlugin() {
 
-        self = this;
+        instance = this;
 
         if(!databaseFile.exists()) {
-            reset();
+            resetDatabase();
         } else {
             try {
                 FileInputStream is = new FileInputStream(databaseFile);
@@ -57,33 +101,17 @@ public class SignPlugin {
                 database = NetworkPlus.gson().fromJson(sb.toString(), SignDatabase.class);
             } catch (Exception e) {
                 NetworkPlus.getLogger().info("An error has occured while deserializing signs.db!");
-                reset();
+                resetDatabase();
             }
         }
 
         Bukkit.getPluginManager().registerEvents(new SignBukkitListener(), NetworkPlus.getPlugin());
         NetworkPlus.getEventManager().registerListener(new SignNetworkListener());
 
+        updateAllSigns();
+
         NetworkPlus.getLogger().info("&6NetSign &7functionality experimental!");
 
-    }
-
-    public void reset() {
-        NetworkPlus.getLogger().info("Resetting &6NetSign &7database...");
-        database = new SignDatabase();
-        save();
-    }
-
-    public SignDatabase getDatabase() {
-        return database;
-    }
-
-    public void save() {
-        try {
-            Util.write(databaseFile, NetworkPlus.gson().toJson(database));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
 }

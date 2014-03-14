@@ -15,10 +15,10 @@ public class SignNetworkListener {
 
     private void updateSigns(String server) {
         SignFormat format = new SignFormat(server);
-        ArrayList<SignLocation> signs = SignPlugin.self.getDatabase().getSigns(server);
+        ArrayList<SignLocation> signs = SignPlugin.instance.getDatabase().getSigns(server);
         if(signs != null) {
             for(SignLocation sign: signs) {
-                SignPlugin.self.updateSign(sign, format);
+                SignPlugin.instance.updateSign(sign, format);
             }
         }
     }
