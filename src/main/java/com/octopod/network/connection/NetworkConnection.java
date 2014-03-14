@@ -20,6 +20,8 @@ public abstract class NetworkConnection {
      */
     public abstract String getUsername();
 
+    public abstract boolean serverExists(String server);
+
     /**
      * Sends a message to another server on a channel.
      * Should fire the MessageRecievedEvent event on the target server.
@@ -32,6 +34,8 @@ public abstract class NetworkConnection {
     public abstract void sendMessage(List<String> servers, String channel, String message);
 
     public abstract void broadcastMessage(String channel, String message);
+
+    public abstract List<String> getPlayers();
 
     /**
      * Sends a player to a server.
