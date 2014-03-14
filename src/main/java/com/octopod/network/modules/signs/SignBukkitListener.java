@@ -27,11 +27,11 @@ public class SignBukkitListener implements Listener {
         Block block = event.getBlock();
         Location loc = block.getLocation();
 
-        if(event.getLine(0).equals("net+sign") && event.getPlayer().hasPermission("network.sign.create")) {
+        if(event.getLine(0).equals("netsign") && event.getPlayer().hasPermission("network.sign.create")) {
 
             String server = event.getLine(1);
 
-            if(NetworkPlus.getInstance().isServerOnline(server)) {
+            if(NetworkPlus.isServerOnline(server)) {
                 SignPlugin.self.getDatabase().addSign(server, loc);
                 SignPlugin.self.save();
                 SignPlugin.self.updateSign(event, new SignFormat(server));

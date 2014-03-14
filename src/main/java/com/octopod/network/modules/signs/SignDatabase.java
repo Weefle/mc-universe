@@ -39,7 +39,7 @@ public class SignDatabase {
             servers.put(server, new ArrayList<SignLocation>());
 
         servers.get(server).add(new SignLocation(loc));
-        logger.info("&6Net+ &7sign registered @ &e" + new SignLocation(loc) + "&7!");
+        logger.info("&6NetSign &7registered @ &e" + new SignLocation(loc) + "&7!");
     }
 
     public String getSign(Location loc) {
@@ -57,7 +57,7 @@ public class SignDatabase {
         for(ArrayList<SignLocation> locs: servers.values()) {
             if(locs.contains(new SignLocation(loc))) {
                 locs.remove(new SignLocation(loc));
-                logger.info("&6Net+ &7sign unregistered @ &e" + new SignLocation(loc) + "&7!");
+                logger.info("&6NetSign &7unregistered @ &e" + new SignLocation(loc) + "&7!");
                 break;
             }
         }

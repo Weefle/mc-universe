@@ -64,12 +64,12 @@ public class SignPlugin {
         Bukkit.getPluginManager().registerEvents(new SignBukkitListener(), NetworkPlus.getPlugin());
         NetworkPlus.getEventManager().registerListener(new SignNetworkListener());
 
-        NetworkPlus.getLogger().info("&6Net+sign &7module loaded. " + "&a" + database.totalSigns() + "&7 sign(s) found.");
+        NetworkPlus.getLogger().info("&6NetSign &7functionality experimental!");
 
     }
 
     public void reset() {
-        NetworkPlus.getLogger().info("Resetting &6Net+sign &7database...");
+        NetworkPlus.getLogger().info("Resetting &6NetSign &7database...");
         database = new SignDatabase();
         save();
     }
