@@ -17,7 +17,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.*;
 
-public class BukkitListeners implements Listener {
+public class BukkitListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onCommand(PlayerCommandPreprocessEvent event) {

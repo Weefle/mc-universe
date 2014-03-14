@@ -6,8 +6,7 @@ import com.octopod.network.cache.NetworkServerCache;
 import com.octopod.network.commands.*;
 import com.octopod.network.connection.LilypadConnection;
 import com.octopod.network.connection.NetworkConnection;
-import com.octopod.network.listener.BukkitListeners;
-import com.octopod.network.listener.DebugListener;
+import com.octopod.network.listener.BukkitListener;
 import com.octopod.network.listener.NetworkListener;
 import com.octopod.network.modules.signs.SignPlugin;
 import org.bukkit.Bukkit;
@@ -38,9 +37,23 @@ public class NetworkPlusPlugin extends JavaPlugin {
      */
 	private NetworkConnection connection;
 
-	BukkitListeners bukkitListeners = null;
-	NetworkListener messageListener = null;
-	DebugListener debugListener = null;
+    /**
+     * The current instance of listeners we use for Bukkit.
+     */
+	private BukkitListener bukkitListener = null;
+
+    /**
+     * The current instance of system listeners we use for this plugin.
+     */
+	private NetworkListener networkListener = null;
+
+    public BukkitListener getBukkitListener() {
+        return bukkitListener;
+    }
+
+    public NetworkListener getNetworkListener() {
+        return networkListener;
+    }
 
     /**
      * Gets this server's current username.
@@ -120,18 +133,18 @@ public class NetworkPlusPlugin extends JavaPlugin {
     private void enable(boolean startup) {
 
         instance = this;
+
         new NetworkPlus(this);
+
         connection = new LilypadConnection(this);
         logger = new NetworkLogger();
 
         //Register all the listeners
-        messageListener = new NetworkListener();
-        bukkitListeners = new BukkitListeners();
-        debugListener = new DebugListener();
+        networkListener = new NetworkListener();
+        bukkitListener = new BukkitListener();
 
-        NetworkPlus.getEventManager().registerListener(messageListener);
-        NetworkPlus.getEventManager().registerListener(debugListener);
-        Bukkit.getPluginManager().registerEvents(bukkitListeners, this);
+        NetworkPlus.getEventManager().registerListener(networkListener);
+        Bukkit.getPluginManager().registerEvents(bukkitListener, this);
 
         //Configuration loading
         NetworkConfig.reloadConfig();
