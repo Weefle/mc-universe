@@ -19,22 +19,43 @@ import com.octopod.network.events.server.ServerPlayerListEvent;
 import com.octopod.network.events.server.ServerUncacheEvent;
 import com.octopod.network.util.BukkitUtils;
 
+/**
+ * @author Octopod
+ */
 public class NetworkListener {
 
+    /**
+     * The current NetworkLogger instance. Will be used to log messages.
+     */
     private NetworkLogger logger = NetworkPlus.getLogger();
 
+    /**
+     * Listens for when this plugin is connected according to the NetworkConnection instance.
+     * This method should request ServerInfo and playerlists from every server.
+     * @param event
+     */
     @EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
 	public void networkConnected(NetworkConnectedEvent event) {
-        logger.debug("&aSuccessfully connected to LilyPad!");
+        logger.debug("&aSuccessfully connected!");
         NetworkPlus.getPlugin().scan();
 	}
 
+    /**
+     * Listens for when a hub server is found.
+     * This method should cache the found hub server under the appropriate priority.
+     * @param event
+     */
     @EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
     public void networkHubCache(NetworkHubCacheEvent event) {
         NetworkHubCache.addHub(event.getServer(), event.getPriority());
         logger.info("Server &a" + event.getServer() + "&7 registered as hub @ priority &e" + event.getPriority());
     }
 
+    /**
+     * Listens for when a playerlist is recieved from any server.
+     * This method should cache the playerlist under the server it was sent from.
+     * @param event
+     */
     @EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
     public void serverPlayerListEvent(ServerPlayerListEvent event) {
         String server = event.getServer();
@@ -45,6 +66,11 @@ public class NetworkListener {
         logger.debug("Recieved &b" + players.length + " players &7from &a" + server);
     }
 
+    /**
+     * Listens for when a ServerInfo object is recieved from any server.
+     * This method should cache the ServerInfo under the server it was sent from.
+     * @param event
+     */
 	@EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
 	public void serverInfoEvent(ServerInfoEvent event) {
 		String server = event.getSender();
@@ -67,29 +93,54 @@ public class NetworkListener {
 
 	}
 
+    /**
+     * Listens for when an uncache request is sent from any server.
+     * This method should uncache the requested server.
+     * @param event
+     */
     @EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
 	public void serverUncacheEvent(ServerUncacheEvent event) {
 		NetworkServerCache.removeServer(event.getUncachedServer());
 	}
 
+    /**
+     * Listens for when any player joins the network.
+     * This method should cache the player into the server they joined into.
+     * @param event
+     */
     @EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
 	public void playerJoinEvent(NetworkPlayerJoinEvent event) {
         logger.debug("&b" + event.getPlayer() + " &7joined network through &a" + event.getServer());
 		NetworkPlayerCache.putPlayer(event.getPlayer(), event.getServer());
 	}
 
+    /**
+     * Listens for when any player leaves the network.
+     * This method should uncache the player.
+     * @param event
+     */
     @EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
 	public void playerLeaveEvent(NetworkPlayerLeaveEvent event) {
         logger.debug("&b" + event.getPlayer() + " &7left network through &a" + event.getServer());
 		NetworkPlayerCache.removePlayer(event.getPlayer());
 	}
 
+    /**
+     * Listens for when any player moves from one server to another.
+     * This method should change the player's entry in the cache to the new server.
+     * @param event
+     */
     @EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
 	public void playerRedirectEvent(NetworkPlayerRedirectEvent event) {
         logger.debug("&b" + event.getPlayer() + " &7redirected from &a" + event.getFromServer() + "&7 to &a" + event.getServer());
 		NetworkPlayerCache.putPlayer(event.getPlayer(), event.getServer());
 	}
 
+    /**
+     * Listens for when any message is recieved from any server.
+     * This method is a gateway to other events and features.
+     * @param event
+     */
     @EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
 	public void messageRecieved(MessageEvent event) {
 
