@@ -1,5 +1,5 @@
 name: NetworkPlus
-main: com.octopod.network.NetworkPlugin
+main: com.octopod.network.NetworkPlusPlugin
 version: ${version}
 softdepend: ['LilyPad-Connect']
 permissions:
