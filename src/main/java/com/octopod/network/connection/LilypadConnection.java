@@ -5,7 +5,7 @@ import com.octopod.network.NetworkPlus;
 import com.octopod.network.NetworkPlusPlugin;
 import com.octopod.network.events.EventEmitter;
 import com.octopod.network.events.network.NetworkConnectedEvent;
-import com.octopod.network.util.BukkitUtils;
+import com.octopod.network.bukkit.BukkitUtils;
 
 import lilypad.client.connect.api.Connect;
 import lilypad.client.connect.api.event.EventListener;

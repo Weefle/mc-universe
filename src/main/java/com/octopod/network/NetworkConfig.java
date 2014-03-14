@@ -1,7 +1,6 @@
 package com.octopod.network;
 
-import com.octopod.network.util.BukkitUtils;
-import com.octopod.network.util.Util;
+import com.octopod.network.bukkit.BukkitUtils;
 import com.octopod.octolib.common.IOUtils;
 import com.octopod.octolib.yaml.YamlConfiguration;
 import org.bukkit.Bukkit;

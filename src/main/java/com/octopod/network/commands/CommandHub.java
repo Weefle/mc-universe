@@ -2,9 +2,8 @@ package com.octopod.network.commands;
 
 import com.octopod.network.NetworkPermission;
 import com.octopod.network.NetworkPlus;
-import com.octopod.network.NetworkPlusPlugin;
 import com.octopod.network.cache.NetworkHubCache;
-import com.octopod.network.util.BukkitUtils;
+import com.octopod.network.bukkit.BukkitUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

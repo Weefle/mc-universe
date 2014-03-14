@@ -1,4 +1,4 @@
-package com.octopod.network.listener;
+package com.octopod.network;
 
 import com.google.gson.JsonSyntaxException;
 import com.octopod.network.*;
@@ -17,7 +17,7 @@ import com.octopod.network.events.relays.MessageEvent;
 import com.octopod.network.events.server.ServerInfoEvent;
 import com.octopod.network.events.server.ServerPlayerListEvent;
 import com.octopod.network.events.server.ServerUncacheEvent;
-import com.octopod.network.util.BukkitUtils;
+import com.octopod.network.bukkit.BukkitUtils;
 
 /**
  * @author Octopod

@@ -1,4 +1,4 @@
-package com.octopod.network.util;
+package com.octopod.network.bukkit;
 
 import com.octopod.network.NetworkPlus;
 import com.octopod.network.NetworkPlusPlugin;

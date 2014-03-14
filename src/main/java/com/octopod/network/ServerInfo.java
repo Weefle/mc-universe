@@ -1,7 +1,6 @@
 package com.octopod.network;
 
-import com.octopod.network.util.BukkitUtils;
-import com.octopod.octolib.common.StringUtils;
+import com.octopod.network.bukkit.BukkitUtils;
 import org.bukkit.Bukkit;
 
 import java.util.Arrays;

@@ -2,9 +2,8 @@ package com.octopod.network.commands;
 
 import com.octopod.network.NetworkConfig;
 import com.octopod.network.NetworkPlus;
-import com.octopod.network.NetworkPlusPlugin;
 import com.octopod.network.events.EventListener;
-import com.octopod.network.util.BukkitUtils;
+import com.octopod.network.bukkit.BukkitUtils;
 import com.octopod.network.NetworkPermission;
 import com.octopod.network.events.server.ServerInfoEvent;
 import com.octopod.network.events.synclisteners.SyncServerInfoListener;

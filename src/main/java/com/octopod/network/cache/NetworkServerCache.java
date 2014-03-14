@@ -1,9 +1,7 @@
 package com.octopod.network.cache;
 
-import com.octopod.network.NetworkLogger;
 import com.octopod.network.NetworkPlus;
 import com.octopod.network.ServerInfo;
-import com.octopod.network.util.BukkitUtils;
 
 import java.util.*;
 

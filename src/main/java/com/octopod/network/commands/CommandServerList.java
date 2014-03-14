@@ -3,7 +3,7 @@ package com.octopod.network.commands;
 import com.octopod.network.*;
 import com.octopod.network.cache.NetworkPlayerCache;
 import com.octopod.network.cache.NetworkServerCache;
-import com.octopod.network.util.BukkitUtils;
+import com.octopod.network.bukkit.BukkitUtils;
 import com.octopod.octolib.minecraft.ChatBuilder;
 import com.octopod.octolib.minecraft.ChatUtils;
 import com.octopod.octolib.minecraft.bukkit.BukkitPlayer;

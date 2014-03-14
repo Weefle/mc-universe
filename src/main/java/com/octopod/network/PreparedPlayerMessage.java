@@ -1,6 +1,6 @@
 package com.octopod.network;
 
-import com.octopod.network.util.BukkitUtils;
+import com.octopod.network.bukkit.BukkitUtils;
 
 /**
  * @author Octopod

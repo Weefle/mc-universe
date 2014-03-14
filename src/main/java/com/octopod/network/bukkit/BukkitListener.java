@@ -1,8 +1,8 @@
-package com.octopod.network.listener;
+package com.octopod.network.bukkit;
 
 import com.octopod.network.NetworkConfig;
 import com.octopod.network.NetworkPlus;
-import com.octopod.network.util.BukkitUtils;
+import com.octopod.network.bukkit.BukkitUtils;
 import com.octopod.network.cache.NetworkCommandCache;
 import com.octopod.network.cache.NetworkHubCache;
 import com.octopod.network.cache.NetworkPlayerCache;

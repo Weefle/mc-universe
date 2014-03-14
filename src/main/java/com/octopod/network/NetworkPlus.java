@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.octopod.network.cache.NetworkPlayerCache;
 import com.octopod.network.connection.NetworkConnection;
 import com.octopod.network.events.EventManager;
-import com.octopod.network.util.BukkitUtils;
+import com.octopod.network.bukkit.BukkitUtils;
 
 import java.io.File;
 import java.util.List;
