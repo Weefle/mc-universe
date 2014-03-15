@@ -37,7 +37,8 @@ public class ServerInfo {
             Bukkit.getServer().getMaxPlayers(), //Server's max players
             BukkitUtils.getWhitelistedPlayerNames(), //Server's whitelisted players
             NetworkConfig.isHub() ? NetworkConfig.getHubPriority() : -1, //Server's hub priority, or -1 if is not a hub.
-            NetworkPlus.getPluginVersion() //Server's plugin version. (<build>-<commit>)
+            NetworkPlus.getPluginVersion(), //Server's plugin version. (<build>-<commit>)
+            BukkitUtils.getPlayerNames() //Server's online players.
         );
     }
 
@@ -58,6 +59,7 @@ public class ServerInfo {
     public String[] getWhitelistedPlayers() {return get(4, new String[0], String[].class);}
     public Integer  getHubPriority()        {return getInt(5, -1);}
     public String   getPluginVersion()      {return getIndex(6);}
+    public String[] getPlayers()            {return get(7, new String[0], String[].class);}
 
     //Tries to get a String from the index, and returns "" if it doesn't exist.
     private String getIndex(int n) {

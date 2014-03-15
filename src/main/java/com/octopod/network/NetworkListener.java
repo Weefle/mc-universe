@@ -182,8 +182,8 @@ public class NetworkListener {
 		}
 
 		/**
-		 * Info Request: Servers that recieve this message will send back server information.
-		 *  Use synchronized listeners to wait for the server's response.
+		 * Info Request
+         * Servers that recieve this message will send back server information.
 		 */
 		if(channel.equals(NetworkConfig.getChannel("INFO_REQUEST")) || channel.equals(NetworkConfig.getChannel("INFO_RESPONSE")))
         {
@@ -207,16 +207,16 @@ public class NetworkListener {
             }
         }
 
-        //Playerlist Request
-
+        /**
+         * PlayerList Request
+         * Servers that recieve this message will send back the server's playerlist.
+         */
         if(channel.equals(NetworkConfig.getChannel("PLAYERLIST_REQUEST")) || channel.equals(NetworkConfig.getChannel("PLAYERLIST_RESPONSE")))
         {
             try {
-                String[] players = NetworkPlus.gson().fromJson(message, String[].class);
-                if(players == null) throw new NullPointerException("Server '" + sender + "' gave us a null playerlist, json: " + message);
-                EventEmitter.getEmitter().triggerEvent(
-                        new ServerPlayerListEvent(event.getSender(), players)
-                );
+                ServerPlayerListEvent playerListEvent = NetworkPlus.gson().fromJson(message, ServerPlayerListEvent.class);
+                if(event == null) throw new NullPointerException("Server '" + sender + "' gave us a null playerlist, json: " + message);
+                EventEmitter.getEmitter().triggerEvent(playerListEvent);
             } catch (JsonSyntaxException e) {
                 NetworkPlus.getLogger().info("Server &a" + sender + " &7has sent an invalid playerlist.");
             }
@@ -224,7 +224,7 @@ public class NetworkListener {
             if(channel.equals(NetworkConfig.getChannel("PLAYERLIST_REQUEST"))) {
                 if(!sender.equals(NetworkPlus.getUsername())) {
                     NetworkPlus.sendMessage(sender, NetworkConfig.getChannel("PLAYERLIST_RESPONSE"),
-                            NetworkPlus.gson().toJson(BukkitUtils.getPlayerNames())
+                            NetworkPlus.gson().toJson(new ServerPlayerListEvent(NetworkPlus.getUsername(), BukkitUtils.getPlayerNames()))
                     );
                 }
             }

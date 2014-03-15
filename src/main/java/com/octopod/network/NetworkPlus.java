@@ -143,6 +143,10 @@ public class NetworkPlus {
         return getNetworkedPlayers().contains(player);
     }
 
+    public static String findPlayer(String player) {
+        return NetworkPlayerCache.findPlayer(player);
+    }
+
     //=========================================================================================//
     //  Server Cache methods
     //=========================================================================================//
