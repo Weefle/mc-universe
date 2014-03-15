@@ -11,10 +11,10 @@ import org.bukkit.ChatColor;
  */
 public class SignFormat {
 
-    private static String F1 = "&4+------------+";
+    private static String F1 = "&4+----------+";
     private static String F2 = "&1%server";
     private static String F3 = "&1%players Players";
-    private static String F4 = "&4+------------+";
+    private static String F4 = "&4+----------+";
 
     public String L1, L2, L3, L4;
 
