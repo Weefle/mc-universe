@@ -101,7 +101,6 @@ public class NetworkPlusPlugin extends JavaPlugin {
      */
     public void scan() {
         NetworkPlus.requestServerInfo();
-        NetworkPlus.requestPlayerList();
     }
 
     public void disablePlugin() {

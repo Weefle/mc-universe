@@ -153,22 +153,19 @@ public class NetworkConfig {
         BukkitUtils.sendMessage(sender, "HUB_PRIORITY: &a" + HUB_PRIORITY);
         BukkitUtils.sendMessage(sender, "SERVER_NAME: &a\"" + getServerName() + "\"");
 
-        addChannel("PLAYER_JOIN",           "player.join");
-        addChannel("PLAYER_REDIRECT",       "player.redirect");
-        addChannel("PLAYER_LEAVE",          "player.leave");
+        addChannel("PLAYER_JOIN",       "player.join");
+        addChannel("PLAYER_REDIRECT",   "player.redirect");
+        addChannel("PLAYER_LEAVE",      "player.leave");
 
-        addChannel("SENDALL",               "sendall");
-        addChannel("MESSAGE",               "message");
-        addChannel("BROADCAST",             "broadcast");
+        addChannel("SENDALL",           "sendall");
+        addChannel("MESSAGE",           "message");
+        addChannel("BROADCAST",         "broadcast");
 
-        addChannel("INFO_REQUEST",          "info.request");
-        addChannel("INFO_RESPONSE",         "info");
+        addChannel("SERVER_REQUEST",    "server.request");
+        addChannel("SERVER_RESPONSE",   "server.response");
 
-        addChannel("PLAYERLIST_REQUEST",    "playerlist.request");
-        addChannel("PLAYERLIST_RESPONSE",   "playerlist.response");
-
-        addChannel("UNCACHE",               "uncache.request");
-        addChannel("UNCACHE_RESPONSE",      "uncache.relay");
+        addChannel("CLEAR_REQUEST",     "clear.request");
+        addChannel("CLEAR_RESPONSE",    "clear.response");
 
         BukkitUtils.sendMessage(sender, "&7Successfully loaded configuration!");
 

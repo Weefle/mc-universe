@@ -220,8 +220,8 @@ public class NetworkPlus {
 
     /**
      * Broadcasts a message to all servers telling them to send back their info.
-     * This method should only be called only when absolutely needed, as the info returned never changes.
-     * This might cause messages to be recieved on the CHANNEL_INFO_RESPONSE channel.
+     * This method should only be called only when absolutely needed.
+     * This might cause messages to be recieved on the SERVER_RESPONSE and SERVER_REQUEST channel.
      */
     public static void requestServerInfo() {
         getLogger().verbose("Requesting info from all servers");
@@ -229,24 +229,14 @@ public class NetworkPlus {
     }
 
     /**
-     * Broadcasts a message to a list of servers telling them to send back their info.
-     * This method should only be called only when absolutely needed, as the info returned never changes.
-     * This might cause messages to be recieved on the CHANNEL_INFO_RESPONSE channel.
-     * @param servers The list of servers to message.
+     * Broadcasts a message to a server telling it to send back their info.
+     * This method should only be called only when absolutely needed.
+     * This might cause messages to be recieved on the SERVER_RESPONSE and SERVER_REQUEST channel.
+     * @param server The server to request information from.
      */
-    public static void requestServerInfo(List<String> servers) {
-        getLogger().verbose("Requesting info from: &a" + servers);
-        sendMessage(servers, NetworkConfig.getChannel("INFO_REQUEST"), gson().toJson(getServerInfo()));
-    }
-
-    /**
-     * Broadcasts a message to a list of servers telling them to send back a list of their players.
-     * This method should only be called only when absolutely needed, as the PlayerCache should automatically change it.
-     * This might cause messages to be recieved on the CHANNEL_PLAYERLIST_RESPONSE channel.
-     */
-    public static void requestPlayerList() {
-        getLogger().verbose("Requesting playerlist from all servers");
-        broadcastMessage(NetworkConfig.getChannel("PLAYERLIST_REQUEST"), gson().toJson(BukkitUtils.getPlayerNames()));
+    public static void requestServerInfo(String server) {
+        getLogger().verbose("Requesting info from &a" + server);
+        sendMessage(server, NetworkConfig.getChannel("INFO_REQUEST"), gson().toJson(getServerInfo()));
     }
 
     /**

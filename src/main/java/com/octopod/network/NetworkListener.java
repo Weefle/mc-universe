@@ -1,7 +1,6 @@
 package com.octopod.network;
 
 import com.google.gson.JsonSyntaxException;
-import com.octopod.network.*;
 import com.octopod.network.cache.NetworkHubCache;
 import com.octopod.network.cache.NetworkPlayerCache;
 import com.octopod.network.cache.NetworkServerCache;
@@ -15,7 +14,6 @@ import com.octopod.network.events.player.NetworkPlayerLeaveEvent;
 import com.octopod.network.events.player.NetworkPlayerRedirectEvent;
 import com.octopod.network.events.relays.MessageEvent;
 import com.octopod.network.events.server.ServerInfoEvent;
-import com.octopod.network.events.server.ServerPlayerListEvent;
 import com.octopod.network.events.server.ServerUncacheEvent;
 import com.octopod.network.bukkit.BukkitUtils;
 
@@ -52,23 +50,9 @@ public class NetworkListener {
     }
 
     /**
-     * Listens for when a playerlist is recieved from any server.
-     * This method should cache the playerlist under the server it was sent from.
-     * @param event
-     */
-    @EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
-    public void serverPlayerListEvent(ServerPlayerListEvent event) {
-        String server = event.getServer();
-        String[] players = event.getPlayers();
-        for(String player: players) {
-            NetworkPlayerCache.putPlayer(player, server);
-        }
-        logger.debug("Recieved &b" + players.length + " players &7from &a" + server);
-    }
-
-    /**
      * Listens for when a ServerInfo object is recieved from any server.
      * This method should cache the ServerInfo under the server it was sent from.
+     * It should also update the NetworkPlayerCache.
      * @param event
      */
 	@EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
@@ -76,6 +60,11 @@ public class NetworkListener {
 		String server = event.getSender();
         ServerInfo serverInfo = event.getServerInfo();
 		NetworkServerCache.addServer(serverInfo);
+
+        //Updated player locations in the NetworkPlayerCache
+        for(String player: serverInfo.getPlayers()) {
+            NetworkPlayerCache.putPlayer(player, server);
+        }
 
         //priority at least 0 = this server is a hub
         int hubPriority = serverInfo.getHubPriority();
@@ -195,6 +184,9 @@ public class NetworkListener {
                 );
             } catch (JsonSyntaxException e) {
                 NetworkPlus.getLogger().info("Server &a" + sender + " &7has sent an invalid ServerInfo.");
+            } catch (NullPointerException e) {
+                NetworkPlus.getLogger().info("Server &a" + sender + " &7has sent a null ServerInfo.");
+                BukkitUtils.console(e.getMessage());
             }
 
             //Send back the message if it's a request
@@ -202,29 +194,6 @@ public class NetworkListener {
                 if(!sender.equals(NetworkPlus.getUsername())) {
                     NetworkPlus.sendMessage(sender, NetworkConfig.getChannel("INFO_RESPONSE"),
                             NetworkPlus.gson().toJson(NetworkPlus.getServerInfo())
-                    );
-                }
-            }
-        }
-
-        /**
-         * PlayerList Request
-         * Servers that recieve this message will send back the server's playerlist.
-         */
-        if(channel.equals(NetworkConfig.getChannel("PLAYERLIST_REQUEST")) || channel.equals(NetworkConfig.getChannel("PLAYERLIST_RESPONSE")))
-        {
-            try {
-                ServerPlayerListEvent playerListEvent = NetworkPlus.gson().fromJson(message, ServerPlayerListEvent.class);
-                if(event == null) throw new NullPointerException("Server '" + sender + "' gave us a null playerlist, json: " + message);
-                EventEmitter.getEmitter().triggerEvent(playerListEvent);
-            } catch (JsonSyntaxException e) {
-                NetworkPlus.getLogger().info("Server &a" + sender + " &7has sent an invalid playerlist.");
-            }
-
-            if(channel.equals(NetworkConfig.getChannel("PLAYERLIST_REQUEST"))) {
-                if(!sender.equals(NetworkPlus.getUsername())) {
-                    NetworkPlus.sendMessage(sender, NetworkConfig.getChannel("PLAYERLIST_RESPONSE"),
-                            NetworkPlus.gson().toJson(new ServerPlayerListEvent(NetworkPlus.getUsername(), BukkitUtils.getPlayerNames()))
                     );
                 }
             }

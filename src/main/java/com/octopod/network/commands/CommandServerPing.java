@@ -34,7 +34,7 @@ public class CommandServerPing extends NetworkCommand {
 			return true;
 		}
 
-        NetworkPlus.requestServerInfo(Arrays.asList(server));
+        NetworkPlus.requestServerInfo(server);
 
         final SyncServerInfoListener listener = new SyncServerInfoListener(new EventListener<ServerInfoEvent>() {
 
