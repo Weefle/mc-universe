@@ -3,6 +3,7 @@ package com.octopod.network;
 import com.google.gson.Gson;
 import com.octopod.network.cache.NetworkPlayerCache;
 import com.octopod.network.connection.NetworkConnection;
+import com.octopod.network.events.EventEmitter;
 import com.octopod.network.events.EventManager;
 import com.octopod.network.bukkit.BukkitUtils;
 
@@ -112,6 +113,10 @@ public class NetworkPlus {
      */
     public static EventManager getEventManager() {
         return EventManager.getManager();
+    }
+
+    public static EventEmitter getEventEmitter() {
+        return EventEmitter.getEmitter();
     }
 
     //=========================================================================================//
