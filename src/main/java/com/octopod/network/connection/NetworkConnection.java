@@ -8,6 +8,10 @@ import java.util.List;
  */
 public abstract class NetworkConnection {
 
+    protected void triggerConnection() {
+
+    }
+
     /**
      * Gets if this server is connected to the other servers.
      * @return

@@ -1,8 +1,8 @@
 package com.octopod.network.events.relays;
 
-import com.octopod.network.events.Event;
+import com.octopod.network.events.CancellableEvent;
 
-public class MessageEvent extends Event {
+public class MessageEvent extends CancellableEvent {
 
 	String username, channel, message;
 	
@@ -24,5 +24,17 @@ public class MessageEvent extends Event {
 	public String getMessage() {
 		return message;
 	}
-	
+
+    boolean cancelled = false;
+
+    @Override
+    public boolean isCancelled() {
+        return cancelled;
+    }
+
+    @Override
+    public void setCancelled(boolean cancel) {
+        cancelled = cancel;
+    }
+
 }

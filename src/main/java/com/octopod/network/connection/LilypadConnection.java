@@ -1,10 +1,10 @@
 package com.octopod.network.connection;
 
 import com.octopod.network.NetworkConfig;
+import com.octopod.network.NetworkListener;
 import com.octopod.network.NetworkPlus;
 import com.octopod.network.NetworkPlusPlugin;
 import com.octopod.network.events.EventEmitter;
-import com.octopod.network.events.network.NetworkConnectedEvent;
 import com.octopod.network.bukkit.BukkitUtils;
 
 import lilypad.client.connect.api.Connect;
@@ -38,8 +38,8 @@ public class LilypadConnection extends NetworkConnection {
         private Listener() {}
 
         @EventListener
-        public void messageReceived(MessageEvent event) {
-
+        public void messageReceived(MessageEvent event)
+        {
             String channel = event.getChannel(), username, message;
 
             if(!channel.startsWith(NetworkConfig.getRequestPrefix())) {
@@ -53,8 +53,7 @@ public class LilypadConnection extends NetworkConnection {
                 return;
             }
 
-            EventEmitter.getEmitter().triggerEvent(new com.octopod.network.events.relays.MessageEvent(username, channel, message));
-
+            NetworkListener.triggerMessageRecieved(username, channel, message);
         }
     }
 
@@ -114,13 +113,13 @@ public class LilypadConnection extends NetworkConnection {
                             return;
                         }
                     }
-                    EventEmitter.getEmitter().triggerEvent(new NetworkConnectedEvent());
+                    triggerConnection();
                 }
 
             }).start();
         } else
         if(isConnected()) {
-            EventEmitter.getEmitter().triggerEvent(new NetworkConnectedEvent());
+            triggerConnection();
         }
 
     }

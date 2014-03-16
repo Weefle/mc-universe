@@ -6,12 +6,12 @@ package com.octopod.network.events;
  */
 public enum EventPriority {
 
-    SYSTEM (-1), //NEVER use this, only for the plugin's listeners
     LOWEST (0),
     LOW(1),
     NORMAL(2),
     HIGH(3),
-    HIGHEST(4);
+    HIGHEST(4),
+    MONITOR(5);
 
     Integer n;
     private EventPriority(int n) {this.n = n;}

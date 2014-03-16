@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface EventHandler {
 	
-	public boolean runAsync() default false;
+	public boolean async() default false;
 
     public EventPriority priority() default EventPriority.NORMAL;
 

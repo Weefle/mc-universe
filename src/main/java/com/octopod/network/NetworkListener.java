@@ -5,16 +5,14 @@ import com.octopod.network.cache.NetworkHubCache;
 import com.octopod.network.cache.NetworkPlayerCache;
 import com.octopod.network.cache.NetworkServerCache;
 import com.octopod.network.events.EventEmitter;
-import com.octopod.network.events.EventHandler;
-import com.octopod.network.events.EventPriority;
 import com.octopod.network.events.network.NetworkConnectedEvent;
-import com.octopod.network.events.network.NetworkHubCacheEvent;
 import com.octopod.network.events.player.NetworkPlayerJoinEvent;
 import com.octopod.network.events.player.NetworkPlayerLeaveEvent;
 import com.octopod.network.events.player.NetworkPlayerRedirectEvent;
 import com.octopod.network.events.relays.MessageEvent;
-import com.octopod.network.events.server.ServerInfoEvent;
-import com.octopod.network.events.server.ServerUncacheEvent;
+import com.octopod.network.events.server.ServerAddedEvent;
+import com.octopod.network.events.server.ServerClearEvent;
+import com.octopod.network.events.server.ServerFoundEvent;
 import com.octopod.network.bukkit.BukkitUtils;
 
 /**
@@ -23,121 +21,131 @@ import com.octopod.network.bukkit.BukkitUtils;
 public class NetworkListener {
 
     /**
-     * The current NetworkLogger instance. Will be used to log messages.
-     */
-    private NetworkLogger logger = NetworkPlus.getLogger();
-
-    /**
      * Listens for when this plugin is connected according to the NetworkConnection instance.
      * This method should request ServerInfo and playerlists from every server.
-     * @param event
      */
-    @EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
-	public void networkConnected(NetworkConnectedEvent event) {
-        logger.debug("&aSuccessfully connected!");
-        NetworkPlus.getPlugin().scan();
-	}
+    public static void triggerNetworkConnected()
+    {
+        NetworkConnectedEvent event = new NetworkConnectedEvent();
 
-    /**
-     * Listens for when a hub server is found.
-     * This method should cache the found hub server under the appropriate priority.
-     * @param event
-     */
-    @EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
-    public void networkHubCache(NetworkHubCacheEvent event) {
-        NetworkHubCache.addHub(event.getServer(), event.getPriority());
-        logger.info("Server &a" + event.getServer() + "&7 registered as hub @ priority &e" + event.getPriority());
+        NetworkPlus.getEventEmitter().triggerEvent(event);
+
+        NetworkPlus.getLogger().debug("&aSuccessfully connected!");
+        NetworkPlus.requestServerInfo();
     }
 
     /**
      * Listens for when a ServerInfo object is recieved from any server.
      * This method should cache the ServerInfo under the server it was sent from.
      * It should also update the NetworkPlayerCache.
-     * @param event
+     * @param serverInfo
      */
-	@EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
-	public void serverInfoEvent(ServerInfoEvent event) {
-		String server = event.getSender();
-        ServerInfo serverInfo = event.getServerInfo();
-		NetworkServerCache.addServer(serverInfo);
+    public static void triggerServerFound(ServerInfo serverInfo)
+    {
+        ServerFoundEvent event = new ServerFoundEvent(serverInfo);
 
-        //Updated player locations in the NetworkPlayerCache
-        for(String player: serverInfo.getPlayers()) {
-            NetworkPlayerCache.putPlayer(player, server);
-        }
+        NetworkPlus.getEventEmitter().triggerEvent(event);
 
-        //priority at least 0 = this server is a hub
-        int hubPriority = serverInfo.getHubPriority();
-        if(hubPriority >= 0)
-            EventEmitter.getEmitter().triggerEvent(new NetworkHubCacheEvent(server, hubPriority));
+        if(!event.isCancelled())
+        {
+            String server = event.getServer();
 
-        if(!NetworkPlus.isTestBuild()) {
-            //Checks for mismatched plugin versions between servers, and warns the server owners.
-            String version = serverInfo.getPluginVersion();
+            NetworkServerCache.addServer(serverInfo);
 
-            if(!version.equals("TEST_BUILD") && !version.equals(NetworkPlus.getPluginVersion())) {
-                logger.info("&a" + server + "&7: Running &6Net+&7 version &6" + (version.equals("") ? "No Version" : version));
+            //Update player locations in the NetworkPlayerCache
+            for(String player: serverInfo.getPlayers()) {
+                NetworkPlayerCache.putPlayer(player, server);
             }
-        }
 
-	}
+            //Checks if this server is a hub (priority above 0)
+            int hubPriority = serverInfo.getHubPriority();
+            if(hubPriority >= 0) {
+                NetworkHubCache.addHub(server, hubPriority);
+                NetworkPlus.getLogger().info("Server &a" + server + "&7 registered as hub @ priority &e" + hubPriority);
+            }
+
+            //Version checking
+            if(!NetworkPlus.isTestBuild()) {
+                //Checks for mismatched plugin versions between servers, and warns the server owners.
+                String version = serverInfo.getPluginVersion();
+
+                if(!version.equals("TEST_BUILD") && !version.equals(NetworkPlus.getPluginVersion())) {
+                    NetworkPlus.getLogger().info("&a" + server + "&7: Running &6Net+&7 version &6" + (version.equals("") ? "No Version" : version));
+                }
+            }
+
+            NetworkPlus.getEventEmitter().triggerEvent(new ServerAddedEvent(serverInfo));
+        }
+    }
 
     /**
      * Listens for when an uncache request is sent from any server.
      * This method should uncache the requested server.
-     * @param event
      */
-    @EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
-	public void serverUncacheEvent(ServerUncacheEvent event) {
-		NetworkServerCache.removeServer(event.getUncachedServer());
-	}
+    public static void triggerServerClear(String server, String requester)
+    {
+        ServerClearEvent event = new ServerClearEvent(server, requester);
+
+        NetworkPlus.getEventEmitter().triggerEvent(event);
+
+        NetworkServerCache.removeServer(event.getClearedServer());
+    }
 
     /**
      * Listens for when any player joins the network.
      * This method should cache the player into the server they joined into.
-     * @param event
      */
-    @EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
-	public void playerJoinEvent(NetworkPlayerJoinEvent event) {
-        logger.debug("&b" + event.getPlayer() + " &7joined network through &a" + event.getServer());
-		NetworkPlayerCache.putPlayer(event.getPlayer(), event.getServer());
-	}
+    public static void triggerPlayerJoin(String player, String server)
+    {
+        NetworkPlayerJoinEvent event = new NetworkPlayerJoinEvent(player, server);
+
+        NetworkPlus.getEventEmitter().triggerEvent(event);
+
+        NetworkPlus.getLogger().debug("&b" + event.getPlayer() + " &7joined network through &a" + event.getServer());
+        NetworkPlayerCache.putPlayer(event.getPlayer(), event.getServer());
+    }
 
     /**
      * Listens for when any player leaves the network.
      * This method should uncache the player.
-     * @param event
      */
-    @EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
-	public void playerLeaveEvent(NetworkPlayerLeaveEvent event) {
-        logger.debug("&b" + event.getPlayer() + " &7left network through &a" + event.getServer());
-		NetworkPlayerCache.removePlayer(event.getPlayer());
-	}
+    public static void triggerPlayerLeave(String player, String server)
+    {
+        NetworkPlayerLeaveEvent event = new NetworkPlayerLeaveEvent(player, server);
+
+        NetworkPlus.getEventEmitter().triggerEvent(event);
+
+        NetworkPlus.getLogger().debug("&b" + event.getPlayer() + " &7left network through &a" + event.getServer());
+        NetworkPlayerCache.removePlayer(event.getPlayer());
+    }
 
     /**
      * Listens for when any player moves from one server to another.
      * This method should change the player's entry in the cache to the new server.
-     * @param event
      */
-    @EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
-	public void playerRedirectEvent(NetworkPlayerRedirectEvent event) {
-        logger.debug("&b" + event.getPlayer() + " &7redirected from &a" + event.getFromServer() + "&7 to &a" + event.getServer());
-		NetworkPlayerCache.putPlayer(event.getPlayer(), event.getServer());
-	}
+    public static void triggerPlayerRedirect(String player, String from, String server)
+    {
+        NetworkPlayerRedirectEvent event = new NetworkPlayerRedirectEvent(player, from, server);
+
+        NetworkPlus.getEventEmitter().triggerEvent(event);
+
+        NetworkPlus.getLogger().debug("&b" + event.getPlayer() + " &7redirected from &a" + event.getFromServer() + "&7 to &a" + event.getServer());
+        NetworkPlayerCache.putPlayer(event.getPlayer(), event.getServer());
+    }
 
     /**
      * Listens for when any message is recieved from any server.
      * This method is a gateway to other events and features.
-     * @param event
      */
-    @EventHandler(priority = EventPriority.SYSTEM, runAsync = true)
-	public void messageRecieved(MessageEvent event) {
+    public static void triggerMessageRecieved(String sender, String channel, String message)
+    {
+        MessageEvent event = new MessageEvent(sender, channel, message);
 
-		String sender = event.getSender();
-		String channel = event.getChannel();
-		String message = event.getMessage();
+        NetworkPlus.getEventEmitter().triggerEvent(event);
 
-        logger.verbose("&7Message: &a" + sender + "&7 on &b" + channel);
+        if(event.isCancelled()) return;
+
+        NetworkPlus.getLogger().verbose("&7Message: &a" + sender + "&7 on &b" + channel);
 
         //Tells the server to send all players on this server to the server specified in 'message'
 		if(channel.equals(NetworkConfig.getChannel("SENDALL")))
@@ -154,34 +162,30 @@ public class NetworkListener {
 
         //Tells the server a player has joined the network
 		if(channel.equals(NetworkConfig.getChannel("PLAYER_JOIN")))
-			EventEmitter.getEmitter().triggerEvent(new NetworkPlayerJoinEvent(message, sender));
+			triggerPlayerJoin(message, sender);
 
         //Tells the server a player has left the network
 		if(channel.equals(NetworkConfig.getChannel("PLAYER_LEAVE")))
-			EventEmitter.getEmitter().triggerEvent(new NetworkPlayerLeaveEvent(message, sender));
+			triggerPlayerLeave(message, sender);
 
         //Tells the server a player has switched servers on the network
 		if(channel.equals(NetworkConfig.getChannel("PLAYER_REDIRECT")))
-			EventEmitter.getEmitter().triggerEvent(new NetworkPlayerRedirectEvent(message, NetworkPlayerCache.findPlayer(message), sender));
+			triggerPlayerRedirect(message, NetworkPlayerCache.findPlayer(message), sender);
 
 		//Tells the server to broadcast a message on the server.
 		if(channel.equals(NetworkConfig.getChannel("BROADCAST")))
-		{
-			BukkitUtils.broadcastMessage(message);
-		}
+		    BukkitUtils.broadcastMessage(message);
 
 		/**
-		 * Info Request
+		 * Server Request
          * Servers that recieve this message will send back server information.
 		 */
-		if(channel.equals(NetworkConfig.getChannel("INFO_REQUEST")) || channel.equals(NetworkConfig.getChannel("INFO_RESPONSE")))
+		if(channel.equals(NetworkConfig.getChannel("SERVER_REQUEST")) || channel.equals(NetworkConfig.getChannel("SERVER_RESPONSE")))
         {
             try {
-                ServerInfo info = NetworkPlus.gson().fromJson(message, ServerInfo.class);
-                if(info == null) throw new NullPointerException("Server '" + sender + "' gave us a null serverinfo, json: " + message);
-                EventEmitter.getEmitter().triggerEvent(
-                        new ServerInfoEvent(NetworkPlus.gson().fromJson(message, ServerInfo.class))
-                );
+                ServerInfo serverInfo = NetworkPlus.gson().fromJson(message, ServerInfo.class);
+                if(serverInfo == null) throw new NullPointerException("Server '" + sender + "' gave us a null serverinfo, json: " + message);
+                triggerServerFound(serverInfo);
             } catch (JsonSyntaxException e) {
                 NetworkPlus.getLogger().info("Server &a" + sender + " &7has sent an invalid ServerInfo.");
             } catch (NullPointerException e) {
@@ -190,18 +194,18 @@ public class NetworkListener {
             }
 
             //Send back the message if it's a request
-            if(channel.equals(NetworkConfig.getChannel("INFO_REQUEST"))) {
+            if(channel.equals(NetworkConfig.getChannel("SERVER_REQUEST"))) {
                 if(!sender.equals(NetworkPlus.getUsername())) {
-                    NetworkPlus.sendMessage(sender, NetworkConfig.getChannel("INFO_RESPONSE"),
+                    NetworkPlus.sendMessage(sender, NetworkConfig.getChannel("SERVER_RESPONSE"),
                             NetworkPlus.gson().toJson(NetworkPlus.getServerInfo())
                     );
                 }
             }
         }
 
-		if(channel.equals(NetworkConfig.getChannel("UNCACHE")))
+		if(channel.equals(NetworkConfig.getChannel("CLEAR_REQUEST")))
 		{		
-			EventEmitter.getEmitter().triggerEvent(new ServerUncacheEvent(message, sender));
+			EventEmitter.getEmitter().triggerEvent(new ServerClearEvent(message, sender));
 		}
 		
 	}

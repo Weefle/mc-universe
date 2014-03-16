@@ -5,11 +5,9 @@ import com.octopod.network.NetworkPlus;
 import com.octopod.network.events.EventListener;
 import com.octopod.network.bukkit.BukkitUtils;
 import com.octopod.network.NetworkPermission;
-import com.octopod.network.events.server.ServerInfoEvent;
+import com.octopod.network.events.server.ServerFoundEvent;
 import com.octopod.network.events.synclisteners.SyncServerInfoListener;
 import org.bukkit.command.CommandSender;
-
-import java.util.Arrays;
 
 public class CommandServerPing extends NetworkCommand {
 
@@ -36,12 +34,12 @@ public class CommandServerPing extends NetworkCommand {
 
         NetworkPlus.requestServerInfo(server);
 
-        final SyncServerInfoListener listener = new SyncServerInfoListener(new EventListener<ServerInfoEvent>() {
+        final SyncServerInfoListener listener = new SyncServerInfoListener(new EventListener<ServerFoundEvent>() {
 
             @Override
-            public boolean onEvent(ServerInfoEvent event)
+            public boolean onEvent(ServerFoundEvent event)
             {
-                if(event.getSender().equals(server)) {
+                if(event.getServer().equals(server)) {
                     BukkitUtils.sendMessage(fsender, "&aPing returned successful!");
                     return true;
                 }

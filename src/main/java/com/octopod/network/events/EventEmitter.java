@@ -3,7 +3,6 @@ package com.octopod.network.events;
 import com.octopod.network.NetworkPlus;
 import org.bukkit.Location;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,50 +21,24 @@ public class EventEmitter {
 		}
 	}
 
-	public long totalTriggers = 0;
-
-	public void triggerEvent(final Event event) {
-		new Thread(event.getClass().getSimpleName() + "-" + totalTriggers++) {
-			@Override
-			public void run() {
-				trigger(event);
-			}
-		}.start();
-	}
-
-	private synchronized void trigger(final Event event) {
+	public synchronized void triggerEvent(final Event event) {
 
 		NetworkPlus.getLogger().verbose("Triggering event in thread: &a" + Thread.currentThread().getName());
 
-		List<EventMethod> methods = collectListenersOf(event);
+        List<EventMethod> listeners = collectListenersOf(event);
 
-        synchronized(methods) {
-            for(final EventMethod eventMethod: methods) {
+        synchronized(listeners) {
 
-                Runnable invoke = new Runnable() {
-                    public void run() {
-                        try {
-                            eventMethod.invoke(event);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                };
-
-                if(eventMethod.handler().runAsync()) {
-                    new Thread(invoke).start();
-                } else {
-                    invoke.run();
-                }
-
+            //Run all listeners
+            for(final EventMethod eventMethod: listeners) {
+                eventMethod.invoke(event);
             }
-
 
         }
 
 	}
 
-    private List<EventMethod> collectListenersOf(Event event) {
+    private ArrayList<EventMethod> collectListenersOf(Event event) {
 
         List<Object> listeners = new ArrayList<>(EventManager.getManager().getListeners());
 
@@ -81,6 +54,7 @@ public class EventEmitter {
                             continue;
                         if(!event.getClass().getSimpleName().equals(argTypes[0].getSimpleName()))
                             continue;
+
                         methods.add(new EventMethod(listener, method, annotation));
                     }
                 }
@@ -89,21 +63,6 @@ public class EventEmitter {
             return methods;
         }
 
-    }
-
-    public Location forward(Location playerLoc)
-    {
-        double
-            x = playerLoc.getX(),
-            y = playerLoc.getY(),
-            z = playerLoc.getZ(),
-            yaw = playerLoc.getYaw();
-
-        double
-            sin = Math.sin(Math.toRadians(yaw)),
-            cos = Math.cos(Math.toRadians(yaw));
-
-        return new Location(playerLoc.getWorld(), x - sin, y, z + cos);
     }
 
     private static class EventMethod implements Comparable<EventMethod>
@@ -118,8 +77,27 @@ public class EventEmitter {
             this.annotation = annotation;
         }
 
-        public void invoke(Object... args) throws IllegalAccessException, InvocationTargetException {
-            method.invoke(object, args);
+        public Event invoke(final Event event) {
+
+            try {
+                Runnable invokeMethod = new Runnable() {
+                    public void run() {
+                        try {
+                            method.invoke(object, event);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                };
+
+                if(annotation.async()) {
+                    new Thread(invokeMethod).start();
+                } else {
+                    invokeMethod.run();
+                }
+            } catch (Exception e) {}
+
+            return event;
         }
 
         public EventHandler handler() {return annotation;}
