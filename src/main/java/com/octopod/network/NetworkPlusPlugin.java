@@ -96,13 +96,6 @@ public class NetworkPlusPlugin extends JavaPlugin {
         return serverInfo;
     }
 
-    /**
-     * Requests server information and playerlists from connected servers.
-     */
-    public void scan() {
-        NetworkPlus.requestServerInfo();
-    }
-
     public void disablePlugin() {
         this.onDisable();
         Bukkit.getPluginManager().disablePlugin(this);
