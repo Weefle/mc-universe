@@ -165,7 +165,6 @@ public class NetworkConfig {
         addChannel("SERVER_RESPONSE",   "server.response");
 
         addChannel("CLEAR_REQUEST",     "clear.request");
-        addChannel("CLEAR_RESPONSE",    "clear.response");
 
         BukkitUtils.sendMessage(sender, "&7Successfully loaded configuration!");
 
