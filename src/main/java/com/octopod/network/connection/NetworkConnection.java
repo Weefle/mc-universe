@@ -1,5 +1,7 @@
 package com.octopod.network.connection;
 
+import com.octopod.network.NetworkListener;
+
 import java.util.List;
 
 /**
@@ -9,7 +11,7 @@ import java.util.List;
 public abstract class NetworkConnection {
 
     protected void triggerConnection() {
-
+        NetworkListener.triggerNetworkConnected();
     }
 
     /**
@@ -17,6 +19,10 @@ public abstract class NetworkConnection {
      * @return
      */
     public abstract boolean isConnected();
+
+    public abstract void connect();
+
+    public abstract void disconnect();
 
     /**
      * Gets the username of this server.

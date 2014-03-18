@@ -4,7 +4,6 @@ import com.octopod.network.NetworkConfig;
 import com.octopod.network.NetworkListener;
 import com.octopod.network.NetworkPlus;
 import com.octopod.network.NetworkPlusPlugin;
-import com.octopod.network.events.EventEmitter;
 import com.octopod.network.bukkit.BukkitUtils;
 
 import lilypad.client.connect.api.Connect;
@@ -67,12 +66,16 @@ public class LilypadConnection extends NetworkConnection {
      */
     private Connect connection;
 
+    private NetworkPlusPlugin plugin;
+
     /**
      * Gets the Connect instance and ensures that it is connected.
      * This should fire the NetworkConnectedEvent after it connects.
      * @param plugin
      */
     public LilypadConnection(final NetworkPlusPlugin plugin) {
+
+        this.plugin = plugin;
 
         connection = plugin.getServer().getServicesManager().getRegistration(Connect.class).getProvider();
 
@@ -83,6 +86,17 @@ public class LilypadConnection extends NetworkConnection {
 
         connection.registerEvents(listener = new Listener());
 
+    }
+
+    @Override
+    public void disconnect()
+    {
+        NetworkPlus.getEventManager().unregisterListener(listener);
+    }
+
+    @Override
+    public void connect()
+    {
         if(connection != null && !connection.isConnected()) {
 
             new Thread(new Runnable() {
@@ -108,7 +122,7 @@ public class LilypadConnection extends NetworkConnection {
                         //If LilyPad still isn't connected, then most commands should be disabled.
                         if(!connection.isConnected())
                         {
-                            NetworkPlus.getLogger().info("&cLilypad could not connect!");
+                            BukkitUtils.console("&cLilypad could not connect!");
                             plugin.disablePlugin();
                             return;
                         }
