@@ -12,57 +12,57 @@ public class NetworkPlayerCache {
     private NetworkPlayerCache() {}
 
     public static void reset() {
-        playerMap.clear();
+        serverMap.clear();
     }
 
-	final static private Map<String, String> playerMap = Collections.synchronizedMap(new HashMap<String, String>());
+    final static private Map<String, List<String>> serverMap = Collections.synchronizedMap(new HashMap<String, List<String>>());
 
-	public static void putPlayer(String player, String server) {
-		playerMap.put(player, server);
+	public static void putPlayer(String player, String server)
+    {
+        removePlayer(player);
+
+        if(!serverMap.containsKey(server))
+            serverMap.put(server, new ArrayList<String>());
+
+        if(!serverMap.get(server).contains(player))
+            serverMap.get(server).add(player);
 	}
 	
 	public static void removePlayer(String player) {
-		playerMap.remove(player);
+        for(List<String> players: serverMap.values())
+            players.remove(player);
 	}
 	
 	public static String findPlayer(String player) {
-		return playerMap.get(player);
-	}
-	
-	public static Map<String, String> getPlayerMap() {
-		return playerMap;
-	}
-
-    public static Map<String, List<String>> getReverseMap() {
-        Map<String, List<String>> serverMap = new HashMap<>();
-        //Loops through the entries in the map.
-        synchronized(playerMap) {
-            for(Map.Entry<String, String> e: playerMap.entrySet()) {
-                //Create a new list @ the server (the value) if one doesn't exist
-                if(!serverMap.containsKey(e.getValue()))
-                    serverMap.put(e.getValue(), new ArrayList<String>());
-                //Get the list @ the server and add the player's name (the key)
-                serverMap.get(e.getValue()).add(e.getKey());
-            }
-            return serverMap;
+        for(Map.Entry<String, List<String>> entry: serverMap.entrySet()) {
+            if(entry.getValue().contains(player))
+                return entry.getKey();
         }
+		return null;
+	}
+
+    public static List<String> getPlayers()
+    {
+        List<String> allPlayers = new ArrayList<>();
+        for(List<String> players: serverMap.values())
+            allPlayers.addAll(players);
+        return allPlayers;
     }
 
-    public static Set<String> getPlayers() {
-        return playerMap.keySet();
-    }
-
-    public static int totalPlayers(String server) {
-        Map<String, List<String>> reverse = getReverseMap();
-        if(reverse.containsKey(server)) {
-            return reverse.get(server).size();
+    public static List<String> getPlayers(String server) {
+        if(serverMap.containsKey(server)) {
+            return serverMap.get(server);
         } else {
-            return 0;
+            return new ArrayList<>();
         }
     }
 
     public static int totalPlayers() {
-        return playerMap.size();
+        return getPlayers().size();
+    }
+
+    public static int totalPlayers(String server) {
+        return getPlayers(server).size();
     }
 
 }
