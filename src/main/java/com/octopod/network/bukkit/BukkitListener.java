@@ -40,10 +40,8 @@ public class BukkitListener implements Listener {
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		
-		Map<String, String> playerMap = NetworkPlayerCache.getPlayerMap();
-		
-		String location = playerMap.get(event.getPlayer().getName());		
+
+		String location = NetworkPlayerCache.findPlayer(event.getPlayer().getName());
 		String channel;
 
 		if(location == null) {
@@ -58,10 +56,8 @@ public class BukkitListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent event) {
-		
-		Map<String, String> playerMap = NetworkPlayerCache.getPlayerMap();
-		
-		String location = playerMap.get(event.getPlayer().getName());
+
+		String location = NetworkPlayerCache.findPlayer(event.getPlayer().getName());
 		String channel = NetworkConfig.getChannel("PLAYER_LEAVE");
 		
 		if(location != null && location.equals(NetworkPlus.getUsername()))
