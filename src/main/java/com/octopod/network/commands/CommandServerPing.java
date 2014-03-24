@@ -2,11 +2,11 @@ package com.octopod.network.commands;
 
 import com.octopod.network.NetworkConfig;
 import com.octopod.network.NetworkPlus;
-import com.octopod.network.events.EventListener;
 import com.octopod.network.bukkit.BukkitUtils;
 import com.octopod.network.NetworkPermission;
+import com.octopod.network.events.Listener;
+import com.octopod.network.events.SynchronizedListener;
 import com.octopod.network.events.server.ServerFoundEvent;
-import com.octopod.network.events.synclisteners.SyncServerInfoListener;
 import org.bukkit.command.CommandSender;
 
 public class CommandServerPing extends NetworkCommand {
@@ -23,7 +23,6 @@ public class CommandServerPing extends NetworkCommand {
 	public boolean exec(CommandSender sender, String label, String[] args) {
 
 		final String server = args[0];
-        final CommandSender fsender = sender;
 
 		BukkitUtils.sendMessage(sender, "&7Attempting to ping the server &b'" + server + "'");
 
@@ -32,32 +31,33 @@ public class CommandServerPing extends NetworkCommand {
 			return true;
 		}
 
-        NetworkPlus.requestServerInfo(server);
-
-        final SyncServerInfoListener listener = new SyncServerInfoListener(new EventListener<ServerFoundEvent>() {
-
+        final SynchronizedListener listener = new SynchronizedListener<>(ServerFoundEvent.class, new Listener<ServerFoundEvent>()
+        {
             @Override
-            public boolean onEvent(ServerFoundEvent event)
+            public void onEvent(ServerFoundEvent event)
             {
                 if(event.getServer().equals(server)) {
-                    BukkitUtils.sendMessage(fsender, "&aPing returned successful!");
-                    return true;
+                    event.setUnlocked(true);
                 }
-                return false;
             }
-
         });
 
         long timeout = NetworkConfig.getRequestTimeout();
 
         long startTime = System.currentTimeMillis();
-        listener.register().waitFor(timeout, 1);
+
+        NetworkPlus.getEventManager().registerListener(listener);
+
+        NetworkPlus.requestServerInfo(server);
+        listener.waitFor(timeout, 1);
 
         if((System.currentTimeMillis() - startTime) >= timeout) {
 			BukkitUtils.sendMessage(sender, "&cPing timed out! The server isn't running this plugin?");
-		}
+		} else {
+            BukkitUtils.sendMessage(sender, "&aPing returned successfully in " + (System.currentTimeMillis() - startTime) + "ms!");
+        }
 
-        listener.unregister();
+        NetworkPlus.getEventManager().unregisterListener(listener);
 
 		return true;
 
