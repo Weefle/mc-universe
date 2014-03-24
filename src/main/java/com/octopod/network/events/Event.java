@@ -1,5 +1,5 @@
 package com.octopod.network.events;
 
-public abstract class Event {
+public abstract class Event extends SynchronizableEvent {
 
 }
