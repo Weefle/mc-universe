@@ -4,7 +4,6 @@ import com.google.gson.JsonSyntaxException;
 import com.octopod.network.cache.NetworkHubCache;
 import com.octopod.network.cache.NetworkPlayerCache;
 import com.octopod.network.cache.NetworkServerCache;
-import com.octopod.network.events.EventEmitter;
 import com.octopod.network.events.network.NetworkConnectedEvent;
 import com.octopod.network.events.player.NetworkPlayerJoinEvent;
 import com.octopod.network.events.player.NetworkPlayerLeaveEvent;
@@ -28,9 +27,14 @@ public class NetworkListener {
     {
         NetworkConnectedEvent event = new NetworkConnectedEvent();
 
-        NetworkPlus.getEventEmitter().triggerEvent(event);
+        NetworkPlus.getEventManager().triggerEvent(event);
 
-        NetworkPlus.getLogger().debug("&aSuccessfully connected!");
+        BukkitUtils.broadcastMessage(
+                "&7Successfully connected via &a" +
+                NetworkPlus.getConnection().getConnectionType() +
+                "&7!"
+        );
+
         NetworkPlus.requestServerInfo();
     }
 
@@ -44,7 +48,7 @@ public class NetworkListener {
     {
         ServerFoundEvent event = new ServerFoundEvent(serverInfo);
 
-        NetworkPlus.getEventEmitter().triggerEvent(event);
+        NetworkPlus.getEventManager().triggerEvent(event);
 
         if(!event.isCancelled())
         {
@@ -74,7 +78,7 @@ public class NetworkListener {
                 }
             }
 
-            NetworkPlus.getEventEmitter().triggerEvent(new ServerAddedEvent(serverInfo));
+            NetworkPlus.getEventManager().triggerEvent(new ServerAddedEvent(serverInfo));
         }
     }
 
@@ -86,7 +90,7 @@ public class NetworkListener {
     {
         ServerClearEvent event = new ServerClearEvent(server, requester);
 
-        NetworkPlus.getEventEmitter().triggerEvent(event);
+        NetworkPlus.getEventManager().triggerEvent(event);
 
         NetworkServerCache.removeServer(event.getClearedServer());
     }
@@ -99,7 +103,7 @@ public class NetworkListener {
     {
         NetworkPlayerJoinEvent event = new NetworkPlayerJoinEvent(player, server);
 
-        NetworkPlus.getEventEmitter().triggerEvent(event);
+        NetworkPlus.getEventManager().triggerEvent(event);
 
         NetworkPlus.getLogger().debug("&b" + event.getPlayer() + " &7joined network through &a" + event.getServer());
         NetworkPlayerCache.putPlayer(event.getPlayer(), event.getServer());
@@ -113,7 +117,7 @@ public class NetworkListener {
     {
         NetworkPlayerLeaveEvent event = new NetworkPlayerLeaveEvent(player, server);
 
-        NetworkPlus.getEventEmitter().triggerEvent(event);
+        NetworkPlus.getEventManager().triggerEvent(event);
 
         NetworkPlus.getLogger().debug("&b" + event.getPlayer() + " &7left network through &a" + event.getServer());
         NetworkPlayerCache.removePlayer(event.getPlayer());
@@ -127,7 +131,7 @@ public class NetworkListener {
     {
         NetworkPlayerRedirectEvent event = new NetworkPlayerRedirectEvent(player, from, server);
 
-        NetworkPlus.getEventEmitter().triggerEvent(event);
+        NetworkPlus.getEventManager().triggerEvent(event);
 
         NetworkPlus.getLogger().debug("&b" + event.getPlayer() + " &7redirected from &a" + event.getFromServer() + "&7 to &a" + event.getServer());
         NetworkPlayerCache.putPlayer(event.getPlayer(), event.getServer());
@@ -141,7 +145,7 @@ public class NetworkListener {
     {
         MessageEvent event = new MessageEvent(sender, channel, message);
 
-        NetworkPlus.getEventEmitter().triggerEvent(event);
+        NetworkPlus.getEventManager().triggerEvent(event);
 
         if(event.isCancelled()) return;
 
@@ -169,8 +173,14 @@ public class NetworkListener {
 			triggerPlayerLeave(message, sender);
 
         //Tells the server a player has switched servers on the network
-		if(channel.equals(NetworkConfig.getChannel("PLAYER_REDIRECT")))
-			triggerPlayerRedirect(message, NetworkPlayerCache.findPlayer(message), sender);
+		if(channel.equals(NetworkConfig.getChannel("PLAYER_REDIRECT"))) {
+            String serverFrom = NetworkPlayerCache.findPlayer(message);
+            if(serverFrom == null) {
+                triggerPlayerJoin(message, sender);
+            } else {
+			    triggerPlayerRedirect(message, NetworkPlayerCache.findPlayer(message), sender);
+            }
+        }
 
 		//Tells the server to broadcast a message on the server.
 		if(channel.equals(NetworkConfig.getChannel("BROADCAST")))
@@ -205,7 +215,7 @@ public class NetworkListener {
 
 		if(channel.equals(NetworkConfig.getChannel("CLEAR_REQUEST")))
 		{		
-			EventEmitter.getEmitter().triggerEvent(new ServerClearEvent(message, sender));
+			NetworkPlus.getEventManager().triggerEvent(new ServerClearEvent(message, sender));
 		}
 		
 	}
