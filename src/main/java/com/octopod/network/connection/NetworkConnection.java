@@ -14,6 +14,8 @@ public abstract class NetworkConnection {
         NetworkListener.triggerNetworkConnected();
     }
 
+    public abstract String getConnectionType();
+
     /**
      * Gets if this server is connected to the other servers.
      * @return
