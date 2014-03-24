@@ -3,13 +3,11 @@ package com.octopod.network;
 import com.google.gson.Gson;
 import com.octopod.network.cache.NetworkPlayerCache;
 import com.octopod.network.connection.NetworkConnection;
-import com.octopod.network.events.EventEmitter;
 import com.octopod.network.events.EventManager;
 import com.octopod.network.bukkit.BukkitUtils;
 
 import java.io.File;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Octopod
@@ -42,6 +40,11 @@ public class NetworkPlus {
      * The current instance of the NetworkPlusPlugin.
      */
     private static NetworkPlusPlugin plugin;
+
+    /**
+     * The current instance of EventManager.
+     */
+    private static EventManager eventManager = new EventManager();
 
     /**
      * Gets the current instance of Gson.
@@ -86,7 +89,7 @@ public class NetworkPlus {
 
     public static ServerInfo getServerInfo() {
         if(!isLoaded()) return null;
-        return plugin.getServerInfo();
+        return new ServerInfo();
     }
 
     public static NetworkConnection getConnection() {
@@ -112,11 +115,7 @@ public class NetworkPlus {
      * @return Network's EventManager.
      */
     public static EventManager getEventManager() {
-        return EventManager.getManager();
-    }
-
-    public static EventEmitter getEventEmitter() {
-        return EventEmitter.getEmitter();
+        return eventManager;
     }
 
     //=========================================================================================//
@@ -133,9 +132,9 @@ public class NetworkPlus {
 
     /**
      * Gets all the players on the network according to the cache.
-     * @return The Set containing all the players.
+     * @return The List containing all the players.
      */
-    public static Set<String> getCachedPlayers() {
+    public static List<String> getCachedPlayers() {
         return NetworkPlayerCache.getPlayers();
     }
 
@@ -230,7 +229,7 @@ public class NetworkPlus {
      */
     public static void requestServerInfo() {
         getLogger().verbose("Requesting info from all servers");
-        broadcastMessage(NetworkConfig.getChannel("INFO_REQUEST"), gson().toJson(getServerInfo()));
+        broadcastMessage(NetworkConfig.getChannel("SERVER_REQUEST"), gson().toJson(getServerInfo()));
     }
 
     /**
@@ -241,7 +240,7 @@ public class NetworkPlus {
      */
     public static void requestServerInfo(String server) {
         getLogger().verbose("Requesting info from &a" + server);
-        sendMessage(server, NetworkConfig.getChannel("INFO_REQUEST"), gson().toJson(getServerInfo()));
+        sendMessage(server, NetworkConfig.getChannel("SERVER_REQUEST"), gson().toJson(getServerInfo()));
     }
 
     /**
@@ -249,6 +248,6 @@ public class NetworkPlus {
      * @param server
      */
     public static void requestUncache(String server) {
-        broadcastMessage(NetworkConfig.getChannel("UNCACHE"), server);
+        broadcastMessage(NetworkConfig.getChannel("CLEAR_REQUEST"), server);
     }
 }
