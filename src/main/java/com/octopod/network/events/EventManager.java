@@ -1,22 +1,17 @@
 package com.octopod.network.events;
 
+import com.octopod.network.NetworkPlus;
+import com.octopod.network.bukkit.BukkitUtils;
+
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public class EventManager {
-	
-	private static EventManager manager = null;
-	
-	public static EventManager getManager() {
-		if(manager != null) {
-			return manager;
-		} else {
-			return (manager = new EventManager());
-		}
-	}
-	
-	private List<Object> listeners = Collections.synchronizedList(new ArrayList<Object>());
+
+	private final List<Object> listeners = Collections.synchronizedList(new ArrayList<>());
 	
 	public List<Object> getListeners() {
 		return listeners;
@@ -33,5 +28,107 @@ public class EventManager {
 	public void unregisterAll() {
 		listeners.clear();
 	}
+
+    public void triggerEvent(final Event event) {
+
+        NetworkPlus.getLogger().verbose("Triggering event in thread: &a" + Thread.currentThread().getName());
+
+        List<EventMethod> listeners = collectListenersOf(event);
+
+        synchronized(listeners) {
+
+            //Run all listeners
+            for(final EventMethod eventMethod: listeners) {
+                eventMethod.invoke(event);
+            }
+
+        }
+    }
+
+    private ArrayList<EventMethod> collectListenersOf(Event event) {
+
+        synchronized(listeners) {
+            ArrayList<EventMethod> methods = new ArrayList<>();
+            for(Object listener: listeners) {
+
+                for(Method method: listener.getClass().getMethods()) {
+                    EventHandler annotation = method.getAnnotation(EventHandler.class);
+                    if(annotation != null)
+                    {
+                        Class<?>[] argTypes = method.getParameterTypes();
+                        if(argTypes.length != 1)
+                            continue;
+
+                        //Try to use argument type to find Event type.
+                        if(!event.getClass().equals(argTypes[0])) {
+                            //If the listener is instanceof ListenerIdentifier, get the type
+                            if(!ListenerIdentifier.class.isInstance(listener)) {
+                                continue;
+                            } else {
+                                Class<? extends Event> type = ((ListenerIdentifier)listener).getType();
+                                BukkitUtils.console("&a" + listener.getClass() + " implements ListenerIdentifier! Type is " + type);
+                                if(!argTypes[0].equals(Event.class) || !(type.equals(event.getClass()))) {
+                                    continue;
+                                }
+                            }
+                        }
+
+                        BukkitUtils.console("&a" + event.getClass() + " is instance of " + argTypes[0]);
+
+                        methods.add(new EventMethod(listener, method, annotation));
+                    }
+                }
+
+            }
+            Collections.sort(methods);
+            return methods;
+        }
+
+    }
+
+    private static class EventMethod implements Comparable<EventMethod>
+    {
+        private Object object;
+        private Method method;
+        private EventHandler annotation;
+
+        protected EventMethod(Object object, Method method, EventHandler annotation) {
+            this.object = object;
+            this.method = method;
+            this.annotation = annotation;
+        }
+
+        public Event invoke(final Event event) {
+
+            try {
+                Runnable invokeMethod = new Runnable() {
+                    public void run() {
+                        try {
+                            method.invoke(object, event);
+                        } catch (Exception e) {
+                            BukkitUtils.console("&cFailed to invoke method " + method.getName() + "(" + Arrays.asList(method.getParameterTypes()) + ")");
+                            BukkitUtils.console("&cUsing arguments of types (" + event.getClass() + ")");
+                        }
+                    }
+                };
+
+                if(annotation.async()) {
+                    new Thread(invokeMethod).start();
+                } else {
+                    invokeMethod.run();
+                }
+            } catch (Exception e) {}
+
+            return event;
+        }
+
+        public EventHandler handler() {return annotation;}
+
+        @Override
+        public int compareTo(EventMethod o) {
+            return Integer.compare(annotation.priority().getPriority(), o.annotation.priority().getPriority());
+        }
+    }
+
 	
 }
