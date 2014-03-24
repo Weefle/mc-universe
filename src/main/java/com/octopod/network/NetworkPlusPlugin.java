@@ -22,11 +22,6 @@ public class NetworkPlusPlugin extends JavaPlugin {
     private static NetworkPlusPlugin instance;
 
     /**
-     * The ServerInfo object holding this server's information.
-     */
-    private ServerInfo serverInfo;
-
-    /**
      * The current instance of NetworkLogger.
      */
     private NetworkLogger logger;
@@ -92,10 +87,6 @@ public class NetworkPlusPlugin extends JavaPlugin {
         return (getConnection() != null && getConnection().isConnected());
     }
 
-    public ServerInfo getServerInfo() {
-        return serverInfo;
-    }
-
     public void disablePlugin() {
         this.onDisable();
         Bukkit.getPluginManager().disablePlugin(this);
@@ -113,6 +104,8 @@ public class NetworkPlusPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
 
+        connection.disconnect();
+
         NetworkServerCache.reset();
         NetworkCommandCache.reset();
         NetworkPlayerCache.reset();
@@ -129,8 +122,12 @@ public class NetworkPlusPlugin extends JavaPlugin {
 
         new NetworkPlus(this);
 
-        connection = new LilypadConnection(this);
         logger = new NetworkLogger();
+
+        connection = new LilypadConnection(this);
+
+        //Configuration loading
+        NetworkConfig.reloadConfig();
 
         //Register all the listeners
         networkListener = new NetworkListener();
@@ -138,12 +135,6 @@ public class NetworkPlusPlugin extends JavaPlugin {
 
         NetworkPlus.getEventManager().registerListener(networkListener);
         Bukkit.getPluginManager().registerEvents(bukkitListener, this);
-
-        //Configuration loading
-        NetworkConfig.reloadConfig();
-
-        //Sets this server's ServerInfo instance
-        serverInfo = new ServerInfo();
 
         NetworkCommandCache.registerCommand(
 
@@ -170,6 +161,8 @@ public class NetworkPlusPlugin extends JavaPlugin {
         }
 
         new SignPlugin();
+
+        connection.connect();
 
 	}
 
