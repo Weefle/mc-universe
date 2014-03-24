@@ -29,6 +29,10 @@ import java.util.List;
  */
 public class LilypadConnection extends NetworkConnection {
 
+    public String getConnectionType() {
+        return "LilyPad";
+    }
+
     /**
      * A nested class for Lilypad's listeners, which will just redirect to our event system.
      */
@@ -84,19 +88,19 @@ public class LilypadConnection extends NetworkConnection {
             connection.unregisterEvents(listener);
         }
 
-        connection.registerEvents(listener = new Listener());
-
     }
 
     @Override
     public void disconnect()
     {
-        NetworkPlus.getEventManager().unregisterListener(listener);
+        connection.unregisterEvents(listener);
     }
 
     @Override
     public void connect()
     {
+        connection.registerEvents(listener = new Listener());
+
         if(connection != null && !connection.isConnected()) {
 
             new Thread(new Runnable() {
@@ -135,7 +139,6 @@ public class LilypadConnection extends NetworkConnection {
         if(isConnected()) {
             triggerConnection();
         }
-
     }
 
     /**
@@ -145,7 +148,7 @@ public class LilypadConnection extends NetworkConnection {
      */
     private Result sendRequest(Request request) {
         try {
-            return connection.request(request).awaitUninterruptibly();
+            return connection.request(request).awaitUninterruptibly(500);
         } catch (RequestException e) {
             e.printStackTrace();
             return null;
@@ -199,7 +202,7 @@ public class LilypadConnection extends NetworkConnection {
     @Override
     public List<String> getPlayers() {
         GetPlayersResult result = (GetPlayersResult)sendRequest(new GetPlayersRequest(true));
-        if(result.getStatusCode() == StatusCode.SUCCESS) {
+        if(result != null && result.getStatusCode() == StatusCode.SUCCESS) {
             return new ArrayList<>(result.getPlayers());
         } else {
             return new ArrayList<>();
