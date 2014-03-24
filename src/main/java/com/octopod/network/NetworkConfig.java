@@ -148,7 +148,7 @@ public class NetworkConfig {
 
         BukkitUtils.sendMessage(sender, "TIMEOUT: &a" + TIMEOUT);
         BukkitUtils.sendMessage(sender, "DEBUG_MODE: &a" + DEBUG_MODE);
-        BukkitUtils.sendMessage(sender, "CHANNEL_PREFIX: &a\"" + "\"");
+        BukkitUtils.sendMessage(sender, "CHANNEL_PREFIX: &a\"" + CHANNEL_PREFIX + "\"");
         BukkitUtils.sendMessage(sender, "HUB_ENABLED: &a" + HUB_ENABLED);
         BukkitUtils.sendMessage(sender, "HUB_PRIORITY: &a" + HUB_PRIORITY);
         BukkitUtils.sendMessage(sender, "SERVER_NAME: &a\"" + getServerName() + "\"");
