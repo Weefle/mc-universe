@@ -143,13 +143,14 @@ public class NetworkListener {
      */
     public static void triggerMessageRecieved(String sender, String channel, String message)
     {
+        //Return if sender is this server; Cannot self-message.
+        if(sender.equals(NetworkPlus.getUsername())) return;
+
         MessageEvent event = new MessageEvent(sender, channel, message);
 
         NetworkPlus.getEventManager().triggerEvent(event);
 
         if(event.isCancelled()) return;
-
-        NetworkPlus.getLogger().verbose("&7Message: &a" + sender + "&7 on &b" + channel);
 
         //Tells the server to send all players on this server to the server specified in 'message'
 		if(channel.equals(NetworkConfig.getChannel("SENDALL")))
@@ -205,6 +206,7 @@ public class NetworkListener {
 
             //Send back the message if it's a request
             if(channel.equals(NetworkConfig.getChannel("SERVER_REQUEST"))) {
+                //and the sender isn't this server
                 if(!sender.equals(NetworkPlus.getUsername())) {
                     NetworkPlus.sendMessage(sender, NetworkConfig.getChannel("SERVER_RESPONSE"),
                             NetworkPlus.gson().toJson(NetworkPlus.getServerInfo())
