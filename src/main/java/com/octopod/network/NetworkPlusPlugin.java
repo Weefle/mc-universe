@@ -163,6 +163,7 @@ public class NetworkPlusPlugin extends JavaPlugin {
         new SignPlugin();
 
         connection.connect();
+        NetworkListener.triggerServerFound(NetworkPlus.getServerInfo());
 
 	}
 
