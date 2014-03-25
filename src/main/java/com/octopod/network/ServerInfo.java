@@ -38,10 +38,10 @@ public class ServerInfo {
             NetworkConfig.getServerName(), //Server's config name
             Bukkit.getServer().getMotd(), //Server's MOTD
             Bukkit.getServer().getMaxPlayers(), //Server's max players
-            BukkitUtils.getWhitelistedPlayerNames(), //Server's whitelisted players
+            Arrays.asList(BukkitUtils.getWhitelistedPlayerNames()), //Server's whitelisted players
             NetworkConfig.isHub() ? NetworkConfig.getHubPriority() : -1, //Server's hub priority, or -1 if is not a hub.
             NetworkPlus.getPluginVersion(), //Server's plugin version. (<build>-<commit>)
-            BukkitUtils.getPlayerNames() //Server's online players.
+            Arrays.asList(BukkitUtils.getPlayerNames()) //Server's online players.
         );
     }
 
