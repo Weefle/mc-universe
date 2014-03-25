@@ -3,6 +3,7 @@ package com.octopod.network;
 import com.octopod.network.bukkit.BukkitUtils;
 import org.bukkit.Bukkit;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,6 +25,8 @@ import java.util.List;
 public class ServerInfo {
 
     private List<Object> arguments;
+
+    public int size() {return arguments.size();}
 
     /**
      * Generates the ServerInfo for this server. It should be only used once on startup/reload.
@@ -52,14 +55,14 @@ public class ServerInfo {
         arguments = Arrays.asList(args);
     }
 
-    public String   getUsername()           {return getIndex(0);}
-    public String   getServerName()         {return getIndex(1);}
-    public String   getDescription()        {return getIndex(2);}
-    public Integer  getMaxPlayers()         {return getInt(3, 0);}
-    public String[] getWhitelistedPlayers() {return get(4, new String[0], String[].class);}
-    public Integer  getHubPriority()        {return getInt(5, -1);}
-    public String   getPluginVersion()      {return getIndex(6);}
-    public String[] getPlayers()            {return get(7, new String[0], String[].class);}
+    public String   getUsername()               {return getIndex(0);}
+    public String   getServerName()             {return getIndex(1);}
+    public String   getDescription()            {return getIndex(2);}
+    public Integer  getMaxPlayers()             {return getInt(3, 0);}
+    public List<String> getWhitelistedPlayers() {return get(4, new ArrayList<String>(), (Class<ArrayList<String>>) (Class<?>) ArrayList.class);}
+    public Integer  getHubPriority()            {return getInt(5, -1);}
+    public String   getPluginVersion()          {return getIndex(6);}
+    public List<String> getPlayers()            {return get(7, new ArrayList<String>(), (Class<ArrayList<String>>)(Class<?>)ArrayList.class);}
 
     //Tries to get a String from the index, and returns "" if it doesn't exist.
     private String getIndex(int n) {
