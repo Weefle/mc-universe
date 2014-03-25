@@ -66,14 +66,11 @@ public class EventManager {
                                 continue;
                             } else {
                                 Class<? extends Event> type = ((ListenerIdentifier)listener).getType();
-                                BukkitUtils.console("&a" + listener.getClass() + " implements ListenerIdentifier! Type is " + type);
                                 if(!argTypes[0].equals(Event.class) || !(type.equals(event.getClass()))) {
                                     continue;
                                 }
                             }
                         }
-
-                        BukkitUtils.console("&a" + event.getClass() + " is instance of " + argTypes[0]);
 
                         methods.add(new EventMethod(listener, method, annotation));
                     }
