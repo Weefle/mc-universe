@@ -1,5 +1,7 @@
 package com.octopod.network.cache;
 
+import com.octopod.network.bukkit.BukkitUtils;
+
 import java.util.*;
 
 /**
@@ -46,6 +48,7 @@ public class NetworkPlayerCache {
         List<String> allPlayers = new ArrayList<>();
         for(List<String> players: serverMap.values())
             allPlayers.addAll(players);
+        BukkitUtils.console(allPlayers + "");
         return allPlayers;
     }
 
