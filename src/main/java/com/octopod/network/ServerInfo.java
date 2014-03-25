@@ -59,7 +59,7 @@ public class ServerInfo {
     public String   getServerName()             {return getIndex(1);}
     public String   getDescription()            {return getIndex(2);}
     public Integer  getMaxPlayers()             {return getInt(3, 0);}
-    public List<String> getWhitelistedPlayers() {return get(4, new ArrayList<String>(), (Class<ArrayList<String>>) (Class<?>) ArrayList.class);}
+    public List<String> getWhitelistedPlayers() {return get(4, new ArrayList<String>(), (Class<ArrayList<String>>)(Class<?>)ArrayList.class);}
     public Integer  getHubPriority()            {return getInt(5, -1);}
     public String   getPluginVersion()          {return getIndex(6);}
     public List<String> getPlayers()            {return get(7, new ArrayList<String>(), (Class<ArrayList<String>>)(Class<?>)ArrayList.class);}
