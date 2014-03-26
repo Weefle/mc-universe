@@ -1,7 +1,5 @@
 package com.octopod.network.cache;
 
-import com.octopod.network.bukkit.BukkitUtils;
-
 import java.util.*;
 
 /**
@@ -14,54 +12,40 @@ public class NetworkPlayerCache {
     private NetworkPlayerCache() {}
 
     public static void reset() {
-        serverMap.clear();
+        playerMap.clear();
     }
 
-    final static private Map<String, List<String>> serverMap = Collections.synchronizedMap(new HashMap<String, List<String>>());
+    final static private Map<String, String> playerMap = Collections.synchronizedMap(new HashMap<String, String>());
 
 	public static void putPlayer(String player, String server)
     {
-        removePlayer(player);
-
-        if(!serverMap.containsKey(server))
-            serverMap.put(server, new ArrayList<String>());
-
-        if(!serverMap.get(server).contains(player))
-            serverMap.get(server).add(player);
+        playerMap.put(player, server);
 	}
 	
 	public static void removePlayer(String player) {
-        for(List<String> players: serverMap.values())
-            players.remove(player);
+        playerMap.remove(player);
 	}
 	
 	public static String findPlayer(String player) {
-        for(Map.Entry<String, List<String>> entry: serverMap.entrySet()) {
-            if(entry.getValue().contains(player))
-                return entry.getKey();
-        }
-		return null;
+        return playerMap.get(player);
 	}
 
     public static List<String> getPlayers()
     {
-        List<String> allPlayers = new ArrayList<>();
-        for(List<String> players: serverMap.values())
-            allPlayers.addAll(players);
-        BukkitUtils.console(allPlayers + "");
-        return allPlayers;
+        return new ArrayList<>(playerMap.keySet());
     }
 
     public static List<String> getPlayers(String server) {
-        if(serverMap.containsKey(server)) {
-            return serverMap.get(server);
-        } else {
-            return new ArrayList<>();
+        List<String> players = new ArrayList<>();
+        for(Map.Entry<String, String> entry: playerMap.entrySet()) {
+            if(entry.getValue().equals(server))
+                players.add(entry.getKey());
         }
+        return players;
     }
 
     public static int totalPlayers() {
-        return getPlayers().size();
+        return playerMap.size();
     }
 
     public static int totalPlayers(String server) {
