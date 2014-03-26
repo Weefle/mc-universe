@@ -58,8 +58,6 @@ public class CommandServerList extends NetworkCommand {
                         serverInfo.getServerName() + "\n" +
                         serverInfo.getDescription() + "\n" +
                         "&8-------------------------------------" + "\n" +
-                        "&6" + StringUtils.join(playerList, ", ") + "\n" +
-                        "&8-------------------------------------" + "\n" +
                         "&7You're on this server!"
 
                     , '&')).
@@ -73,8 +71,6 @@ public class CommandServerList extends NetworkCommand {
 
                         serverInfo.getServerName() + "\n" +
                         serverInfo.getDescription() + "\n" +
-                        "&8-------------------------------------" + "\n" +
-                        "&6" + StringUtils.join(playerList, ", ") + "\n" +
                         "&8-------------------------------------" + "\n" +
                         "&7Click to join the server &a" + serverInfo.getServerName() + "&7!"
 
