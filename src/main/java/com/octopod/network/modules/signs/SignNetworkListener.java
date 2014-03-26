@@ -3,7 +3,6 @@ package com.octopod.network.modules.signs;
 import com.octopod.network.events.EventHandler;
 import com.octopod.network.events.player.NetworkPlayerJoinEvent;
 import com.octopod.network.events.player.NetworkPlayerLeaveEvent;
-import com.octopod.network.events.player.NetworkPlayerRedirectEvent;
 
 import java.util.ArrayList;
 
@@ -15,22 +14,16 @@ public class SignNetworkListener {
 
     private void updateSigns(String server) {
         SignFormat format = new SignFormat(server);
-        ArrayList<SignLocation> signs = SignPlugin.instance.getDatabase().getSigns(server);
+        ArrayList<SignLocation> signs = SignPlugin.getDatabase().getSigns(server);
         if(signs != null) {
             for(SignLocation sign: signs) {
-                SignPlugin.instance.updateSign(sign, format);
+                SignPlugin.updateSign(sign, format);
             }
         }
     }
 
     @EventHandler
     public void onPlayerJoin(NetworkPlayerJoinEvent event) {
-        updateSigns(event.getServer());
-    }
-
-    @EventHandler
-    public void onPlayerRedirect(NetworkPlayerRedirectEvent event) {
-        updateSigns(event.getFromServer());
         updateSigns(event.getServer());
     }
 

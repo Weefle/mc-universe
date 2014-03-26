@@ -41,14 +41,7 @@ public class BukkitListener implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 
-		String location = NetworkPlayerCache.findPlayer(event.getPlayer().getName());
-		String channel;
-
-		if(location == null) {
-			channel = NetworkConfig.getChannel("PLAYER_JOIN");
-		} else {
-			channel = NetworkConfig.getChannel("PLAYER_REDIRECT");
-		}
+		String channel = NetworkConfig.getChannel("PLAYER_JOIN");
 
         NetworkPlus.broadcastMessage(channel, event.getPlayer().getName());
 		
@@ -57,13 +50,9 @@ public class BukkitListener implements Listener {
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent event) {
 
-		String location = NetworkPlayerCache.findPlayer(event.getPlayer().getName());
 		String channel = NetworkConfig.getChannel("PLAYER_LEAVE");
-		
-		if(location != null && location.equals(NetworkPlus.getUsername()))
-		{
-			NetworkPlus.broadcastMessage(channel, event.getPlayer().getName());
-		}
+
+	    NetworkPlus.broadcastMessage(channel, event.getPlayer().getName());
 		
 	}
 	

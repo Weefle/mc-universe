@@ -7,7 +7,6 @@ import com.octopod.network.cache.NetworkServerCache;
 import com.octopod.network.events.network.NetworkConnectedEvent;
 import com.octopod.network.events.player.NetworkPlayerJoinEvent;
 import com.octopod.network.events.player.NetworkPlayerLeaveEvent;
-import com.octopod.network.events.player.NetworkPlayerRedirectEvent;
 import com.octopod.network.events.relays.MessageEvent;
 import com.octopod.network.events.server.ServerAddedEvent;
 import com.octopod.network.events.server.ServerClearEvent;
@@ -105,7 +104,7 @@ public class NetworkListener {
 
         NetworkPlus.getEventManager().triggerEvent(event);
 
-        NetworkPlus.getLogger().debug("&b" + event.getPlayer() + " &7joined network through &a" + event.getServer());
+        BukkitUtils.console("&b" + event.getPlayer() + " &7joined &a" + event.getServer());
         NetworkPlayerCache.putPlayer(event.getPlayer(), event.getServer());
     }
 
@@ -119,22 +118,11 @@ public class NetworkListener {
 
         NetworkPlus.getEventManager().triggerEvent(event);
 
-        NetworkPlus.getLogger().debug("&b" + event.getPlayer() + " &7left network through &a" + event.getServer());
-        NetworkPlayerCache.removePlayer(event.getPlayer());
-    }
+        BukkitUtils.console("&b" + event.getPlayer() + " &7left &a" + event.getServer());
 
-    /**
-     * Listens for when any player moves from one server to another.
-     * This method should change the player's entry in the cache to the new server.
-     */
-    public static void triggerPlayerRedirect(String player, String from, String server)
-    {
-        NetworkPlayerRedirectEvent event = new NetworkPlayerRedirectEvent(player, from, server);
-
-        NetworkPlus.getEventManager().triggerEvent(event);
-
-        NetworkPlus.getLogger().debug("&b" + event.getPlayer() + " &7redirected from &a" + event.getFromServer() + "&7 to &a" + event.getServer());
-        NetworkPlayerCache.putPlayer(event.getPlayer(), event.getServer());
+        if(NetworkPlayerCache.findPlayer(player).equals(server)) {
+            NetworkPlayerCache.removePlayer(event.getPlayer());
+        }
     }
 
     /**
@@ -172,16 +160,6 @@ public class NetworkListener {
         //Tells the server a player has left the network
 		if(channel.equals(NetworkConfig.getChannel("PLAYER_LEAVE")))
 			triggerPlayerLeave(message, sender);
-
-        //Tells the server a player has switched servers on the network
-		if(channel.equals(NetworkConfig.getChannel("PLAYER_REDIRECT"))) {
-            String serverFrom = NetworkPlayerCache.findPlayer(message);
-            if(serverFrom == null) {
-                triggerPlayerJoin(message, sender);
-            } else {
-			    triggerPlayerRedirect(message, NetworkPlayerCache.findPlayer(message), sender);
-            }
-        }
 
 		//Tells the server to broadcast a message on the server.
 		if(channel.equals(NetworkConfig.getChannel("BROADCAST")))
