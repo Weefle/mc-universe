@@ -1,7 +1,6 @@
 package com.octopod.network;
 
 import com.octopod.network.cache.NetworkCommandCache;
-import com.octopod.network.cache.NetworkPlayerCache;
 import com.octopod.network.cache.NetworkServerCache;
 import com.octopod.network.commands.*;
 import com.octopod.network.connection.LilypadConnection;
@@ -108,7 +107,6 @@ public class NetworkPlusPlugin extends JavaPlugin {
 
         NetworkServerCache.reset();
         NetworkCommandCache.reset();
-        NetworkPlayerCache.reset();
 
         NetworkPlus.getEventManager().unregisterAll();
         NetworkPlus.requestUncache(getUsername());
@@ -163,7 +161,7 @@ public class NetworkPlusPlugin extends JavaPlugin {
         new SignPlugin();
 
         connection.connect();
-        NetworkListener.triggerServerFound(NetworkPlus.getServerInfo());
+        NetworkListener.discoverServer(NetworkPlus.getUsername(), NetworkPlus.getServerInfo());
 
 	}
 

@@ -2,7 +2,6 @@ package com.octopod.network.connection;
 
 import com.octopod.network.NetworkConfig;
 import com.octopod.network.NetworkListener;
-import com.octopod.network.NetworkPlus;
 import com.octopod.network.NetworkPlusPlugin;
 import com.octopod.network.bukkit.BukkitUtils;
 
@@ -56,7 +55,7 @@ public class LilypadConnection extends NetworkConnection {
                 return;
             }
 
-            NetworkListener.triggerMessageRecieved(username, channel, message);
+            NetworkListener.recieveMessage(username, channel, message);
         }
     }
 

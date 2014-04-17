@@ -2,16 +2,15 @@ package com.octopod.network;
 
 import com.google.gson.JsonSyntaxException;
 import com.octopod.network.cache.NetworkHubCache;
-import com.octopod.network.cache.NetworkPlayerCache;
 import com.octopod.network.cache.NetworkServerCache;
 import com.octopod.network.events.network.NetworkConnectedEvent;
 import com.octopod.network.events.player.NetworkPlayerJoinEvent;
 import com.octopod.network.events.player.NetworkPlayerLeaveEvent;
 import com.octopod.network.events.relays.MessageEvent;
-import com.octopod.network.events.server.ServerAddedEvent;
-import com.octopod.network.events.server.ServerClearEvent;
-import com.octopod.network.events.server.ServerFoundEvent;
+import com.octopod.network.events.server.*;
 import com.octopod.network.bukkit.BukkitUtils;
+
+import java.util.HashMap;
 
 /**
  * @author Octopod
@@ -22,7 +21,7 @@ public class NetworkListener {
      * Listens for when this plugin is connected according to the NetworkConnection instance.
      * This method should request ServerInfo and playerlists from every server.
      */
-    public static void triggerNetworkConnected()
+    public static void connectNetwork()
     {
         NetworkConnectedEvent event = new NetworkConnectedEvent();
 
@@ -37,28 +36,41 @@ public class NetworkListener {
         NetworkPlus.requestServerInfo();
     }
 
+    public static void recieveServer(String server, HashMap<String, Object> info) {
+
+        ServerRecievedEvent event = new ServerRecievedEvent(server, info);
+
+        NetworkPlus.getEventManager().triggerEvent(event);
+
+        if(!event.isCancelled()) {
+
+            //If the server doesn't exist, request information from that server.
+            if(!NetworkServerCache.serverExists(server)) {
+                discoverServer(server, info);
+            } else {
+                updateServer(server, options);
+            }
+
+        }
+
+    }
+
     /**
-     * Listens for when a ServerInfo object is recieved from any server.
+     * Fires when a ServerInfo is recieved from a server that isn't cached.
      * This method should cache the ServerInfo under the server it was sent from.
      * It should also update the NetworkPlayerCache.
-     * @param serverInfo
+     * @param server The name of the server who sent the information.
+     * @param info
      */
-    public static void triggerServerFound(ServerInfo serverInfo)
+    public static void discoverServer(String server, HashMap<String, Object> info)
     {
-        ServerFoundEvent event = new ServerFoundEvent(serverInfo);
+        ServerDiscoveredEvent event = new ServerDiscoveredEvent(server, info);
 
         NetworkPlus.getEventManager().triggerEvent(event);
 
         if(!event.isCancelled())
         {
-            String server = event.getServer();
-
-            NetworkServerCache.addServer(serverInfo);
-
-            //Update player locations in the NetworkPlayerCache
-            for(String player: serverInfo.getPlayers()) {
-                NetworkPlayerCache.putPlayer(player, server);
-            }
+            ServerFlags serverInfo = NetworkServerCache.addServer(server, info);
 
             //Checks if this server is a hub (priority above 0)
             int hubPriority = serverInfo.getHubPriority();
@@ -70,14 +82,15 @@ public class NetworkListener {
             //Version checking
             if(!NetworkPlus.isTestBuild()) {
                 //Checks for mismatched plugin versions between servers, and warns the server owners.
-                String version = serverInfo.getPluginVersion();
+                String version = serverInfo.getVersion();
 
                 if(!version.equals("TEST_BUILD") && !version.equals(NetworkPlus.getPluginVersion())) {
                     NetworkPlus.getLogger().info("&a" + server + "&7: Running &6Net+&7 version &6" + (version.equals("") ? "No Version" : version));
                 }
             }
 
-            NetworkPlus.getEventManager().triggerEvent(new ServerAddedEvent(serverInfo));
+            NetworkPlus.sendServerInfo(server);
+            NetworkPlus.getEventManager().triggerEvent(new PostServerDiscoveredEvent(serverInfo));
         }
     }
 
@@ -85,9 +98,9 @@ public class NetworkListener {
      * Listens for when an uncache request is sent from any server.
      * This method should uncache the requested server.
      */
-    public static void triggerServerClear(String server, String requester)
+    public static void clearServer(String server, String requester)
     {
-        ServerClearEvent event = new ServerClearEvent(server, requester);
+        ServerClearedEvent event = new ServerClearedEvent(server, requester);
 
         NetworkPlus.getEventManager().triggerEvent(event);
 
@@ -98,38 +111,31 @@ public class NetworkListener {
      * Listens for when any player joins the network.
      * This method should cache the player into the server they joined into.
      */
-    public static void triggerPlayerJoin(String player, String server)
+    public static void firePlayerJoinEvent(String player, String server)
     {
         NetworkPlayerJoinEvent event = new NetworkPlayerJoinEvent(player, server);
 
         NetworkPlus.getEventManager().triggerEvent(event);
-
-        BukkitUtils.console("&b" + event.getPlayer() + " &7joined &a" + event.getServer());
-        NetworkPlayerCache.putPlayer(event.getPlayer(), event.getServer());
     }
 
     /**
      * Listens for when any player leaves the network.
      * This method should uncache the player.
      */
-    public static void triggerPlayerLeave(String player, String server)
+    public static void firePlayerLeaveEvent(String player, String server)
     {
         NetworkPlayerLeaveEvent event = new NetworkPlayerLeaveEvent(player, server);
 
         NetworkPlus.getEventManager().triggerEvent(event);
 
         BukkitUtils.console("&b" + event.getPlayer() + " &7left &a" + event.getServer());
-
-        if(NetworkPlayerCache.findPlayer(player).equals(server)) {
-            NetworkPlayerCache.removePlayer(event.getPlayer());
-        }
     }
 
     /**
      * Listens for when any message is recieved from any server.
      * This method is a gateway to other events and features.
      */
-    public static void triggerMessageRecieved(String sender, String channel, String message)
+    public static void recieveMessage(String sender, String channel, String message)
     {
         //Return if sender is this server; Cannot self-message.
         if(sender.equals(NetworkPlus.getUsername())) return;
@@ -155,11 +161,11 @@ public class NetworkListener {
 
         //Tells the server a player has joined the network
 		if(channel.equals(NetworkConfig.getChannel("PLAYER_JOIN")))
-			triggerPlayerJoin(message, sender);
+			firePlayerJoinEvent(message, sender);
 
         //Tells the server a player has left the network
 		if(channel.equals(NetworkConfig.getChannel("PLAYER_LEAVE")))
-			triggerPlayerLeave(message, sender);
+			firePlayerLeaveEvent(message, sender);
 
 		//Tells the server to broadcast a message on the server.
 		if(channel.equals(NetworkConfig.getChannel("BROADCAST")))
@@ -167,35 +173,34 @@ public class NetworkListener {
 
 		/**
 		 * Server Request
-         * Servers that recieve this message will send back server information.
+         * Sends back this server's ServerInfo object converted into a string.
 		 */
-		if(channel.equals(NetworkConfig.getChannel("SERVER_REQUEST")) || channel.equals(NetworkConfig.getChannel("SERVER_RESPONSE")))
+		if(channel.equals(NetworkConfig.getChannel("SERVER_REQUEST")))
+        {
+            NetworkPlus.sendMessage(sender, NetworkConfig.getChannel("SERVER_RESPONSE"),
+                    NetworkPlus.gson().toJson(NetworkPlus.getServerInfo())
+            );
+        }
+
+        /**
+         * Server Response
+         * Attempts to convert the message into a HashMap object and cache it.
+         */
+        if(channel.equals(NetworkConfig.getChannel("SERVER_RESPONSE")))
         {
             try {
-                ServerInfo serverInfo = NetworkPlus.gson().fromJson(message, ServerInfo.class);
-                if(serverInfo == null) throw new NullPointerException("Server '" + sender + "' gave us a null serverinfo, json: " + message);
-                triggerServerFound(serverInfo);
+                recieveServer(sender, Util.mapFromJson(message));
             } catch (JsonSyntaxException e) {
                 NetworkPlus.getLogger().info("Server &a" + sender + " &7has sent an invalid ServerInfo.");
             } catch (NullPointerException e) {
                 NetworkPlus.getLogger().info("Server &a" + sender + " &7has sent a null ServerInfo.");
                 BukkitUtils.console(e.getMessage());
             }
-
-            //Send back the message if it's a request
-            if(channel.equals(NetworkConfig.getChannel("SERVER_REQUEST"))) {
-                //and the sender isn't this server
-                if(!sender.equals(NetworkPlus.getUsername())) {
-                    NetworkPlus.sendMessage(sender, NetworkConfig.getChannel("SERVER_RESPONSE"),
-                            NetworkPlus.gson().toJson(NetworkPlus.getServerInfo())
-                    );
-                }
-            }
         }
 
 		if(channel.equals(NetworkConfig.getChannel("CLEAR_REQUEST")))
 		{		
-			NetworkPlus.getEventManager().triggerEvent(new ServerClearEvent(message, sender));
+			NetworkPlus.getEventManager().triggerEvent(new ServerClearedEvent(message, sender));
 		}
 		
 	}

@@ -1,7 +1,7 @@
 package com.octopod.network;
 
 import com.google.gson.Gson;
-import com.octopod.network.cache.NetworkPlayerCache;
+import com.octopod.network.cache.NetworkServerCache;
 import com.octopod.network.connection.NetworkConnection;
 import com.octopod.network.events.EventManager;
 import com.octopod.network.bukkit.BukkitUtils;
@@ -87,9 +87,9 @@ public class NetworkPlus {
         return plugin.logger();
     }
 
-    public static ServerInfo getServerInfo() {
+    public static ServerFlags getServerInfo() {
         if(!isLoaded()) return null;
-        return new ServerInfo();
+        return ServerFlags.createLocal();
     }
 
     public static NetworkConnection getConnection() {
@@ -135,7 +135,7 @@ public class NetworkPlus {
      * @return The List containing all the players.
      */
     public static List<String> getCachedPlayers() {
-        return NetworkPlayerCache.getPlayers();
+        return NetworkServerCache.getAllOnlinePlayers();
     }
 
     /**
@@ -148,7 +148,7 @@ public class NetworkPlus {
     }
 
     public static String findPlayer(String player) {
-        return NetworkPlayerCache.findPlayer(player);
+        return NetworkServerCache.findPlayer(player);
     }
 
     //=========================================================================================//
@@ -241,6 +241,18 @@ public class NetworkPlus {
     public static void requestServerInfo(String server) {
         getLogger().verbose("Requesting info from &a" + server);
         sendMessage(server, NetworkConfig.getChannel("SERVER_REQUEST"), gson().toJson(getServerInfo()));
+    }
+
+    public static void sendServerInfo(String server) {
+        NetworkPlus.sendMessage(server, NetworkConfig.getChannel("SERVER_RESPONSE"),
+                gson().toJson(NetworkPlus.getServerInfo())
+        );
+    }
+
+    public static void broadcastServerInfo() {
+        NetworkPlus.broadcastMessage(NetworkConfig.getChannel("SERVER_RESPONSE"),
+                gson().toJson(NetworkPlus.getServerInfo())
+        );
     }
 
     /**

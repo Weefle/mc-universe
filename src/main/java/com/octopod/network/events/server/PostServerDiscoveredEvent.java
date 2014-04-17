@@ -1,27 +1,27 @@
 package com.octopod.network.events.server;
 
-import com.octopod.network.ServerInfo;
+import com.octopod.network.ServerFlags;
 import com.octopod.network.events.Event;
 
 /**
  * Runs after the ServerInfo was cached.
  */
-public class ServerAddedEvent extends Event {
-	
+public class PostServerDiscoveredEvent extends Event {
+
 	String server;
-    ServerInfo serverInfo;
-	
-	public ServerAddedEvent(ServerInfo serverInfo) {
+    ServerFlags serverInfo;
+
+	public PostServerDiscoveredEvent(ServerFlags serverInfo) {
 		this.server = serverInfo.getUsername();
         this.serverInfo = serverInfo;
 	}
-	
+
 	public String getServer() {
 		return server;
 	}
-	
-	public ServerInfo getServerInfo() {
+
+	public ServerFlags getServerInfo() {
 		return serverInfo;
 	}
-	
+
 }

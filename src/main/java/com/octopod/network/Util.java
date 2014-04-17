@@ -4,6 +4,7 @@ import com.octopod.octolib.common.IOUtils;
 import org.bukkit.craftbukkit.libs.com.google.gson.Gson;
 
 import java.io.*;
+import java.util.HashMap;
 
 /**
  * @author Octopod
@@ -35,6 +36,11 @@ public class Util {
         while((ch = is.read()) != -1) sb.append((char)ch);
         IOUtils.closeSilent(is);
         return sb.toString();
+    }
+
+    @SuppressWarnings("unchecked")
+    public static HashMap<String, Object> mapFromJson(String json) {
+        return NetworkPlus.gson().fromJson(json, (Class<HashMap<String, Object>>)(Class<?>)HashMap.class);
     }
 
 }

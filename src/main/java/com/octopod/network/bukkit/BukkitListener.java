@@ -4,7 +4,7 @@ import com.octopod.network.NetworkConfig;
 import com.octopod.network.NetworkPlus;
 import com.octopod.network.cache.NetworkCommandCache;
 import com.octopod.network.cache.NetworkHubCache;
-import com.octopod.network.cache.NetworkPlayerCache;
+import com.octopod.network.cache.NetworkServerCache;
 import com.octopod.network.commands.NetworkCommand;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -19,8 +19,8 @@ import java.util.*;
 public class BukkitListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onCommand(PlayerCommandPreprocessEvent event) {
-
+    public void onCommand(PlayerCommandPreprocessEvent event)
+    {
         Map<String, NetworkCommand> commands = NetworkCommandCache.getCommands();
 
         String[] parsed = event.getMessage().split(" ");
@@ -35,29 +35,29 @@ public class BukkitListener implements Listener {
                 event.setCancelled(true);
             }
         }
+    }
 
+    private void updatePlayers()
+    {
+        HashMap<String, Object> options = new HashMap<>();
+        options.put("onlinePlayers", Arrays.asList(BukkitUtils.getPlayerNames()));
+
+        //First, update this server.
+        NetworkServerCache.getInfo(NetworkPlus.getUsername()).update(options);
+
+        //Then, broadcast to everywhere else.
+        NetworkPlus.broadcastMessage(NetworkConfig.getChannel("SERVER_RESPONSE"), NetworkPlus.gson().toJson(options));
     }
 
 	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent event) {
-
-		String channel = NetworkConfig.getChannel("PLAYER_JOIN");
-
-        NetworkPlus.broadcastMessage(channel, event.getPlayer().getName());
-		
-	}
+	public void onPlayerJoin(PlayerJoinEvent event) {updatePlayers();}
 	
 	@EventHandler
-	public void onPlayerLeave(PlayerQuitEvent event) {
-
-		String channel = NetworkConfig.getChannel("PLAYER_LEAVE");
-
-	    NetworkPlus.broadcastMessage(channel, event.getPlayer().getName());
-		
-	}
+	public void onPlayerLeave(PlayerQuitEvent event) {updatePlayers();}
 	
 	@EventHandler(ignoreCancelled = true)
-	public void onPlayerKicked(PlayerKickEvent event) {
+	public void onPlayerKicked(PlayerKickEvent event)
+    {
 
         String hub = NetworkHubCache.getHub();
 

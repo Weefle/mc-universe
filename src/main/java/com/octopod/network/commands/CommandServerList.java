@@ -1,17 +1,14 @@
 package com.octopod.network.commands;
 
 import com.octopod.network.*;
-import com.octopod.network.cache.NetworkPlayerCache;
 import com.octopod.network.cache.NetworkServerCache;
 import com.octopod.network.bukkit.BukkitUtils;
 import com.octopod.octolib.minecraft.ChatBuilder;
 import com.octopod.octolib.minecraft.ChatUtils;
 import com.octopod.octolib.minecraft.bukkit.BukkitPlayer;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -29,20 +26,21 @@ public class CommandServerList extends NetworkCommand {
 
 		if(!(sender instanceof Player)) {return false;}
 
-		Map<String, ServerInfo> serverMap = NetworkServerCache.getServerMap();
+		Map<String, ServerFlags> serverMap = NetworkServerCache.getServerMap();
+        int totalPlayers = NetworkServerCache.getAllOnlinePlayers().size();
 
         //Gets the size of all players on the network via LilyPad and gets the difference from the total known players.
-        int unlistedPlayerCount = NetworkPlus.getNetworkedPlayers().size() - NetworkPlayerCache.totalPlayers();
+        int unlistedPlayerCount = NetworkPlus.getNetworkedPlayers().size() - totalPlayers;
 
-        BukkitUtils.sendMessage(sender, "&7Found &a" + serverMap.size() + " &7servers. &b" + NetworkPlayerCache.totalPlayers() + " players &8(~" + unlistedPlayerCount + " unlisted)", null);
+        BukkitUtils.sendMessage(sender, "&7Found &a" + serverMap.size() + " &7servers. &b" + totalPlayers + " players &8(~" + unlistedPlayerCount + " unlisted)", null);
         BukkitUtils.sendMessage(sender, "&7Hover over the server names for more information.", null);
 
-		for(ServerInfo serverInfo: serverMap.values()) {
+		for(ServerFlags serverInfo: serverMap.values()) {
 
             String server = serverInfo.getUsername();
 
             //The list of players on this server.
-            List<String> playerList = NetworkPlayerCache.getPlayers(server);
+            List<String> playerList = NetworkServerCache.getOnlinePlayers(server);
 
             //The playerlist shouldn't be null, but just in case:
             int playerCount = playerList == null ? 0 : playerList.size();

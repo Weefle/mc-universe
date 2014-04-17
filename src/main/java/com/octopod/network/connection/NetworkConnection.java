@@ -11,7 +11,7 @@ import java.util.List;
 public abstract class NetworkConnection {
 
     protected void triggerConnection() {
-        NetworkListener.triggerNetworkConnected();
+        NetworkListener.connectNetwork();
     }
 
     public abstract String getConnectionType();

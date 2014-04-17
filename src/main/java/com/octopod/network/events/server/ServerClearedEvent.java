@@ -2,11 +2,11 @@ package com.octopod.network.events.server;
 
 import com.octopod.network.events.Event;
 
-public class ServerClearEvent extends Event {
+public class ServerClearedEvent extends Event {
 	
 	String requester, server;
 	
-	public ServerClearEvent(String server, String requester) {
+	public ServerClearedEvent(String server, String requester) {
 		this.requester = requester;
 		this.server = server;
 	}

@@ -1,8 +1,8 @@
 package com.octopod.network.commands;
 
 import com.octopod.network.NetworkPermission;
-import com.octopod.network.cache.NetworkPlayerCache;
 import com.octopod.network.bukkit.BukkitUtils;
+import com.octopod.network.cache.NetworkServerCache;
 import org.bukkit.command.CommandSender;
 
 public class CommandFind extends NetworkCommand {
@@ -29,7 +29,7 @@ public class CommandFind extends NetworkCommand {
 
 		String player = args[0];
 
-		String server = NetworkPlayerCache.findPlayer(player);
+		String server = NetworkServerCache.findPlayer(player);
 
 		if(server == null) {
 			BukkitUtils.sendMessage(sender, "&cThis player was not found.");

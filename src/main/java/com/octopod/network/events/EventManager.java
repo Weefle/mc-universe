@@ -61,7 +61,7 @@ public class EventManager {
 
                         //Try to use argument type to find Event type.
                         if(!event.getClass().equals(argTypes[0])) {
-                            //If the listener is instanceof ListenerIdentifier, get the type
+                            //If the listener is instanceof ListenerIdentifier, getFlag the type
                             if(!ListenerIdentifier.class.isInstance(listener)) {
                                 continue;
                             } else {

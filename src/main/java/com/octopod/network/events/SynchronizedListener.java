@@ -14,7 +14,7 @@ public class SynchronizedListener<T extends Event> implements Listener<T>, Liste
     /**
      * Implementation of ListenerIdentifier.
      * Because the below listener is a Generic type (Event) then we will use getType()
-     * to get the Event type instead.
+     * to getFlag the Event type instead.
      * @return
      */
     @Override
