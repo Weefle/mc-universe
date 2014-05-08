@@ -2,6 +2,7 @@ package com.octopod.network.bukkit;
 
 import com.octopod.network.NetworkConfig;
 import com.octopod.network.NetworkPlus;
+import com.octopod.network.NetworkQueueManager;
 import com.octopod.network.cache.NetworkCommandCache;
 import com.octopod.network.cache.NetworkHubCache;
 import com.octopod.network.cache.NetworkServerCache;
@@ -53,7 +54,16 @@ public class BukkitListener implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {updatePlayers();}
 	
 	@EventHandler
-	public void onPlayerLeave(PlayerQuitEvent event) {updatePlayers();}
+	public void onPlayerLeave(PlayerQuitEvent event) 
+	{
+		updatePlayers();
+		if (NetworkQueueManager.instance.isQueued(event.getPlayer()
+				.getName())) {
+			NetworkQueueManager.instance
+					.remove(event.getPlayer().getName());
+		}
+		NetworkQueueManager.instance.updateQueue();
+	}
 	
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerKicked(PlayerKickEvent event)

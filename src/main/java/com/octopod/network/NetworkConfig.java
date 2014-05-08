@@ -156,6 +156,8 @@ public class NetworkConfig {
         addChannel("PLAYER_JOIN",       "player.join");
         addChannel("PLAYER_REDIRECT",   "player.redirect");
         addChannel("PLAYER_LEAVE",      "player.leave");
+        addChannel("PLAYER_JOIN_QUEUE", "player.leavequeue");
+        addChannel("PLAYER_LEAVE_QUEUE","player.joinqueue");
 
         addChannel("SENDALL",           "sendall");
         addChannel("MESSAGE",           "message");

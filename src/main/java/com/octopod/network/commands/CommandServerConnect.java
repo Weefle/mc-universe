@@ -1,10 +1,15 @@
 package com.octopod.network.commands;
 
-import com.octopod.network.NetworkPlus;
-import com.octopod.network.bukkit.BukkitUtils;
-import com.octopod.network.NetworkPermission;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import com.octopod.network.NetworkConfig;
+import com.octopod.network.NetworkPermission;
+import com.octopod.network.NetworkPlus;
+import com.octopod.network.NetworkQueueManager;
+import com.octopod.network.ServerFlags;
+import com.octopod.network.bukkit.BukkitUtils;
+import com.octopod.network.cache.NetworkServerCache;
 
 public class CommandServerConnect extends NetworkCommand {
 
@@ -40,6 +45,36 @@ public class CommandServerConnect extends NetworkCommand {
 		//Checks if the message went through before sending them there.
 		if(!NetworkPlus.isServerOnline(server)) {
             BukkitUtils.sendMessage(sender, "&cThis server is offline or does not exist.");
+			return true;
+		}
+		
+		// Checks if the server is full before sending them there.
+		if (!NetworkPlus.isServerFull(server)) {
+			// Make sure they're not already in a queue
+			for (ServerFlags flags : NetworkServerCache.getServerMap().values()) {
+				if (flags.getQueuedPlayers().contains(player)) {
+					BukkitUtils.sendMessage(
+							sender,
+							"&cYou're already queued to join &a"
+									+ flags.getServerName());
+					return true;
+				}
+			}
+
+			// Broadcast message to be added to queue
+			BukkitUtils.sendMessage(sender, "&c" + server
+					+ " is full. Adding you to queue.");
+			String channel = NetworkConfig.getChannel("PLAYER_JOIN_QUEUE");
+			if (!player.hasPermission(NetworkPermission.NETWORK_QUEUE_BYPASS
+					.toString())) {
+				NetworkPlus.broadcastMessage(channel, player.getName() + ":"
+						+ server + ":0");
+			} else {
+				int vipInQueue = NetworkQueueManager.instance
+						.getVIPQueueMembers();
+				NetworkPlus.broadcastMessage(channel, player.getName() + ":"
+						+ server + ":" + String.valueOf(vipInQueue + 1));
+			}
 			return true;
 		}
 

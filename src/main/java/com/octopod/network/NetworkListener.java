@@ -1,16 +1,19 @@
 package com.octopod.network;
 
+import java.util.HashMap;
+
 import com.google.gson.JsonSyntaxException;
+import com.octopod.network.bukkit.BukkitUtils;
 import com.octopod.network.cache.NetworkHubCache;
 import com.octopod.network.cache.NetworkServerCache;
 import com.octopod.network.events.network.NetworkConnectedEvent;
 import com.octopod.network.events.player.NetworkPlayerJoinEvent;
 import com.octopod.network.events.player.NetworkPlayerLeaveEvent;
 import com.octopod.network.events.relays.MessageEvent;
-import com.octopod.network.events.server.*;
-import com.octopod.network.bukkit.BukkitUtils;
-
-import java.util.HashMap;
+import com.octopod.network.events.server.PostServerDiscoveredEvent;
+import com.octopod.network.events.server.ServerClearedEvent;
+import com.octopod.network.events.server.ServerDiscoveredEvent;
+import com.octopod.network.events.server.ServerRecievedEvent;
 
 /**
  * @author Octopod
@@ -130,6 +133,36 @@ public class NetworkListener {
 
         BukkitUtils.console("&b" + event.getPlayer() + " &7left &a" + event.getServer());
     }
+    
+	/**
+	 * Listens for when any player joins the queue on the network. This method
+	 * should add the player to the respected queue.
+	 */
+	public static void firePlayerJoinQueueEvent(String player, String server,
+			int queuePosition) {
+		NetworkPlus.getLogger().debug(
+				"&b" + player + " &7joined the queue for &a" + server
+						+ " &7in position: &a" + queuePosition);
+		// If the message is to this server, add to queue.
+		if (server
+				.equalsIgnoreCase(NetworkPlus.getServerInfo().getServerName())) {
+			NetworkQueueManager.instance.add(player, queuePosition);
+		}
+	}
+
+	/**
+	 * Listens for when any player leaves the queue on the network. This method
+	 * should remove the player from the respected queue.
+	 */
+	public static void firePlayerLeaveQueueEvent(String player, String server) {
+		NetworkPlus.getLogger().debug(
+				"&b" + player + " &7left the queue for &a" + server);
+		// If the server is this server, update queue.
+		if (server
+				.equalsIgnoreCase(NetworkPlus.getServerInfo().getServerName())) {
+			NetworkQueueManager.instance.updateQueue();
+		}
+	}
 
     /**
      * Listens for when any message is recieved from any server.
@@ -166,6 +199,14 @@ public class NetworkListener {
         //Tells the server a player has left the network
 		if(channel.equals(NetworkConfig.getChannel("PLAYER_LEAVE")))
 			firePlayerLeaveEvent(message, sender);
+		
+		//Tells the server a player has joined the queue
+		if (channel.equals(NetworkConfig.getChannel("PLAYER_JOIN_QUEUE")))
+			firePlayerJoinQueueEvent(message.split(":")[0], sender, Integer.parseInt(message.split(":")[1]));
+		
+		//Tells the server a player has left the queue
+		if (channel.equals(NetworkConfig.getChannel("PLAYER_LEAVE_QUEUE")))
+			firePlayerLeaveQueueEvent(message.split(":")[0], sender);
 
 		//Tells the server to broadcast a message on the server.
 		if(channel.equals(NetworkConfig.getChannel("BROADCAST")))

@@ -20,7 +20,8 @@ public enum NetworkPermission {
     NETWORK_SERVER_LIST     ("network.server.list"),
     NETWORK_SERVER_PING     ("network.server.ping"),
     NETWORK_SERVER_SEND     ("network.server.send"),
-    NETWORK_SERVER_SENDALL  ("network.server.sendall");
+    NETWORK_SERVER_SENDALL  ("network.server.sendall"),
+    NETWORK_QUEUE_BYPASS    ("network.queue.bypass");
 
     private String node;
     private NetworkPermission(String node) {
