@@ -1,13 +1,13 @@
 package com.octopod.network;
 
+import java.io.File;
+import java.util.List;
+
 import com.google.gson.Gson;
+import com.octopod.network.bukkit.BukkitUtils;
 import com.octopod.network.cache.NetworkServerCache;
 import com.octopod.network.connection.NetworkConnection;
 import com.octopod.network.events.EventManager;
-import com.octopod.network.bukkit.BukkitUtils;
-
-import java.io.File;
-import java.util.List;
 
 /**
  * @author Octopod
@@ -163,6 +163,18 @@ public class NetworkPlus {
     public static boolean isServerOnline(String server) {
         return getConnection().serverExists(server);
     }
+    
+	/**
+	 * Gets if the server with this username is currently full of players.
+	 * 
+	 * @param server
+	 *            The username of the server.
+	 * @return If the server is full.
+	 */
+	public static boolean isServerFull(String server) {
+		return NetworkServerCache.getOnlinePlayers(server).size() >= NetworkServerCache
+				.getInfo(server).getMaxPlayers();
+	}
 
     public static boolean sendPlayer(String player, String server) {
         return getConnection().sendPlayer(player, server);

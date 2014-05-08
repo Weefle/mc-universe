@@ -1,9 +1,15 @@
 package com.octopod.network;
 
-import com.octopod.network.bukkit.BukkitUtils;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+
 import org.bukkit.Bukkit;
 
-import java.util.*;
+import com.octopod.network.NetworkConfig;
+import com.octopod.network.NetworkPlus;
+import com.octopod.network.NetworkQueueManager;
+import com.octopod.network.bukkit.BukkitUtils;
 
 /**
  * @author Octopod
@@ -26,6 +32,7 @@ public class ServerFlags {
         options.put("hubPriority", NetworkConfig.isHub() ? NetworkConfig.getHubPriority() : -1); //Server's hub priority, or -1 if is not a hub.
         options.put("version", NetworkPlus.getPluginVersion()); //Server's plugin version. (<build>-<commit>)
         options.put("onlinePlayers", Arrays.asList(BukkitUtils.getPlayerNames())); //Server's online players.
+        options.put("queuedPlayers", NetworkQueueManager.instance.getQueueMembers());// Players queued for this server
         return new ServerFlags(options);
     }
 
@@ -80,6 +87,7 @@ public class ServerFlags {
 
     public ArrayList<String> getWhitelistedPlayers() {return getStringList("whitelistedPlayers");}
     public ArrayList<String> getOnlinePlayers() {return getStringList("onlinePlayers");}
+    public ArrayList<String> getQueuedPlayers() {return getStringList("queuedPlayers");}
 
     public String toString() {
         return NetworkPlus.gson().toJson(this);
