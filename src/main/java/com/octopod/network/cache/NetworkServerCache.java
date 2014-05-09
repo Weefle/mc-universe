@@ -17,20 +17,20 @@ public class NetworkServerCache {
 
     /**
      * Adds a new ServerInfo entry into the cache.
-     * @param server The name of the server.
-     * @param json The JSON string representing a HashMap.
-     * @return True, if the cache contained the server, and false if it didn't.
+     * @param serverID The name of the server.
+     * @param flags The flags recieved from this server.
+     * @return The new or patched ServerFlags object.
      */
-    public static ServerFlags addServer(String server, HashMap<String, Object> info) {
-        if(!serverMap.containsKey(server)) {
+    public static ServerFlags addServer(String serverID, HashMap<String, Object> flags) {
+        if(!serverMap.containsKey(serverID)) {
             //Add a new entry
-            ServerFlags serverInfo = new ServerFlags(info);
-            serverMap.put(server, serverInfo);
+            ServerFlags serverInfo = new ServerFlags(flags);
+            serverMap.put(serverID, serverInfo);
             return serverInfo;
         } else {
             //Merge into existing entry
-            ServerFlags serverInfo = serverMap.get(server);
-            serverInfo.merge(info);
+            ServerFlags serverInfo = serverMap.get(serverID);
+            serverInfo.merge(flags);
             return serverInfo;
         }
     }

@@ -1,13 +1,9 @@
 package com.octopod.network.commands;
 
+import com.octopod.network.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.octopod.network.NetworkConfig;
-import com.octopod.network.NetworkPermission;
-import com.octopod.network.NetworkPlus;
-import com.octopod.network.NetworkQueueManager;
-import com.octopod.network.ServerFlags;
 import com.octopod.network.bukkit.BukkitUtils;
 import com.octopod.network.cache.NetworkServerCache;
 
@@ -64,16 +60,18 @@ public class CommandServerConnect extends NetworkCommand {
 			// Broadcast message to be added to queue
 			BukkitUtils.sendMessage(sender, "&c" + server
 					+ " is full. Adding you to queue.");
-			String channel = NetworkConfig.getChannel("PLAYER_JOIN_QUEUE");
+			String channel = NetworkConfig.Channels.PLAYER_JOIN_QUEUE.toString();
 			if (!player.hasPermission(NetworkPermission.NETWORK_QUEUE_BYPASS
 					.toString())) {
-				NetworkPlus.broadcastMessage(channel, player.getName() + ":"
-						+ server + ":0");
+				NetworkPlus.broadcastMessage(channel,
+                        new ServerMessage(player.getName(), server, "0")
+                );
 			} else {
 				int vipInQueue = NetworkQueueManager.instance
 						.getVIPQueueMembers();
-				NetworkPlus.broadcastMessage(channel, player.getName() + ":"
-						+ server + ":" + String.valueOf(vipInQueue + 1));
+				NetworkPlus.broadcastMessage(channel,
+                        new ServerMessage(player.getName(), server, String.valueOf(vipInQueue + 1))
+                );
 			}
 			return true;
 		}

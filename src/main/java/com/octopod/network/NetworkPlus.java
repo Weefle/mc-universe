@@ -187,12 +187,21 @@ public class NetworkPlus {
         return getConnection().sendPlayer(player, server);
     }
 
+    /**
+     * Sends all players on a server to another server.
+     * @param serverFrom The server where the players are from.
+     * @param server The server the players will be sent to.
+     */
     public static void sendAllPlayers(String serverFrom, String server) {
-        sendMessage(serverFrom, NetworkConfig.getChannel("SENDALL"), new ServerMessage(server));
+        sendMessage(serverFrom, NetworkConfig.Channels.SERVER_SENDALL.toString(), new ServerMessage(server));
     }
 
+    /**
+     * Sends all players ON THE ENTIRE NETWORK to a server.
+     * @param server The server the players will be sent to.
+     */
     public static void sendAllPlayers(String server) {
-        broadcastMessage(NetworkConfig.getChannel("SENDALL"), new ServerMessage(server));
+        broadcastMessage(NetworkConfig.Channels.SERVER_SENDALL.toString(), new ServerMessage(server));
     }
 
     //=========================================================================================//
@@ -226,7 +235,7 @@ public class NetworkPlus {
      * @param message The message to send.
      */
     public static void broadcastNetworkMessage(String server, String message) {
-        sendMessage(server, NetworkConfig.getChannel("BROADCAST"), new ServerMessage(message));
+        sendMessage(server, NetworkConfig.Channels.SERVER_ALERT.toString(), new ServerMessage(message));
     }
 
     /**
@@ -234,7 +243,7 @@ public class NetworkPlus {
      * @param message The message to send.
      */
     public static void broadcastNetworkMessage(String message) {
-        broadcastMessage(NetworkConfig.getChannel("BROADCAST"), new ServerMessage(message));
+        broadcastMessage(NetworkConfig.Channels.SERVER_ALERT.toString(), new ServerMessage(message));
     }
 
     /**
@@ -247,7 +256,7 @@ public class NetworkPlus {
         if(BukkitUtils.isPlayerOnline(player)) {
             BukkitUtils.sendMessage(player, message);
         } else {
-            broadcastMessage(NetworkConfig.getChannel("MESSAGE"), new ServerMessage(player, message));
+            broadcastMessage(NetworkConfig.Channels.PLAYER_MESSAGE.toString(), new ServerMessage(player, message));
         }
     }
 
@@ -258,7 +267,7 @@ public class NetworkPlus {
      */
     public static void requestServerInfo() {
         getLogger().verbose("Requesting info from all servers");
-        broadcastMessage(NetworkConfig.getChannel("SERVER_REQUEST"));
+        broadcastMessage(NetworkConfig.Channels.SERVER_FLAGS_REQUEST.toString());
     }
 
     /**
@@ -269,15 +278,32 @@ public class NetworkPlus {
      */
     public static void requestServerInfo(String server) {
         getLogger().verbose("Requesting info from &a" + server);
-        sendMessage(server, NetworkConfig.getChannel("SERVER_REQUEST"));
+        sendMessage(server, NetworkConfig.Channels.SERVER_FLAGS_REQUEST.toString());
     }
 
     public static void sendServerInfo(String server) {
-        NetworkPlus.sendMessage(server, NetworkConfig.getChannel("SERVER_RESPONSE"), getServerInfo().toMessage());
+        sendServerInfo(server, getServerInfo());
+    }
+
+    /**
+     * Sends a server a ServerFlags object.
+     * @param server The name of the server to send it to.
+     * @param serverFlags The ServerFlags object.
+     */
+    public static void sendServerInfo(String server, ServerFlags serverFlags) {
+        NetworkPlus.sendMessage(server, NetworkConfig.Channels.SERVER_FLAGS_REQUEST.toString(), serverFlags.asMessage());
     }
 
     public static void broadcastServerInfo() {
-        NetworkPlus.broadcastMessage(NetworkConfig.getChannel("SERVER_RESPONSE"), getServerInfo().toMessage());
+        broadcastServerInfo(getServerInfo());
+    }
+
+    /**
+     * Broadcasts a ServerFlags object.
+     * @param serverFlags The ServerFlags object.
+     */
+    public static void broadcastServerInfo(ServerFlags serverFlags) {
+        NetworkPlus.broadcastMessage(NetworkConfig.Channels.SERVER_FLAGS_REQUEST.toString(), serverFlags.asMessage());
     }
 
 }

@@ -8,12 +8,12 @@ import java.util.HashMap;
  * @author Octopod
  *         Created on 3/26/14
  */
-public class ServerFlagsRecievedEvent extends CancellableEvent {
+public class ServerFlagsReceivedEvent extends CancellableEvent {
 
     String server;
     HashMap<String, Object> flags;
 
-    public ServerFlagsRecievedEvent(String serverID, HashMap<String, Object> flags) {
+    public ServerFlagsReceivedEvent(String serverID, HashMap<String, Object> flags) {
         server = serverID;
         this.flags = flags;
     }

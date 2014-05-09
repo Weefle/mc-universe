@@ -16,6 +16,16 @@ public class ServerMessage {
      */
     public static final ServerMessage EMPTY = new ServerMessage();
 
+    /**
+     * Parses a String as a ServerMessage object.
+     * TODO: Find an easier and quicker way to serialize and deserialize just a list of Strings.
+     * @param serialized The serialized version of an array of Strings
+     * @return A ServerMessage object.
+     */
+    public static ServerMessage parse(String serialized) {
+        return NetworkPlus.gson().fromJson(serialized, ServerMessage.class);
+    }
+
     public ServerMessage(String... args) {
         arguments = new ArrayList<>(Arrays.asList(args));
     }

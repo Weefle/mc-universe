@@ -1,8 +1,10 @@
 package com.octopod.network.connection;
 
+import com.google.gson.JsonParseException;
+import com.octopod.network.NetworkActions;
 import com.octopod.network.NetworkConfig;
-import com.octopod.network.NetworkListener;
 import com.octopod.network.NetworkPlusPlugin;
+import com.octopod.network.ServerMessage;
 import com.octopod.network.bukkit.BukkitUtils;
 
 import lilypad.client.connect.api.Connect;
@@ -55,7 +57,13 @@ public class LilypadConnection extends NetworkConnection {
                 return;
             }
 
-            NetworkListener.recieveMessage(username, channel, message);
+            try {
+                ServerMessage serverMessage = ServerMessage.parse(message);
+                NetworkActions.actionRecieveMessage(username, channel, serverMessage);
+            } catch (JsonParseException e) {
+                //The message probably isn't even a JSON, just ignore it.
+            }
+
         }
     }
 

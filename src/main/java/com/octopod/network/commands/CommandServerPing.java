@@ -6,7 +6,7 @@ import com.octopod.network.bukkit.BukkitUtils;
 import com.octopod.network.NetworkPermission;
 import com.octopod.network.events.Listener;
 import com.octopod.network.events.SynchronizedListener;
-import com.octopod.network.events.server.ServerFlagsRecievedEvent;
+import com.octopod.network.events.server.ServerFlagsReceivedEvent;
 import org.bukkit.command.CommandSender;
 
 public class CommandServerPing extends NetworkCommand {
@@ -36,10 +36,10 @@ public class CommandServerPing extends NetworkCommand {
             return true;
         }
 
-        final SynchronizedListener listener = new SynchronizedListener<>(ServerFlagsRecievedEvent.class, new Listener<ServerFlagsRecievedEvent>()
+        final SynchronizedListener listener = new SynchronizedListener<>(ServerFlagsReceivedEvent.class, new Listener<ServerFlagsReceivedEvent>()
         {
             @Override
-            public void onEvent(ServerFlagsRecievedEvent event)
+            public void onEvent(ServerFlagsReceivedEvent event)
             {
                 if(event.getServer().equals(server)) {
                     event.setUnlocked(true);

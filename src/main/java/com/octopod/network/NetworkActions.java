@@ -9,8 +9,8 @@ import com.octopod.network.cache.NetworkHubCache;
 import com.octopod.network.cache.NetworkServerCache;
 import com.octopod.network.events.network.NetworkConnectedEvent;
 import com.octopod.network.events.relays.MessageEvent;
-import com.octopod.network.events.server.PostServerFlagsRecievedEvent;
-import com.octopod.network.events.server.ServerFlagsRecievedEvent;
+import com.octopod.network.events.server.PostServerFlagsReceivedEvent;
+import com.octopod.network.events.server.ServerFlagsReceivedEvent;
 
 /**
  * @author Octopod
@@ -45,7 +45,7 @@ public class NetworkActions {
      */
     public static void actionRecieveServerFlags(String server, HashMap<String, Object> flags) {
 
-        ServerFlagsRecievedEvent event = new ServerFlagsRecievedEvent(server, flags);
+        ServerFlagsReceivedEvent event = new ServerFlagsReceivedEvent(server, flags);
 
         NetworkPlus.getEventManager().triggerEvent(event);
 
@@ -70,7 +70,7 @@ public class NetworkActions {
                 }
             }
 
-            NetworkPlus.getEventManager().triggerEvent(new PostServerFlagsRecievedEvent(serverInfo));
+            NetworkPlus.getEventManager().triggerEvent(new PostServerFlagsReceivedEvent(serverInfo));
 
         }
 

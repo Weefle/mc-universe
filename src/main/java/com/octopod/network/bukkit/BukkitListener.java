@@ -3,6 +3,7 @@ package com.octopod.network.bukkit;
 import com.octopod.network.NetworkConfig;
 import com.octopod.network.NetworkPlus;
 import com.octopod.network.NetworkQueueManager;
+import com.octopod.network.ServerMessage;
 import com.octopod.network.cache.NetworkCommandCache;
 import com.octopod.network.cache.NetworkHubCache;
 import com.octopod.network.cache.NetworkServerCache;
@@ -44,10 +45,12 @@ public class BukkitListener implements Listener {
         options.put("onlinePlayers", Arrays.asList(BukkitUtils.getPlayerNames()));
 
         //First, update this server.
-        NetworkServerCache.getInfo(NetworkPlus.getUsername()).update(options);
+        NetworkServerCache.getInfo(NetworkPlus.getUsername()).merge(options);
 
         //Then, broadcast to everywhere else.
-        NetworkPlus.broadcastMessage(NetworkConfig.getChannel("SERVER_RESPONSE"), NetworkPlus.gson().toJson(options));
+        NetworkPlus.broadcastMessage(NetworkConfig.Channels.SERVER_FLAGS_CACHE.toString(),
+                new ServerMessage(NetworkPlus.getUsername(), NetworkPlus.gson().toJson(options))
+        );
     }
 
 	@EventHandler
