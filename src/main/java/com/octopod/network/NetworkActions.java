@@ -157,7 +157,7 @@ public class NetworkActions {
 		if(NetworkConfig.Channels.SERVER_FLAGS_REQUEST.equals(channel))
         {
             NetworkPlus.sendMessage(sender, NetworkConfig.Channels.SERVER_FLAGS_CACHE.toString(),
-                    new ServerMessage(NetworkPlus.getUsername(), NetworkPlus.getServerInfo().toString())
+                    NetworkPlus.getServerInfo().asMessage()
             );
             return;
         }
