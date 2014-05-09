@@ -133,13 +133,4 @@ public class ServerFlags {
         return NetworkPlus.gson().toJson(this);
     }
 
-    /**
-     * Converts this object into a ServerMessage
-     * (pretty much making the JSON serialization the only argument)
-     * @return
-     */
-    public ServerMessage toMessage() {
-        return new ServerMessage(toString());
-    }
-
 }
