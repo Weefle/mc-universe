@@ -8,6 +8,7 @@ import com.octopod.network.bukkit.BukkitUtils;
 import com.octopod.network.cache.NetworkServerCache;
 import com.octopod.network.connection.NetworkConnection;
 import com.octopod.network.events.EventManager;
+import net.md_5.bungee.api.config.ServerInfo;
 
 /**
  * @author Octopod
@@ -87,9 +88,15 @@ public class NetworkPlus {
         return plugin.logger();
     }
 
+    /**
+     * Gets current information about the server represented by flags.
+     * Because it's /current/ information, a new ServerFlags object is created every time this method is used.
+     * Try not to overuse this method too much, use merge() to update specific flags of an object instead.
+     * @return A new ServerFlags object.
+     */
     public static ServerFlags getServerInfo() {
         if(!isLoaded()) return null;
-        return ServerFlags.createLocal();
+        return new ServerFlags();
     }
 
     public static NetworkConnection getConnection() {
@@ -181,35 +188,45 @@ public class NetworkPlus {
     }
 
     public static void sendAllPlayers(String serverFrom, String server) {
-        sendMessage(serverFrom, NetworkConfig.getChannel("SENDALL"), server);
+        sendMessage(serverFrom, NetworkConfig.getChannel("SENDALL"), new ServerMessage(server));
     }
 
     public static void sendAllPlayers(String server) {
-        broadcastMessage(NetworkConfig.getChannel("SENDALL"), server);
+        broadcastMessage(NetworkConfig.getChannel("SENDALL"), new ServerMessage(server));
     }
 
     //=========================================================================================//
     //  Request methods
     //=========================================================================================//
 
-    public static void sendMessage(String server, String channel, String message) {
-        getConnection().sendMessage(server, channel, message);
+    public static void sendMessage(String server, String channel) {
+        sendMessage(server, channel, ServerMessage.EMPTY);
     }
 
-    public static void sendMessage(List<String> servers, String channel, String message) {
-        getConnection().sendMessage(servers, channel, message);
+    public static void sendMessage(String server, String channel, ServerMessage message) {
+        getConnection().sendMessage(server, channel, message.toString());
     }
 
-    public static void broadcastMessage(String channel, String message) {
-        getConnection().broadcastMessage(channel, message);
+    public static void sendMessage(List<String> servers, String channel, ServerMessage message) {
+        getConnection().sendMessage(servers, channel, message.toString());
     }
+
+    public static void broadcastMessage(String channel) {
+        broadcastMessage(channel, ServerMessage.EMPTY);
+    }
+
+    public static void broadcastMessage(String channel, ServerMessage message) {
+        getConnection().broadcastMessage(channel, message.toString());
+    }
+
+    //=========================================================================================//
 
     /**
      * Tells a server (using this plugin) to broadcast a raw message.
      * @param message The message to send.
      */
     public static void broadcastNetworkMessage(String server, String message) {
-        sendMessage(server, NetworkConfig.getChannel("BROADCAST"), message);
+        sendMessage(server, NetworkConfig.getChannel("BROADCAST"), new ServerMessage(message));
     }
 
     /**
@@ -217,7 +234,7 @@ public class NetworkPlus {
      * @param message The message to send.
      */
     public static void broadcastNetworkMessage(String message) {
-        broadcastMessage(NetworkConfig.getChannel("BROADCAST"), message);
+        broadcastMessage(NetworkConfig.getChannel("BROADCAST"), new ServerMessage(message));
     }
 
     /**
@@ -230,7 +247,7 @@ public class NetworkPlus {
         if(BukkitUtils.isPlayerOnline(player)) {
             BukkitUtils.sendMessage(player, message);
         } else {
-            broadcastMessage(NetworkConfig.getChannel("MESSAGE"), gson().toJson(new PreparedPlayerMessage(player, message)));
+            broadcastMessage(NetworkConfig.getChannel("MESSAGE"), new ServerMessage(player, message));
         }
     }
 
@@ -241,7 +258,7 @@ public class NetworkPlus {
      */
     public static void requestServerInfo() {
         getLogger().verbose("Requesting info from all servers");
-        broadcastMessage(NetworkConfig.getChannel("SERVER_REQUEST"), gson().toJson(getServerInfo()));
+        broadcastMessage(NetworkConfig.getChannel("SERVER_REQUEST"));
     }
 
     /**
@@ -252,26 +269,15 @@ public class NetworkPlus {
      */
     public static void requestServerInfo(String server) {
         getLogger().verbose("Requesting info from &a" + server);
-        sendMessage(server, NetworkConfig.getChannel("SERVER_REQUEST"), gson().toJson(getServerInfo()));
+        sendMessage(server, NetworkConfig.getChannel("SERVER_REQUEST"));
     }
 
     public static void sendServerInfo(String server) {
-        NetworkPlus.sendMessage(server, NetworkConfig.getChannel("SERVER_RESPONSE"),
-                gson().toJson(NetworkPlus.getServerInfo())
-        );
+        NetworkPlus.sendMessage(server, NetworkConfig.getChannel("SERVER_RESPONSE"), getServerInfo().toMessage());
     }
 
     public static void broadcastServerInfo() {
-        NetworkPlus.broadcastMessage(NetworkConfig.getChannel("SERVER_RESPONSE"),
-                gson().toJson(NetworkPlus.getServerInfo())
-        );
+        NetworkPlus.broadcastMessage(NetworkConfig.getChannel("SERVER_RESPONSE"), getServerInfo().toMessage());
     }
 
-    /**
-     * Broadcasts a message telling every server to uncache a server.
-     * @param server
-     */
-    public static void requestUncache(String server) {
-        broadcastMessage(NetworkConfig.getChannel("CLEAR_REQUEST"), server);
-    }
 }
