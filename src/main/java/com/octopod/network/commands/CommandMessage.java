@@ -28,7 +28,7 @@ public class CommandMessage extends NetworkCommand {
 		String sender = cmdsender.getName();
 		String target = args[0];
 		String message = StringUtils.join(Arrays.asList(args).subList(1, args.length), " ");
-		String server = NetworkPlus.getUsername();
+		String server = NetworkPlus.getServerID();
 
         String formatTarget = String.format(NetworkConfig.FORMAT_MSG_TARGET, server, sender, message);
         String formatSender = String.format(NetworkConfig.FORMAT_MSG_SENDER, server, target, message);

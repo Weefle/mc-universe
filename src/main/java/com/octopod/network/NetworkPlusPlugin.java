@@ -165,7 +165,7 @@ public class NetworkPlusPlugin extends JavaPlugin {
         ServerFlags serverFlags = NetworkPlus.getServerInfo();
 
         //"Fake" the server recieving its own info, for caching purposes.
-        NetworkActions.actionRecieveServerFlags(NetworkPlus.getUsername(), serverFlags.getFlags());
+        NetworkActions.actionRecieveServerFlags(NetworkPlus.getServerID(), serverFlags.getFlags());
 
         //Then, send the serverFlags across the network.
         NetworkPlus.broadcastServerInfo(serverFlags);

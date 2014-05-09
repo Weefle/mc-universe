@@ -33,7 +33,7 @@ public class CommandHub extends NetworkCommand {
 
         String hub = NetworkHubCache.getHub();
 
-        if(hub != null && !hub.equals(NetworkPlus.getUsername())) {
+        if(hub != null && !hub.equals(NetworkPlus.getServerID())) {
             BukkitUtils.sendMessage(sender, "&7You've been moved to the hub server &a" + hub + "&7.");
             NetworkPlus.sendPlayer(sender.getName(), hub);
         } else {

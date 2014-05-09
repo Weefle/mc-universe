@@ -83,7 +83,7 @@ public class NetworkQueueManager {
 		int maxServerSize = NetworkPlus.getServerInfo().getMaxPlayers();
 		String toJoin = getQueueMembers().get(0);
 		if (serverSize < maxServerSize) {
-			NetworkPlus.sendPlayer(toJoin, NetworkPlus.getUsername());
+			NetworkPlus.sendPlayer(toJoin, NetworkPlus.getServerID());
 			remove(toJoin);
 		}
 	}

@@ -45,11 +45,11 @@ public class BukkitListener implements Listener {
         options.put("onlinePlayers", Arrays.asList(BukkitUtils.getPlayerNames()));
 
         //First, update this server.
-        NetworkServerCache.getInfo(NetworkPlus.getUsername()).merge(options);
+        NetworkServerCache.getInfo(NetworkPlus.getServerID()).merge(options);
 
         //Then, broadcast to everywhere else.
         NetworkPlus.broadcastMessage(NetworkConfig.Channels.SERVER_FLAGS_CACHE.toString(),
-                new ServerMessage(NetworkPlus.getUsername(), NetworkPlus.gson().toJson(options))
+                new ServerMessage(NetworkPlus.getServerID(), NetworkPlus.gson().toJson(options))
         );
     }
 
@@ -74,7 +74,7 @@ public class BukkitListener implements Listener {
 
         String hub = NetworkHubCache.getHub();
 
-        if(hub != null && !hub.equals(NetworkPlus.getUsername())) {
+        if(hub != null && !hub.equals(NetworkPlus.getServerID())) {
             event.setCancelled(true);
 
             BukkitUtils.sendMessage(event.getPlayer(), NetworkPlus.prefix() + "&7You've been moved to the hub server:");

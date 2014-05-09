@@ -17,7 +17,7 @@ public class NetworkServerCache {
 
     /**
      * Adds a new ServerInfo entry into the cache.
-     * @param serverID The name of the server.
+     * @param serverID The ID of the server.
      * @param flags The flags recieved from this server.
      * @return The new or patched ServerFlags object.
      */
@@ -35,31 +35,31 @@ public class NetworkServerCache {
         }
     }
 
-	public static boolean removeServer(String server) {
-		if(serverMap.containsKey(server)) {
-            NetworkPlus.getLogger().debug("&cRemoved server &a" + server + "&c from cache.");
-			serverMap.remove(server);
+	public static boolean removeServer(String serverID) {
+		if(serverMap.containsKey(serverID)) {
+            NetworkPlus.getLogger().debug("&cRemoved server &a" + serverID + "&c from cache.");
+			serverMap.remove(serverID);
             return true;
 		} else {
 			return false;
 		}
 	}
 
-	public static boolean serverExists(String server) {
-		return serverMap.containsKey(server);
+	public static boolean serverExists(String serverID) {
+		return serverMap.containsKey(serverID);
 	}
 
-    public static ServerFlags getInfo(String server) {
-        if(serverExists(server)) {
-            return serverMap.get(server);
+    public static ServerFlags getInfo(String serverID) {
+        if(serverExists(serverID)) {
+            return serverMap.get(serverID);
         } else {
             return null;
         }
     }
 
-    public static List<String> getOnlinePlayers(String server) {
-        if(serverExists(server)) {
-            return serverMap.get(server).getOnlinePlayers();
+    public static List<String> getOnlinePlayers(String serverID) {
+        if(serverExists(serverID)) {
+            return serverMap.get(serverID).getOnlinePlayers();
         } else {
             return null;
         }

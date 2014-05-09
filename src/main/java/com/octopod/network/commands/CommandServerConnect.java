@@ -33,7 +33,7 @@ public class CommandServerConnect extends NetworkCommand {
 		String server = args[0];
 
 		//Checks if the server they're trying to connect to is this same server
-		if(server.equals(NetworkPlus.getUsername())) {
+		if(server.equals(NetworkPlus.getServerID())) {
 			BukkitUtils.sendMessage(sender, "&cYou are already connected to this server.");
 			return true;
 		}

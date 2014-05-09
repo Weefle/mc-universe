@@ -9,7 +9,6 @@ import org.bukkit.command.CommandSender;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 
 public class NetworkConfig {
 
@@ -242,7 +241,7 @@ public class NetworkConfig {
 
     public static String getServerName() {
         if(SERVER_NAME.equals("")) {
-            return NetworkPlus.getUsername();
+            return NetworkPlus.getServerID();
         } else {
             return SERVER_NAME;
         }

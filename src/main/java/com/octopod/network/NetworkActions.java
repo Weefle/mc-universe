@@ -40,25 +40,25 @@ public class NetworkActions {
      * Runs the action for when the server recieves flags from a server.
      * This method should cache the flags as a new ServerFlags object,
      * or merge into the existing ServerFlags object if one exists.
-     * @param server The ID of the server.
+     * @param serverID The ID of the server.
      * @param flags The flags representing information.
      */
-    public static void actionRecieveServerFlags(String server, HashMap<String, Object> flags) {
+    public static void actionRecieveServerFlags(String serverID, HashMap<String, Object> flags) {
 
-        ServerFlagsReceivedEvent event = new ServerFlagsReceivedEvent(server, flags);
+        ServerFlagsReceivedEvent event = new ServerFlagsReceivedEvent(serverID, flags);
 
         NetworkPlus.getEventManager().triggerEvent(event);
 
         if(!event.isCancelled()) {
 
             //Adds in the new flags and returns the resultant ServerFlags object.
-            ServerFlags serverInfo = NetworkServerCache.addServer(server, flags);
+            ServerFlags serverInfo = NetworkServerCache.addServer(serverID, flags);
 
             //Checks if this server is a hub (priority above 0)
             int hubPriority = serverInfo.getHubPriority();
             if(hubPriority >= 0) {
-                NetworkHubCache.addHub(server, hubPriority);
-                NetworkPlus.getLogger().info("Server &a" + server + "&7 registered as hub @ priority &e" + hubPriority);
+                NetworkHubCache.addHub(serverID, hubPriority);
+                NetworkPlus.getLogger().info("Server &a" + serverID + "&7 registered as hub @ priority &e" + hubPriority);
             }
 
             //Version checking
@@ -66,7 +66,7 @@ public class NetworkActions {
                 //Checks for mismatched plugin versions between servers, and warns the server owners.
                 String version = serverInfo.getVersion();
                 if(!version.equals("TEST_BUILD") && !version.equals(NetworkPlus.getPluginVersion())) {
-                    NetworkPlus.getLogger().info("&a" + server + "&7: Running &6Net+&7 version &6" + (version.equals("") ? "No Version" : version));
+                    NetworkPlus.getLogger().info("&a" + serverID + "&7: Running &6Net+&7 version &6" + (version.equals("") ? "No Version" : version));
                 }
             }
 
@@ -80,13 +80,13 @@ public class NetworkActions {
 	 * Runs the action for when any players joins the queue on the network.
      * This method should add the player to the respective queue.
 	 */
-	public static void actionPlayerJoinQueueEvent(String player, String server,
+	public static void actionPlayerJoinQueueEvent(String player, String serverID,
         int queuePosition) {
 		NetworkPlus.getLogger().debug(
-				"&b" + player + " &7joined the queue for &a" + server
+				"&b" + player + " &7joined the queue for &a" + serverID
 						+ " &7in position: &a" + queuePosition);
 		// If the message is to this server, add to queue.
-		if (server
+		if (serverID
 				.equalsIgnoreCase(NetworkPlus.getServerInfo().getServerName())) {
 			NetworkQueueManager.instance.add(player, queuePosition);
 		}
@@ -96,11 +96,11 @@ public class NetworkActions {
 	 * Runs the action for when any players leaves the queue on the network.
      * This method should remove the player from the respective queue.
 	 */
-	public static void actionPlayerLeaveQueueEvent(String player, String server) {
+	public static void actionPlayerLeaveQueueEvent(String player, String serverID) {
 		NetworkPlus.getLogger().debug(
-				"&b" + player + " &7left the queue for &a" + server);
+				"&b" + player + " &7left the queue for &a" + serverID);
 		// If the server is this server, update queue.
-		if (server
+		if (serverID
 				.equalsIgnoreCase(NetworkPlus.getServerInfo().getServerName())) {
 			NetworkQueueManager.instance.updateQueue();
 		}
@@ -111,13 +111,13 @@ public class NetworkActions {
      * This method is a gateway to other events and features.
      * Refer to NetworkConfig.Channels to what each channel does.
      */
-    public static void actionRecieveMessage(String sender, String channel, ServerMessage serverMessage)
+    public static void actionRecieveMessage(String senderID, String channel, ServerMessage serverMessage)
     {
         //Return if sender is this server; Cannot self-message.
         //In case different APIs don't allow self-messaging.
-        if(sender.equals(NetworkPlus.getUsername())) return;
+        if(senderID.equals(NetworkPlus.getServerID())) return;
 
-        MessageEvent event = new MessageEvent(sender, channel, serverMessage);
+        MessageEvent event = new MessageEvent(senderID, channel, serverMessage);
 
         NetworkPlus.getEventManager().triggerEvent(event);
 
@@ -140,12 +140,12 @@ public class NetworkActions {
 		}
 
 		if (NetworkConfig.Channels.PLAYER_JOIN_QUEUE.equals(channel)) {
-			actionPlayerJoinQueueEvent(message.split(":")[0], sender, Integer.parseInt(message.split(":")[1]));
+			actionPlayerJoinQueueEvent(message.split(":")[0], senderID, Integer.parseInt(message.split(":")[1]));
             return;
         }
 
 		if (NetworkConfig.Channels.PLAYER_LEAVE_QUEUE.equals(channel)) {
-			actionPlayerLeaveQueueEvent(message.split(":")[0], sender);
+			actionPlayerLeaveQueueEvent(message.split(":")[0], senderID);
             return;
         }
 
@@ -156,7 +156,7 @@ public class NetworkActions {
 
 		if(NetworkConfig.Channels.SERVER_FLAGS_REQUEST.equals(channel))
         {
-            NetworkPlus.sendMessage(sender, NetworkConfig.Channels.SERVER_FLAGS_CACHE.toString(),
+            NetworkPlus.sendMessage(senderID, NetworkConfig.Channels.SERVER_FLAGS_CACHE.toString(),
                     NetworkPlus.getServerInfo().asMessage()
             );
             return;
@@ -165,13 +165,13 @@ public class NetworkActions {
         if(NetworkConfig.Channels.SERVER_FLAGS_CACHE.equals(channel))
         {
             if(args.length == 2) {
-                String server = args[0];
+                String serverID = args[0];
                 String json = args[1];
                 HashMap<String, Object> flags;
 
                 try {
                     flags = Util.mapFromJson(json);
-                    actionRecieveServerFlags(server, flags);
+                    actionRecieveServerFlags(serverID, flags);
                     return;
                 } catch (JsonSyntaxException e) {
                     //Unable to parse JSON, just move to the bottom.
@@ -182,7 +182,7 @@ public class NetworkActions {
 
         //If the code reaches this point, something has gone wrong.
         NetworkPlus.getLogger().debug(
-                "Recieved incorrect arguments from server &a" + sender,
+                "Recieved incorrect arguments from server &a" + senderID,
                 "Channel: &b" + channel,
                 "Arguments: &e" + Arrays.asList(args)
         );

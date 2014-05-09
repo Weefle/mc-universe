@@ -44,14 +44,14 @@ public class LilypadConnection extends NetworkConnection {
         @EventListener
         public void messageReceived(MessageEvent event)
         {
-            String channel = event.getChannel(), username, message;
+            String channel = event.getChannel(), serverID, message;
 
             if(!channel.startsWith(NetworkConfig.getRequestPrefix())) {
                 return;
             }
 
             try {
-                username = event.getSender();
+                serverID = event.getSender();
                 message = event.getMessageAsString();
             } catch (UnsupportedEncodingException e) {
                 return;
@@ -59,7 +59,7 @@ public class LilypadConnection extends NetworkConnection {
 
             try {
                 ServerMessage serverMessage = ServerMessage.parse(message);
-                NetworkActions.actionRecieveMessage(username, channel, serverMessage);
+                NetworkActions.actionRecieveMessage(serverID, channel, serverMessage);
             } catch (JsonParseException e) {
                 //The message probably isn't even a JSON, just ignore it.
             }

@@ -31,7 +31,7 @@ public class CommandServerPing extends NetworkCommand {
 			return true;
 		}
 
-        if(server.equals(NetworkPlus.getUsername())) {
+        if(server.equals(NetworkPlus.getServerID())) {
             BukkitUtils.sendMessage(sender, "&cCannot ping the server you're on!");
             return true;
         }

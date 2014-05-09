@@ -17,11 +17,11 @@ public class NetworkHubCache {
 
     });
 
-    public static void addHub(String server, Integer priority) {
+    public static void addHub(String serverID, Integer priority) {
         if(!hubMap.containsKey(priority)) {
             hubMap.put(priority, new ArrayList<String>());
         }
-        hubMap.get(priority).add(server);
+        hubMap.get(priority).add(serverID);
     }
 
     public static String getHub() {

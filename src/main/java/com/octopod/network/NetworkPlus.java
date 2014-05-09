@@ -71,7 +71,7 @@ public class NetworkPlus {
      * Gets this plugin's username on LilyPad.
      * @return This plugin's username.
      */
-    public static String getUsername() {
+    public static String getServerID() {
         return getConnection().getUsername();
     }
 
@@ -164,11 +164,11 @@ public class NetworkPlus {
 
     /**
      * Gets if the server with this username is online.
-     * @param server The username of the server.
+     * @param serverID The username of the server.
      * @return If the server is online.
      */
-    public static boolean isServerOnline(String server) {
-        return getConnection().serverExists(server);
+    public static boolean isServerOnline(String serverID) {
+        return getConnection().serverExists(serverID);
     }
     
 	/**
@@ -183,41 +183,41 @@ public class NetworkPlus {
 				.getInfo(server).getMaxPlayers();
 	}
 
-    public static boolean sendPlayer(String player, String server) {
-        return getConnection().sendPlayer(player, server);
+    public static boolean sendPlayer(String player, String serverID) {
+        return getConnection().sendPlayer(player, serverID);
     }
 
     /**
      * Sends all players on a server to another server.
      * @param serverFrom The server where the players are from.
-     * @param server The server the players will be sent to.
+     * @param serverID The server the players will be sent to.
      */
-    public static void sendAllPlayers(String serverFrom, String server) {
-        sendMessage(serverFrom, NetworkConfig.Channels.SERVER_SENDALL.toString(), new ServerMessage(server));
+    public static void sendAllPlayers(String serverFrom, String serverID) {
+        sendMessage(serverFrom, NetworkConfig.Channels.SERVER_SENDALL.toString(), new ServerMessage(serverID));
     }
 
     /**
      * Sends all players ON THE ENTIRE NETWORK to a server.
-     * @param server The server the players will be sent to.
+     * @param serverID The server the players will be sent to.
      */
-    public static void sendAllPlayers(String server) {
-        broadcastMessage(NetworkConfig.Channels.SERVER_SENDALL.toString(), new ServerMessage(server));
+    public static void sendAllPlayers(String serverID) {
+        broadcastMessage(NetworkConfig.Channels.SERVER_SENDALL.toString(), new ServerMessage(serverID));
     }
 
     //=========================================================================================//
     //  Request methods
     //=========================================================================================//
 
-    public static void sendMessage(String server, String channel) {
-        sendMessage(server, channel, ServerMessage.EMPTY);
+    public static void sendMessage(String serverID, String channel) {
+        sendMessage(serverID, channel, ServerMessage.EMPTY);
     }
 
-    public static void sendMessage(String server, String channel, ServerMessage message) {
-        getConnection().sendMessage(server, channel, message.toString());
+    public static void sendMessage(String serverID, String channel, ServerMessage message) {
+        getConnection().sendMessage(serverID, channel, message.toString());
     }
 
-    public static void sendMessage(List<String> servers, String channel, ServerMessage message) {
-        getConnection().sendMessage(servers, channel, message.toString());
+    public static void sendMessage(List<String> serverIDs, String channel, ServerMessage message) {
+        getConnection().sendMessage(serverIDs, channel, message.toString());
     }
 
     public static void broadcastMessage(String channel) {
@@ -234,8 +234,8 @@ public class NetworkPlus {
      * Tells a server (using this plugin) to broadcast a raw message.
      * @param message The message to send.
      */
-    public static void broadcastNetworkMessage(String server, String message) {
-        sendMessage(server, NetworkConfig.Channels.SERVER_ALERT.toString(), new ServerMessage(message));
+    public static void broadcastNetworkMessage(String serverID, String message) {
+        sendMessage(serverID, NetworkConfig.Channels.SERVER_ALERT.toString(), new ServerMessage(message));
     }
 
     /**
@@ -266,7 +266,7 @@ public class NetworkPlus {
      * This might cause messages to be recieved on the SERVER_RESPONSE and SERVER_REQUEST channel.
      */
     public static void requestServerInfo() {
-        getLogger().verbose("Requesting info from all servers");
+        getLogger().verbose("Requesting info from all serverIDs");
         broadcastMessage(NetworkConfig.Channels.SERVER_FLAGS_REQUEST.toString());
     }
 
@@ -274,24 +274,24 @@ public class NetworkPlus {
      * Broadcasts a message to a server telling it to send back their info.
      * This method should only be called only when absolutely needed.
      * This might cause messages to be recieved on the SERVER_RESPONSE and SERVER_REQUEST channel.
-     * @param server The server to request information from.
+     * @param serverID The server to request information from.
      */
-    public static void requestServerInfo(String server) {
-        getLogger().verbose("Requesting info from &a" + server);
-        sendMessage(server, NetworkConfig.Channels.SERVER_FLAGS_REQUEST.toString());
+    public static void requestServerInfo(String serverID) {
+        getLogger().verbose("Requesting info from &a" + serverID);
+        sendMessage(serverID, NetworkConfig.Channels.SERVER_FLAGS_REQUEST.toString());
     }
 
-    public static void sendServerInfo(String server) {
-        sendServerInfo(server, getServerInfo());
+    public static void sendServerInfo(String serverID) {
+        sendServerInfo(serverID, getServerInfo());
     }
 
     /**
      * Sends a server a ServerFlags object.
-     * @param server The name of the server to send it to.
+     * @param serverID The ID of the server to send it to.
      * @param serverFlags The ServerFlags object.
      */
-    public static void sendServerInfo(String server, ServerFlags serverFlags) {
-        NetworkPlus.sendMessage(server, NetworkConfig.Channels.SERVER_FLAGS_REQUEST.toString(), serverFlags.asMessage());
+    public static void sendServerInfo(String serverID, ServerFlags serverFlags) {
+        NetworkPlus.sendMessage(serverID, NetworkConfig.Channels.SERVER_FLAGS_REQUEST.toString(), serverFlags.asMessage());
     }
 
     public static void broadcastServerInfo() {

@@ -37,7 +37,7 @@ public class CommandServerList extends NetworkCommand {
 
 		for(ServerFlags serverInfo: serverMap.values()) {
 
-            String server = serverInfo.getUsername();
+            String server = serverInfo.getServerID();
 
             //The list of players on this server.
             List<String> playerList = NetworkServerCache.getOnlinePlayers(server);
@@ -48,7 +48,7 @@ public class CommandServerList extends NetworkCommand {
             ChatBuilder cb = new ChatBuilder();
 
             //If this server is the server the commandsender is on:
-            if(server.equals(NetworkPlus.getUsername()))
+            if(server.equals(NetworkPlus.getServerID()))
             {
                 cb.appendL("    &8[&f" + serverInfo.getServerName() + "&8] ").
                     tooltip(ChatUtils.translateColorCodes(
@@ -72,7 +72,7 @@ public class CommandServerList extends NetworkCommand {
                         "&8-------------------------------------" + "\n" +
                         "&7Click to join the server &a" + serverInfo.getServerName() + "&7!"
 
-                    , '&')).run("/server " + serverInfo.getUsername()).
+                    , '&')).run("/server " + serverInfo.getServerID()).
                     appendL("&b(" + playerCount + ")");
             }
 

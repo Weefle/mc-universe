@@ -6,9 +6,6 @@ import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 
-import com.octopod.network.NetworkConfig;
-import com.octopod.network.NetworkPlus;
-import com.octopod.network.NetworkQueueManager;
 import com.octopod.network.bukkit.BukkitUtils;
 
 /**
@@ -57,7 +54,7 @@ public class ServerFlags {
 
         public HashMap<String, Object> generate() {
             HashMap<String, Object> options = new HashMap<>();
-            options.put("username", NetworkPlus.getUsername());             //Server's username
+            options.put("serverID", NetworkPlus.getServerID());             //Server's username
             options.put("serverName", NetworkConfig.getServerName());       //Server's config name
             options.put("description", Bukkit.getServer().getMotd());       //Server's MOTD
             options.put("maxPlayers", Bukkit.getServer().getMaxPlayers());  //Server's max players
@@ -116,7 +113,7 @@ public class ServerFlags {
 
     //A bunch of default getters
 
-    public String getUsername() {return getString("username");}
+    public String getServerID() {return getString("serverID");}
     public String getServerName() {return getString("serverName");}
     public String getDescription() {return getString("description");}
     public String getVersion() {return getString("version");}

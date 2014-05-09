@@ -12,7 +12,7 @@ public class PostServerFlagsReceivedEvent extends Event {
     ServerFlags serverInfo;
 
 	public PostServerFlagsReceivedEvent(ServerFlags serverInfo) {
-		this.server = serverInfo.getUsername();
+		this.server = serverInfo.getServerID();
         this.serverInfo = serverInfo;
 	}
 
