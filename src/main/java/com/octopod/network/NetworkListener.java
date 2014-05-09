@@ -168,16 +168,18 @@ public class NetworkListener {
      * Listens for when any message is recieved from any server.
      * This method is a gateway to other events and features.
      */
-    public static void recieveMessage(String sender, String channel, String message)
+    public static void recieveMessage(String sender, String channel, ServerMessage serverMessage)
     {
         //Return if sender is this server; Cannot self-message.
         if(sender.equals(NetworkPlus.getUsername())) return;
 
-        MessageEvent event = new MessageEvent(sender, channel, message);
+        MessageEvent event = new MessageEvent(sender, channel, serverMessage);
 
         NetworkPlus.getEventManager().triggerEvent(event);
 
         if(event.isCancelled()) return;
+
+        String message = serverMessage.toString();
 
         //Tells the server to send all players on this server to the server specified in 'message'
 		if(channel.equals(NetworkConfig.getChannel("SENDALL")))
@@ -189,7 +191,7 @@ public class NetworkListener {
         //Tells the server to send a message to a player. Information included in 'message'
 		if(channel.equals(NetworkConfig.getChannel("MESSAGE")))
 		{
-			NetworkPlus.gson().fromJson(message, PreparedPlayerMessage.class).send();
+			//TODO: Use the ServerMessage arguments to correctly send the 2nd argument (message) to the 1st argument (player)
 		}
 
         //Tells the server a player has joined the network
@@ -219,7 +221,7 @@ public class NetworkListener {
 		if(channel.equals(NetworkConfig.getChannel("SERVER_REQUEST")))
         {
             NetworkPlus.sendMessage(sender, NetworkConfig.getChannel("SERVER_RESPONSE"),
-                    NetworkPlus.gson().toJson(NetworkPlus.getServerInfo())
+                    NetworkPlus.getServerInfo().toMessage()
             );
         }
 
