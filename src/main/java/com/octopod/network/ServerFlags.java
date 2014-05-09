@@ -137,4 +137,12 @@ public class ServerFlags {
         return NetworkPlus.gson().toJson(this);
     }
 
+    public ServerMessage asMessage() {
+        return asMessage((String)getFlag("username", null));
+    }
+
+    public ServerMessage asMessage(String serverID) {
+        return new ServerMessage(serverID, NetworkPlus.getServerInfo().toString());
+    }
+
 }
