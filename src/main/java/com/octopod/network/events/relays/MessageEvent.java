@@ -1,12 +1,14 @@
 package com.octopod.network.events.relays;
 
+import com.octopod.network.ServerMessage;
 import com.octopod.network.events.CancellableEvent;
 
 public class MessageEvent extends CancellableEvent {
 
-	String username, channel, message;
+	String username, channel;
+    ServerMessage message;
 	
-	public MessageEvent(String username, String channel, String message) {
+	public MessageEvent(String username, String channel, ServerMessage message) {
 		this.username = username;
 		this.channel = channel;
 		this.message = message;
@@ -20,10 +22,18 @@ public class MessageEvent extends CancellableEvent {
 	public String getChannel() {
 		return channel;
 	}
-	
-	public String getMessage() {
-		return message;
-	}
+
+    public ServerMessage getServerMessage() {
+        return message;
+    }
+
+    public String getMessage() {
+        return message.toString();
+    }
+
+    public String[] getArguments() {
+        return message.getArgs();
+    }
 
     boolean cancelled = false;
 
