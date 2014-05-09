@@ -71,8 +71,7 @@ public class NetworkQueueManager {
 		queue.remove(player);
 		alertPlayers(queuePos);
 
-		String channel_queueleave = NetworkConfig
-				.getChannel("PLAYER_LEAVE_QUEUE");
+		String channel_queueleave = NetworkConfig.Channels.PLAYER_LEAVE_QUEUE.toString();
 		NetworkPlus.broadcastMessage(channel_queueleave, new ServerMessage(player));
 	}
 
