@@ -6,12 +6,12 @@ import com.octopod.network.events.Event;
 /**
  * Runs after the ServerInfo was cached.
  */
-public class PostServerDiscoveredEvent extends Event {
+public class PostServerFlagsRecievedEvent extends Event {
 
 	String server;
     ServerFlags serverInfo;
 
-	public PostServerDiscoveredEvent(ServerFlags serverInfo) {
+	public PostServerFlagsRecievedEvent(ServerFlags serverInfo) {
 		this.server = serverInfo.getUsername();
         this.serverInfo = serverInfo;
 	}
