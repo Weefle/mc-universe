@@ -20,6 +20,8 @@ import com.octopod.network.events.server.ServerRecievedEvent;
  */
 public class NetworkListener {
 
+    //TODO: Move all event action-related methods to a separate class.
+
     /**
      * Listens for when this plugin is connected according to the NetworkConnection instance.
      * This method should request ServerInfo and playerlists from every server.
