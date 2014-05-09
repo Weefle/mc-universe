@@ -38,7 +38,6 @@ public class NetworkQueueManager {
 	 * Add Player to queue
 	 * 
 	 * @param player
-	 * @param server
 	 * @param queuePosition
 	 *            0 if the end of list, else if they're being added to a
 	 *            different position.
@@ -74,7 +73,7 @@ public class NetworkQueueManager {
 
 		String channel_queueleave = NetworkConfig
 				.getChannel("PLAYER_LEAVE_QUEUE");
-		NetworkPlus.broadcastMessage(channel_queueleave, player);
+		NetworkPlus.broadcastMessage(channel_queueleave, new ServerMessage(player));
 	}
 
 	/**
