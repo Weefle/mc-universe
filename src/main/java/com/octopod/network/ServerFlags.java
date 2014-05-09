@@ -71,6 +71,10 @@ public class ServerFlags {
 
     };
 
+    public HashMap<String, Object> getFlags() {
+        return flags;
+    }
+
     /**
      * Merges the map into this instance's option map.
      * Used to "patch" the current flags.
