@@ -36,6 +36,12 @@
                 <role>contributor</role>
             </roles>
         </contributor>
+        <contributor>
+            <name>Dan Schmitt</name>
+            <roles>
+                <role>contributor</role>
+            </roles>
+        </contributor>
     </contributors>
 
 	<build>
