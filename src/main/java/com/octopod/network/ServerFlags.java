@@ -39,7 +39,7 @@ public class ServerFlags {
      * Creates a ServerInfo instance by flags.
      * @param map A map containing the arguments for this object
      */
-    private ServerFlags(HashMap<String, Object> map) {
+    public ServerFlags(HashMap<String, Object> map) {
         flags = map;
     }
 
