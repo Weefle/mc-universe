@@ -38,14 +38,14 @@ public class NetworkPlusPlugin extends JavaPlugin {
     /**
      * The current instance of system listeners we use for this plugin.
      */
-	private NetworkListener networkListener = null;
+	private NetworkActions networkActions = null;
 
     public BukkitListener getBukkitListener() {
         return bukkitListener;
     }
 
-    public NetworkListener getNetworkListener() {
-        return networkListener;
+    public NetworkActions getNetworkActions() {
+        return networkActions;
     }
 
     /**
@@ -109,7 +109,7 @@ public class NetworkPlusPlugin extends JavaPlugin {
         NetworkCommandCache.reset();
 
         NetworkPlus.getEventManager().unregisterAll();
-        NetworkPlus.requestUncache(getUsername());
+        //TODO: Patch this server's flags across the network to tell them that this server is offline.
 
     }
 
@@ -128,10 +128,10 @@ public class NetworkPlusPlugin extends JavaPlugin {
         NetworkConfig.reloadConfig();
 
         //Register all the listeners
-        networkListener = new NetworkListener();
+        networkActions = new NetworkActions();
         bukkitListener = new BukkitListener();
 
-        NetworkPlus.getEventManager().registerListener(networkListener);
+        NetworkPlus.getEventManager().registerListener(networkActions);
         Bukkit.getPluginManager().registerEvents(bukkitListener, this);
 
         NetworkCommandCache.registerCommand(
@@ -161,7 +161,9 @@ public class NetworkPlusPlugin extends JavaPlugin {
         new SignPlugin();
 
         connection.connect();
-        NetworkListener.discoverServer(NetworkPlus.getUsername(), NetworkPlus.getServerInfo());
+
+        //"Fake" the server recieving its own info, for caching purposes.
+        NetworkActions.actionRecieveServerFlags(NetworkPlus.getUsername(), NetworkPlus.getServerInfo().getFlags());
 
 	}
 
