@@ -17,7 +17,7 @@ public class NetworkQueueManager {
 	/**
 	 * The current instance of the NetworkQueueManager
 	 */
-	public static NetworkQueueManager instance;
+	public static NetworkQueueManager instance = new NetworkQueueManager();
 
 	/**
 	 * The current instance of this servers queue
@@ -30,7 +30,6 @@ public class NetworkQueueManager {
 	private int vipInQueue;
 
 	public NetworkQueueManager() {
-		instance = this;
 		queue = new ArrayList<>();
 	}
 
