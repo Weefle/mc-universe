@@ -4,6 +4,8 @@ import com.octopod.network.bukkit.BukkitUtils;
 import org.bukkit.entity.Player;
 
 public class NetworkLogger {
+
+    private static final boolean TESTING = true;
 	
 	/**
 	 * Sends a message to the console and players with the "network.debug" permission.
@@ -12,7 +14,7 @@ public class NetworkLogger {
 	 */
 	public void info(String... messages)
 	{
-        if(NetworkConfig.getDebugMode() >= 0)
+        if(NetworkConfig.getDebugMode() >= 0 || TESTING)
         {
             for(String message: messages) {
 
@@ -33,7 +35,7 @@ public class NetworkLogger {
 	 */	
 	public void debug(String... messages)
 	{
-		if(NetworkConfig.getDebugMode() >= 1)
+		if(NetworkConfig.getDebugMode() >= 1 || TESTING)
 		{
 			for(String message: messages) {
 				message = "&7[i] &7" + message;
@@ -55,7 +57,7 @@ public class NetworkLogger {
 	 */		
 	public void verbose(String... messages)
 	{
-		if(NetworkConfig.getDebugMode() >= 2)
+		if(NetworkConfig.getDebugMode() >= 2 || TESTING)
 		{
 			for(String message: messages) {
 				message = "&c[i] &7" + message;
