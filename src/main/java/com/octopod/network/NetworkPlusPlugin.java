@@ -153,9 +153,9 @@ public class NetworkPlusPlugin extends JavaPlugin {
         );
 
         if(NetworkPlus.isTestBuild()) {
-            NetworkPlus.getLogger().info("You are running a test build of &fNetworkPlus&7!");
+            NetworkPlus.getLogger().log(0, "You are running a test build of &fNetworkPlus&7!");
         } else {
-            NetworkPlus.getLogger().info("Successfully loaded &fNetworkPlus&7 &6" + getPluginVersion());
+            NetworkPlus.getLogger().log(0, "Successfully loaded &fNetworkPlus&7 &6" + getPluginVersion());
         }
 
         new SignPlugin();

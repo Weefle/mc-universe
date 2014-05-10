@@ -57,6 +57,8 @@ public class NetworkActions {
 
         ServerFlagsReceivedEvent event = new ServerFlagsReceivedEvent(serverID, flags);
 
+
+
         NetworkPlus.getEventManager().triggerEvent(event);
 
         if(!event.isCancelled()) {

@@ -269,7 +269,7 @@ public class NetworkPlus {
      * This might cause messages to be recieved on the SERVER_RESPONSE and SERVER_REQUEST channel.
      */
     public static void requestServerInfo() {
-        getLogger().verbose("Requesting info from all serverIDs");
+        getLogger().log(3, "Requesting info from all servers");
         broadcastMessage(NetworkConfig.Channels.SERVER_FLAGS_REQUEST.toString());
     }
 
@@ -280,7 +280,7 @@ public class NetworkPlus {
      * @param serverID The server to request information from.
      */
     public static void requestServerInfo(String serverID) {
-        getLogger().verbose("Requesting info from &a" + serverID);
+        getLogger().log(3, "Requesting info from &a" + serverID);
         sendMessage(serverID, NetworkConfig.Channels.SERVER_FLAGS_REQUEST.toString());
     }
 
@@ -294,6 +294,7 @@ public class NetworkPlus {
      * @param serverFlags The ServerFlags object.
      */
     public static void sendServerInfo(String serverID, ServerFlags serverFlags) {
+        getLogger().log(3, "Sending server info to &a" + serverID);
         NetworkPlus.sendMessage(serverID, NetworkConfig.Channels.SERVER_FLAGS_REQUEST.toString(), serverFlags.asMessage());
     }
 
@@ -306,6 +307,7 @@ public class NetworkPlus {
      * @param serverFlags The ServerFlags object.
      */
     public static void broadcastServerInfo(ServerFlags serverFlags) {
+        getLogger().log(3, "Sending server info to all servers");
         NetworkPlus.broadcastMessage(NetworkConfig.Channels.SERVER_FLAGS_REQUEST.toString(), serverFlags.asMessage());
     }
 
