@@ -39,4 +39,16 @@ public class NetworkLogger {
         }
     }
 
+    public void info(String... messages) {
+        log(0, messages);
+    }
+
+    public void debug(String... messages) {
+        log(1, messages);
+    }
+
+    public void verbose(String... messages) {
+        log(2, messages);
+    }
+
 }
