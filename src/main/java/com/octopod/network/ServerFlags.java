@@ -58,10 +58,10 @@ public class ServerFlags {
             options.put("serverName", NetworkConfig.getServerName());       //Server's config name
             options.put("description", Bukkit.getServer().getMotd());       //Server's MOTD
             options.put("maxPlayers", Bukkit.getServer().getMaxPlayers());  //Server's max players
-            options.put("whitelistedPlayers", Arrays.asList(BukkitUtils.getWhitelistedPlayerNames())); //Server's whitelisted players
+            options.put("whitelistedPlayers", new ArrayList<>(Arrays.asList(BukkitUtils.getWhitelistedPlayerNames()))); //Server's whitelisted players
             options.put("hubPriority", NetworkConfig.isHub() ? NetworkConfig.getHubPriority() : -1); //Server's hub priority, or -1 if is not a hub.
             options.put("version", NetworkPlus.getPluginVersion()); //Server's plugin version. (<build>-<commit>)
-            options.put("onlinePlayers", Arrays.asList(BukkitUtils.getPlayerNames())); //Server's online players.
+            options.put("onlinePlayers", new ArrayList<>(Arrays.asList(BukkitUtils.getPlayerNames()))); //Server's online players.
             options.put("queuedPlayers", NetworkQueueManager.instance.getQueueMembers());// Players queued for this server
             return options;
         }
