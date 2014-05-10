@@ -5,71 +5,38 @@ import org.bukkit.entity.Player;
 
 public class NetworkLogger {
 
+    /**
+     * If this is true, it will show all debug messages regardless of the "debug" config option.
+     * THIS SHOULDN'T BE TRUE IN RELEASE BUILDS.
+     */
     private static final boolean TESTING = true;
-	
-	/**
-	 * Sends a message to the console and players with the "network.debug" permission.
-	 * Players will see messages sent using this method regardless of what the debug option is.
-	 * @param messages An array of messages to send.
-	 */
-	public void info(String... messages)
-	{
-        if(NetworkConfig.getDebugMode() >= 0 || TESTING)
+
+    /**
+     * Sends a message at a level to the console and players with the "network.debug.<level>" permission.
+     * The level should represent the importance of the message (0 being the most important)
+     * For example, if the level was 2, the player will need the "network.debug.2" permission (or higher)
+     * @param level The level of the message.
+     * @param messages An array of messages to send.
+     */
+    public void log(int level, String... messages)
+    {
+        if(NetworkConfig.getDebugMode() >= level || TESTING)
         {
             for(String message: messages) {
+                message = "&f[i" + level + "] &7" + message;
 
                 BukkitUtils.console(message);
                 for(Player player: BukkitUtils.getPlayers()) {
-                    if(player.hasPermission("network.debug")) {
-                        BukkitUtils.sendMessage(player, "&7" + message);
+                    //Check permissions going down levels.
+                    for(int i = level; i <= 0; i--) {
+                        if(player.hasPermission("network.debug." + i)) {
+                            BukkitUtils.sendMessage(player, "&7" + message);
+                            break;
+                        }
                     }
                 }
             }
         }
-	}	
-	
-	/**
-	 * Sends a message to the console and players with the "network.debug" permission.
-	 * Players will see messages sent using this method if the debug option is at least 1.
-	 * @param messages An array of messages to send.
-	 */	
-	public void debug(String... messages)
-	{
-		if(NetworkConfig.getDebugMode() >= 1 || TESTING)
-		{
-			for(String message: messages) {
-				message = "&7[i] &7" + message;
-				
-				BukkitUtils.console(message);
-				for(Player player: BukkitUtils.getPlayers()) {
-					if(player.hasPermission("network.debug")) {
-						BukkitUtils.sendMessage(player, message);
-					}
-				}				
-			}		
-		}
-	}
-	
-	/**
-	 * Sends a message to the console and players with the "network.debug" permission.
-	 * Players will see messages sent using this method if the debug option is at least 2.
-	 * @param messages An array of messages to send.
-	 */		
-	public void verbose(String... messages)
-	{
-		if(NetworkConfig.getDebugMode() >= 2 || TESTING)
-		{
-			for(String message: messages) {
-				message = "&c[i] &7" + message;
-				
-				BukkitUtils.console(message);
-				for(Player player: BukkitUtils.getPlayers()) {
-					if(player.hasPermission("network.debug.verbose")) {
-                        BukkitUtils.sendMessage(player, message);
-					}
-				}				
-			}		
-		}
-	}
+    }
 
 }
