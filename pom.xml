@@ -226,12 +226,7 @@
 		<dependency>
 			<groupId>org.bukkit</groupId>
 			<artifactId>bukkit</artifactId>
-			<version>LATEST</version>
-		</dependency>
-		<dependency>
-			<groupId>org.bukkit</groupId>
-			<artifactId>craftbukkit</artifactId>
-			<version>LATEST</version>
+			<version>1.7.9-R0.1-SNAPSHOT</version>
 		</dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
