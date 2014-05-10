@@ -45,7 +45,7 @@ public class CommandServerConnect extends NetworkCommand {
 		}
 		
 		// Checks if the server is full before sending them there.
-		if (!NetworkPlus.isServerFull(server)) {
+		if (NetworkPlus.isServerFull(server)) {
 			// Make sure they're not already in a queue
 			for (ServerFlags flags : NetworkServerCache.getServerMap().values()) {
 				if (flags.getQueuedPlayers().contains(player)) {
