@@ -1,7 +1,6 @@
 package com.octopod.network;
 
 import com.octopod.octolib.common.IOUtils;
-import org.bukkit.craftbukkit.libs.com.google.gson.Gson;
 
 import java.io.*;
 import java.util.HashMap;
