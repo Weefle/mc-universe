@@ -174,13 +174,16 @@ public class NetworkPlus {
 	/**
 	 * Gets if the server with this username is currently full of players.
 	 * 
-	 * @param server
-	 *            The username of the server.
+	 * @param server The username of the server.
 	 * @return If the server is full.
 	 */
 	public static boolean isServerFull(String server) {
-		return NetworkServerCache.getOnlinePlayers(server).size() >= NetworkServerCache
-				.getInfo(server).getMaxPlayers();
+        ServerFlags flags = NetworkServerCache.getInfo(server);
+        if(flags == null) {
+            return false;
+        } else {
+		    return NetworkServerCache.getOnlinePlayers(server).size() >= flags.getMaxPlayers();
+        }
 	}
 
     public static boolean sendPlayer(String player, String serverID) {
