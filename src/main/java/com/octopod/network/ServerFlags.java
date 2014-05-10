@@ -3,6 +3,7 @@ package com.octopod.network;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 
@@ -107,9 +108,17 @@ public class ServerFlags {
     public void setInteger(String k, Integer v) {setFlag(k, v);}
     public void setStringList(String k, ArrayList<String> v) {setFlag(k, v);}
 
-    public String getString(String k) {return (String) getFlag(k, "[UNKNOWN]");}
-    public Integer getInteger(String k) {return (Integer) getFlag(k, -1);}
-    public ArrayList<String> getStringList(String k) {return (ArrayList<String>) getFlag(k, new ArrayList<String>());}
+    public String getString(String k) {return (String) getFlag(k, "null");}
+
+    public Integer getInteger(String k) {
+        Object val = getFlag(k, -1);
+        if(val instanceof Integer)
+            return (Integer)val;
+        if(val instanceof Double)
+            return ((Double)val).intValue();
+            return null;
+    }
+    public ArrayList<String> getStringList(String k) {return new ArrayList<>((List<String>) getFlag(k, new ArrayList<String>()));}
 
     //A bunch of default getters
 
@@ -131,7 +140,7 @@ public class ServerFlags {
      */
     @Override
     public String toString() {
-        return NetworkPlus.gson().toJson(this);
+        return NetworkPlus.gson().toJson(getFlags());
     }
 
     public ServerMessage asMessage() {

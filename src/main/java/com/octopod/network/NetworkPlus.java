@@ -285,7 +285,7 @@ public class NetworkPlus {
     }
 
     public static void sendServerInfo(String serverID) {
-        sendServerInfo(serverID, getServerInfo());
+        sendServerInfo(serverID, getServerInfo(), getServerID());
     }
 
     /**
@@ -293,22 +293,22 @@ public class NetworkPlus {
      * @param serverID The ID of the server to send it to.
      * @param serverFlags The ServerFlags object.
      */
-    public static void sendServerInfo(String serverID, ServerFlags serverFlags) {
+    public static void sendServerInfo(String serverID, ServerFlags serverFlags, String serverIDOwnedBy) {
         getLogger().log(3, "Sending server info to &a" + serverID);
-        NetworkPlus.sendMessage(serverID, NetworkConfig.Channels.SERVER_FLAGS_REQUEST.toString(), serverFlags.asMessage());
+        NetworkPlus.sendMessage(serverID, NetworkConfig.Channels.SERVER_FLAGS_CACHE.toString(), serverFlags.asMessage(serverIDOwnedBy));
     }
 
     public static void broadcastServerInfo() {
-        broadcastServerInfo(getServerInfo());
+        broadcastServerInfo(getServerInfo(), getServerID());
     }
 
     /**
      * Broadcasts a ServerFlags object.
      * @param serverFlags The ServerFlags object.
      */
-    public static void broadcastServerInfo(ServerFlags serverFlags) {
+    public static void broadcastServerInfo(ServerFlags serverFlags, String serverIDOwnedBy) {
         getLogger().log(3, "Sending server info to all servers");
-        NetworkPlus.broadcastMessage(NetworkConfig.Channels.SERVER_FLAGS_REQUEST.toString(), serverFlags.asMessage());
+        NetworkPlus.broadcastMessage(NetworkConfig.Channels.SERVER_FLAGS_CACHE.toString(), serverFlags.asMessage(serverIDOwnedBy));
     }
 
 }

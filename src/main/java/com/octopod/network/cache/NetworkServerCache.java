@@ -31,6 +31,7 @@ public class NetworkServerCache {
             //Merge into existing entry
             ServerFlags serverInfo = serverMap.get(serverID);
             serverInfo.merge(flags);
+            serverMap.put(serverID, serverInfo);
             return serverInfo;
         }
     }

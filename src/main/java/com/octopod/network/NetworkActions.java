@@ -2,6 +2,7 @@ package com.octopod.network;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 import com.google.gson.JsonSyntaxException;
 import com.octopod.network.bukkit.BukkitUtils;
@@ -39,7 +40,7 @@ public class NetworkActions {
         NetworkActions.actionRecieveServerFlags(NetworkPlus.getServerID(), serverFlags.getFlags());
 
         //Then, send the serverFlags across the network.
-        NetworkPlus.broadcastServerInfo(serverFlags);
+        NetworkPlus.broadcastServerInfo(serverFlags, NetworkPlus.getServerID());
 
         //Then, request serverFlags from every server.
         NetworkPlus.requestServerInfo();
@@ -56,8 +57,6 @@ public class NetworkActions {
     public static void actionRecieveServerFlags(String serverID, HashMap<String, Object> flags) {
 
         ServerFlagsReceivedEvent event = new ServerFlagsReceivedEvent(serverID, flags);
-
-
 
         NetworkPlus.getEventManager().triggerEvent(event);
 
@@ -80,6 +79,11 @@ public class NetworkActions {
                 if(!version.equals("TEST_BUILD") && !version.equals(NetworkPlus.getPluginVersion())) {
                     NetworkPlus.getLogger().info("&a" + serverID + "&7: Running &6Net+&7 version &6" + (version.equals("") ? "No Version" : version));
                 }
+            }
+
+            NetworkPlus.getLogger().verbose("Recieved server info from &a" + serverID + ":");
+            for(Map.Entry<String, Object> entry: serverInfo.getFlags().entrySet()) {
+                NetworkPlus.getLogger().verbose("    &b" + entry.getKey() + ": &7" + entry.getValue());
             }
 
             NetworkPlus.getEventManager().triggerEvent(new PostServerFlagsReceivedEvent(serverInfo));
@@ -138,6 +142,12 @@ public class NetworkActions {
         String message = serverMessage.toString();
         String[] args = serverMessage.getArgs();
 
+        NetworkPlus.getLogger().verbose(
+                "Recieved message from &a" + senderID +
+                "&7 on channel &b" + channel +
+                "&7 with &e" + args.length + "&7 arguments"
+        );
+
 		if(NetworkConfig.Channels.SERVER_SENDALL.equals(channel))
 		{
             for(String player: BukkitUtils.getPlayerNames())
@@ -168,9 +178,7 @@ public class NetworkActions {
 
 		if(NetworkConfig.Channels.SERVER_FLAGS_REQUEST.equals(channel))
         {
-            NetworkPlus.sendMessage(senderID, NetworkConfig.Channels.SERVER_FLAGS_CACHE.toString(),
-                    NetworkPlus.getServerInfo().asMessage()
-            );
+            NetworkPlus.sendServerInfo(senderID);
             return;
         }
 
