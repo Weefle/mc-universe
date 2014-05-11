@@ -39,10 +39,23 @@ public class BukkitListener implements Listener {
         }
     }
 
-    private void updatePlayers()
+    private void updatePlayerJoined() {
+        List<String> players = new ArrayList<>();
+        players.addAll(Arrays.asList(BukkitUtils.getPlayerNames()));
+        updatePlayers(players);
+    }
+
+    private void updatePlayerLeft(String player) {
+        List<String> players = new ArrayList<>();
+        players.addAll(Arrays.asList(BukkitUtils.getPlayerNames()));
+        players.remove(player);
+        updatePlayers(players);
+    }
+
+    private void updatePlayers(List<String> players)
     {
         HashMap<String, Object> options = new HashMap<>();
-        options.put("onlinePlayers", Arrays.asList(BukkitUtils.getPlayerNames()));
+        options.put("onlinePlayers", players);
 
         //First, update this server.
         NetworkServerCache.getInfo(NetworkPlus.getServerID()).merge(options);
@@ -54,12 +67,12 @@ public class BukkitListener implements Listener {
     }
 
 	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent event) {updatePlayers();}
+	public void onPlayerJoin(PlayerJoinEvent event) {updatePlayerJoined();}
 	
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent event) 
 	{
-		updatePlayers();
+		updatePlayerLeft(event.getPlayer().getName());
 		if (NetworkQueueManager.instance.isQueued(event.getPlayer()
 				.getName())) {
 			NetworkQueueManager.instance
