@@ -2,11 +2,10 @@ package com.octopod.network;
 
 import java.util.ArrayList;
 
+import com.octopod.network.bukkit.BukkitUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
-
-import com.octopod.network.bukkit.BukkitUtils;
 
 public class NetworkQueueManager {
 
@@ -134,14 +133,14 @@ public class NetworkQueueManager {
 			if (getQueuePosition(p.getName()) >= fromQueuePos) {
 				if (p.isOnline()) {
 					BukkitUtils.sendMessage(p.getName(),
-							"&cThere are currently &e"
-									+ NetworkPlus.getServerInfo().getOnlinePlayers()
-									+ "/"
-									+ NetworkPlus.getServerInfo()
-											.getMaxPlayers()
-									+ "&c in "
-									+ NetworkPlus.getServerInfo()
-											.getServerName());
+                            "&cThere are currently &e"
+                                    + NetworkPlus.getServerInfo().getOnlinePlayers()
+                                    + "/"
+                                    + NetworkPlus.getServerInfo()
+                                    .getMaxPlayers()
+                                    + "&c in "
+                                    + NetworkPlus.getServerInfo()
+                                    .getServerName());
 					BukkitUtils.sendMessage(p.getName(),
 							"&cYour new queue position is: "
 									+ getQueuePosition(p.getName()));
