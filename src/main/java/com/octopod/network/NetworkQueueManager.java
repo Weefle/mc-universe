@@ -2,7 +2,6 @@ package com.octopod.network;
 
 import java.util.ArrayList;
 
-import com.octopod.network.bukkit.BukkitUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
@@ -69,8 +68,10 @@ public class NetworkQueueManager {
 		queue.remove(player);
 		alertPlayers(queuePos);
 
-		String channel_queueleave = NetworkConfig.Channels.PLAYER_LEAVE_QUEUE.toString();
-		NetworkPlus.broadcastMessage(channel_queueleave, new ServerMessage(player));
+		String channel_queueleave = NetworkConfig.Channels.PLAYER_LEAVE_QUEUE
+				.toString();
+		NetworkPlus.broadcastMessage(channel_queueleave, new ServerMessage(
+				player));
 	}
 
 	/**
@@ -79,10 +80,12 @@ public class NetworkQueueManager {
 	public void updateQueue() {
 		int serverSize = NetworkPlus.getServerInfo().getOnlinePlayers().size();
 		int maxServerSize = NetworkPlus.getServerInfo().getMaxPlayers();
-		String toJoin = getQueueMembers().get(0);
 		if (serverSize < maxServerSize) {
-			NetworkPlus.sendPlayer(toJoin, NetworkPlus.getServerID());
-			remove(toJoin);
+			if (!getQueueMembers().isEmpty()) {
+				String toJoin = getQueueMembers().get(0);
+				NetworkPlus.sendPlayer(toJoin, NetworkPlus.getServerID());
+				remove(toJoin);
+			}
 		}
 	}
 
@@ -131,22 +134,21 @@ public class NetworkQueueManager {
 		for (String player : queue) {
 			OfflinePlayer p = Bukkit.getOfflinePlayer(player);
 			if (getQueuePosition(p.getName()) >= fromQueuePos) {
-				if (p.isOnline()) {
-					BukkitUtils.sendMessage(p.getName(),
-                            "&cThere are currently &e"
-                                    + NetworkPlus.getServerInfo().getOnlinePlayers()
-                                    + "/"
-                                    + NetworkPlus.getServerInfo()
-                                    .getMaxPlayers()
-                                    + "&c in "
-                                    + NetworkPlus.getServerInfo()
-                                    .getServerName());
-					BukkitUtils.sendMessage(p.getName(),
-							"&cYour new queue position is: "
-									+ getQueuePosition(p.getName()));
-					p.getPlayer().playSound(p.getPlayer().getLocation(),
-							Sound.NOTE_PIANO, 1, 1);
-				}
+				String player_message = NetworkConfig.Channels.PLAYER_MESSAGE
+						.toString();
+				String msg;
+				msg = "&cThere are currently &e"
+						+ NetworkPlus.getServerInfo().getOnlinePlayers() + "/"
+						+ NetworkPlus.getServerInfo().getMaxPlayers()
+						+ "&c in "
+						+ NetworkPlus.getServerInfo().getServerName() + "."
+						+ System.lineSeparator()
+						+ "&cYour new queue position is: "
+						+ getQueuePosition(p.getName());
+				NetworkPlus.broadcastMessage(player_message, new ServerMessage(
+						msg));
+				p.getPlayer().playSound(p.getPlayer().getLocation(),
+						Sound.NOTE_PIANO, 1, 1);
 			}
 		}
 	}
