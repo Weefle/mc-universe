@@ -57,34 +57,39 @@ public class NetworkActions {
 
         if(!event.isCancelled()) {
 
-            //Adds in the new flags and returns the resultant ServerFlags object.
-            ServerFlags serverInfo = NetworkServerCache.addServer(serverID, flags);
-
-            //Checks if this server is a hub (priority above 0)
-            int hubPriority = serverInfo.getHubPriority();
-            if(hubPriority >= 0) {
-                NetworkHubCache.addHub(serverID, hubPriority);
-                NetworkPlus.getLogger().info("Server &a" + serverID + "&7 registered as hub @ priority &e" + hubPriority);
-            }
-
-            //Version checking
-            if(!NetworkPlus.isTestBuild()) {
-                //Checks for mismatched plugin versions between servers, and warns the server owners.
-                String version = serverInfo.getVersion();
-                if(!version.equals("TEST_BUILD") && !version.equals(NetworkPlus.getPluginVersion())) {
-                    NetworkPlus.getLogger().info("&a" + serverID + "&7: Running &6Net+&7 version &6" + (version.equals("") ? "No Version" : version));
+            if(flags.hasFlag("version"))
+            {
+                //Version checking
+                if(!NetworkPlus.isTestBuild()) {
+                    //Checks for mismatched plugin versions between servers, and warns the server owners.
+                    String version = flags.getVersion();
+                    if(!version.equals("TEST_BUILD") && !version.equals(NetworkPlus.getPluginVersion())) {
+                        NetworkPlus.getLogger().info("&a" + serverID + "&7: Running &6Net+&7 version &6" + (version.equals("") ? "No Version" : version));
+                    }
                 }
             }
 
-            NetworkPlus.getLogger().verbose("Recieved server info from &a" + serverID + ":");
-            for(Map.Entry<String, Object> entry: serverInfo.asMap().entrySet()) {
-                NetworkPlus.getLogger().verbose("    &b" + entry.getKey() + ": &7" + entry.getValue());
+            if(flags.hasFlag("hubPriority"))
+            {
+                //Checks if this server is a hub (priority above 0)
+                int hubPriority = flags.getHubPriority();
+                if(hubPriority >= 0) {
+                    NetworkHubCache.addHub(serverID, hubPriority);
+                    NetworkPlus.getLogger().info("Server &a" + serverID + "&7 registered as hub @ priority &e" + hubPriority);
+                }
             }
 
-            NetworkPlus.getEventManager().triggerEvent(new PostServerFlagsReceivedEvent(serverInfo));
+            //Adds in the new flags
+            NetworkServerCache.addServer(serverID, flags);
+
+            NetworkPlus.getLogger().verbose("Recieved server info from &a" + serverID + ":");
+            for(Map.Entry<String, Object> entry: flags.asMap().entrySet()) {
+                NetworkPlus.getLogger().verbose("    &b" + entry.getKey() + ": &e" + entry.getValue() + "&e");
+            }
+
+            NetworkPlus.getEventManager().triggerEvent(new PostServerFlagsReceivedEvent(serverID, flags));
 
         }
-
     }
 
 	/**

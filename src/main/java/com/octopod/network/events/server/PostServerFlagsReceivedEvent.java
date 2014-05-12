@@ -11,8 +11,8 @@ public class PostServerFlagsReceivedEvent extends Event {
 	String server;
     ServerFlags serverInfo;
 
-	public PostServerFlagsReceivedEvent(ServerFlags serverInfo) {
-		this.server = serverInfo.getServerID();
+	public PostServerFlagsReceivedEvent(String server, ServerFlags serverInfo) {
+		this.server = server;
         this.serverInfo = serverInfo;
 	}
 

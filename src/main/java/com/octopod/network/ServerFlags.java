@@ -22,7 +22,6 @@ public class ServerFlags {
 
     /**
      * The map of flags for this ServerInfo instance.
-     * TODO: Make this HashMap a <String, String> instead. Need to settle on a way to serialize String arguments for lists first.
      */
     private HashMap<String, Object> flagMap = new HashMap<>();
 
@@ -52,28 +51,28 @@ public class ServerFlags {
             flags.setFlag("description", Bukkit.getServer().getMotd());
 
             //Server's maximum players
-            flags.setFlag("maxPlayers", Bukkit.getServer().getMaxPlayers());
+            flags.setInteger("maxPlayers", Bukkit.getServer().getMaxPlayers());
 
             //If the server's whitelist is enabled
-            flags.setFlag("serverWhitelistEnabled", Bukkit.getServer().hasWhitelist());
+            flags.setBoolean("serverWhitelistEnabled", Bukkit.getServer().hasWhitelist());
 
             //Server's list of whitelisted players (empty list if whitelist is disabled)
-            flags.setFlag("whitelistedPlayers", new ArrayList<>(Arrays.asList(BukkitUtils.getWhitelistedPlayerNames())));
+            flags.setStringList("whitelistedPlayers", new ArrayList<>(Arrays.asList(BukkitUtils.getWhitelistedPlayerNames())));
 
             //Server's hub priority (-1 if not a hub)
-            flags.setFlag("hubPriority", NetworkConfig.isHub() ? NetworkConfig.getHubPriority() : -1);
+            flags.setInteger("hubPriority", NetworkConfig.isHub() ? NetworkConfig.getHubPriority() : -1);
 
             //Server's plugin version
             flags.setFlag("version", NetworkPlus.getPluginVersion());
 
             //Server's list of online players
-            flags.setFlag("onlinePlayers", new ArrayList<>(Arrays.asList(BukkitUtils.getPlayerNames())));
+            flags.setStringList("onlinePlayers", new ArrayList<>(Arrays.asList(BukkitUtils.getPlayerNames())));
 
             //Players queued for this server.
-            flags.setFlag("queuedPlayers", NetworkQueueManager.instance.getQueueMembers());
+            flags.setStringList("queuedPlayers", NetworkQueueManager.instance.getQueueMembers());
 
             //Status of the server (true if online, false if not)
-            flags.setFlag("serverStatus", true);
+            flags.setBoolean("serverStatus", true);
 
             return flags;
         }
@@ -93,36 +92,41 @@ public class ServerFlags {
         flagMap.putAll(flags.asMap());
     }
 
+    public boolean hasFlag(String key) {
+        return flagMap.containsKey(key);
+    }
+
     /**
      * Sets a flag to a value.
-     * @param k The key.
-     * @param v The value.
+     * @param key The key.
+     * @param value The value.
      */
-    public void setFlag(String k, Object v) {
-        flagMap.put(k, v);
+    public void setFlag(String key, String value) {
+        flagMap.put(key, value);
     }
 
     /**
      * Gets the flag by key.
-     * @param k The key.
-     * @param def The value to return if the key doesn't exist.
-     * @return The value located at the key, or 'def' if the key doesn't exist.
+     * @param key The key.
+     * @param defaultValue The value to return if the key doesn't exist.
+     * @return The value located at the key, or 'defaultValue' if the key doesn't exist.
      */
-    public Object getFlag(String k, Object def) {
-        Object val = flagMap.get(k);
+    public Object getFlag(String key, Object defaultValue) {
+        Object val = flagMap.get(key);
         if(val == null)
-            return def;
+            return defaultValue;
             return val;
     }
 
-    public void setString(String k, String v) {setFlag(k, v);}
-    public void setInteger(String k, Integer v) {setFlag(k, v);}
-    public void setStringList(String k, ArrayList<String> v) {setFlag(k, v);}
+    public void setString(String key, String value) {setFlag(key, value);}
+    public void setBoolean(String key, Boolean value) {setFlag(key, value.toString());}
+    public void setInteger(String key, Integer value) {setFlag(key, value.toString());}
+    public void setStringList(String key, List<String> value) {setFlag(key, Util.generateArgs(value.toArray(new String[value.size()])));}
 
-    public String getString(String k) {return (String) getFlag(k, "null");}
-
-    public Integer getInteger(String k) {
-        Object value = getFlag(k, -1);
+    public String getString(String key) {return (String)getFlag(key, "null");}
+    public Boolean getBoolean(String key) {return (Boolean)getFlag(key, false);}
+    public Integer getInteger(String key) {
+        Object value = getFlag(key, -1);
         if(value instanceof Integer)
             return (Integer)value;
         if(value instanceof Double)
@@ -130,7 +134,7 @@ public class ServerFlags {
             return null;
     }
 
-    public ArrayList<String> getStringList(String k) {return new ArrayList<>((List<String>) getFlag(k, new ArrayList<String>()));}
+    public ArrayList<String> getStringList(String key) {return new ArrayList<>((List<String>)getFlag(key, new ArrayList<>()));}
 
     //A bunch of default getters
 
@@ -169,7 +173,7 @@ public class ServerFlags {
     }
 
     public ServerMessage asMessage() {
-        return asMessage((String)getFlag("username", null));
+        return asMessage(getString("username"));
     }
 
     public ServerMessage asMessage(String serverID) {

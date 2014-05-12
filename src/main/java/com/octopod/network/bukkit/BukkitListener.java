@@ -52,7 +52,7 @@ public class BukkitListener implements Listener {
     private void updatePlayers(List<String> players)
     {
         ServerFlags flags = new ServerFlags();
-        flags.setFlag("onlinePlayers", players);
+        flags.setStringList("onlinePlayers", players);
 
         NetworkPlus.broadcastPartialServerInfo(NetworkPlus.getServerID(), flags);
     }
