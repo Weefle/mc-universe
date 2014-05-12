@@ -108,7 +108,7 @@ public class BukkitUtils {
 
         List<String> players = new ArrayList<>();
 
-        for(OfflinePlayer p: Bukkit.getOfflinePlayers())
+        for(OfflinePlayer p: Bukkit.getWhitelistedPlayers())
             players.add(p.getName());
 
         return players.toArray(new String[players.size()]);
