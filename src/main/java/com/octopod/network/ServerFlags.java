@@ -119,8 +119,17 @@ public class ServerFlags {
     public void setInteger(String k, Integer v) {setFlag(k, v);}
     public void setStringList(String k, ArrayList<String> v) {setFlag(k, v);}
 
-    public String getString(String k) {return (String) getFlag(k, "[UNKNOWN]");}
-    public Integer getInteger(String k) {return ((Double)getFlag(k, -1)).intValue() ;}
+    public String getString(String k) {return (String) getFlag(k, "null");}
+
+    public Integer getInteger(String k) {
+        Object value = getFlag(k, -1);
+        if(value instanceof Integer)
+            return (Integer)value;
+        if(value instanceof Double)
+            return ((Double)value).intValue();
+            return null;
+    }
+
     public ArrayList<String> getStringList(String k) {return new ArrayList<>((List<String>) getFlag(k, new ArrayList<String>()));}
 
     //A bunch of default getters

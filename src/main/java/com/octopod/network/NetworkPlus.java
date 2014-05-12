@@ -96,7 +96,7 @@ public class NetworkPlus {
      */
     public static ServerFlags getServerInfo() {
         if(!isLoaded()) return null;
-        return new ServerFlags();
+        return ServerFlags.generateFlags();
     }
 
     public static NetworkConnection getConnection() {
