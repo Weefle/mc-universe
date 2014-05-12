@@ -20,6 +20,11 @@ public class CommandMessage extends NetworkCommand {
 		);
 	}
 
+    @Override
+    public boolean weakCommand() {
+        return true;
+    }
+
 	@Override
 	protected boolean exec(CommandSender cmdsender, String label, String[] args) {
 

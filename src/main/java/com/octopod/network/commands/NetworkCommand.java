@@ -40,7 +40,7 @@ public abstract class NetworkCommand implements Comparable<NetworkCommand> {
 	}
 
     public boolean weakCommand() {
-        return true;
+        return false;
     }
 
 	protected abstract boolean exec(CommandSender sender, String label, String[] args);
@@ -55,16 +55,17 @@ public abstract class NetworkCommand implements Comparable<NetworkCommand> {
             //If command returns true
             if(exec(sender, label, args)) {
                 return true;
-            } else
-            //If the command isn't weak, show the help entry instead of letting Bukkit handle the command.
-            if(!weakCommand()) {
-                BukkitUtils.sendMessage(sender,
-                        "&8[&b" + getUsage() + "&8]: " +
-                                "&6" + getDescription());
-                return true;
             }
 
 		}
+
+        //If the command isn't weak, show the help entry instead of letting Bukkit handle the command.
+        if(!weakCommand()) {
+            BukkitUtils.sendMessage(sender,
+                    "&8[&b" + getUsage() + "&8]: " +
+                            "&6" + getDescription());
+            return true;
+        }
 
         return false;
 
