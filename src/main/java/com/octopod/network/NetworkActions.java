@@ -33,13 +33,14 @@ public class NetworkActions {
                 "&7!"
         );
 
-        ServerFlags serverFlags = NetworkPlus.getServerInfo();
+        //Generate a new ServerFlags object for this server.
+        ServerFlags serverFlags = ServerFlags.generateFlags();
 
         //Broadcast the serverFlags across the network.
-        NetworkPlus.broadcastServerInfo(NetworkPlus.getServerID(), serverFlags);
+        NetworkPlus.broadcastServerFlags(NetworkPlus.getServerID(), serverFlags);
 
         //Then, request serverFlags from every server.
-        NetworkPlus.requestServerInfo();
+        NetworkPlus.requestServerFlags();
     }
 
     /**
@@ -103,7 +104,7 @@ public class NetworkActions {
 						+ " &7in position: &a" + queuePosition);
 		// If the message is to this server, add to queue.
 		if (serverID
-				.equalsIgnoreCase(NetworkPlus.getServerInfo().getServerName())) {
+				.equalsIgnoreCase(NetworkPlus.getServerFlags().getServerName())) {
 			NetworkQueueManager.instance.add(player, queuePosition);
 		}
 	}
@@ -117,7 +118,7 @@ public class NetworkActions {
 				"&b" + player + " &7left the queue for &a" + serverID);
 		// If the server is this server, update queue.
 		if (serverID
-				.equalsIgnoreCase(NetworkPlus.getServerInfo().getServerName())) {
+				.equalsIgnoreCase(NetworkPlus.getServerFlags().getServerName())) {
 			NetworkQueueManager.instance.updateQueue();
 		}
 	}
@@ -178,7 +179,7 @@ public class NetworkActions {
 
 		if(NetworkConfig.Channels.SERVER_FLAGS_REQUEST.equals(channel))
         {
-            NetworkPlus.sendServerInfo(senderID);
+            NetworkPlus.sendServerFlags(senderID);
             return;
         }
 
