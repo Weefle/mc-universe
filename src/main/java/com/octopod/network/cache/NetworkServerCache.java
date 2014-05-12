@@ -21,18 +21,17 @@ public class NetworkServerCache {
      * @param flags The flags recieved from this server.
      * @return The new or patched ServerFlags object.
      */
-    public static ServerFlags addServer(String serverID, HashMap<String, Object> flags) {
+    public static ServerFlags addServer(String serverID, ServerFlags flags) {
         if(!serverMap.containsKey(serverID)) {
             //Add a new entry
-            ServerFlags serverInfo = new ServerFlags(flags);
-            serverMap.put(serverID, serverInfo);
-            return serverInfo;
+            serverMap.put(serverID, flags);
+            return flags;
         } else {
             //Merge into existing entry
-            ServerFlags serverInfo = serverMap.get(serverID);
-            serverInfo.merge(flags);
-            serverMap.put(serverID, serverInfo);
-            return serverInfo;
+            ServerFlags value = serverMap.get(serverID);
+            value.merge(flags);
+            serverMap.put(serverID, value);
+            return value;
         }
     }
 

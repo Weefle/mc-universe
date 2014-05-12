@@ -1,6 +1,7 @@
 package com.octopod.network;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 
 import com.google.gson.Gson;
@@ -8,7 +9,6 @@ import com.octopod.network.bukkit.BukkitUtils;
 import com.octopod.network.cache.NetworkServerCache;
 import com.octopod.network.connection.NetworkConnection;
 import com.octopod.network.events.EventManager;
-import net.md_5.bungee.api.config.ServerInfo;
 
 /**
  * @author Octopod
@@ -291,24 +291,42 @@ public class NetworkPlus {
     /**
      * Sends a server a ServerFlags object.
      * @param serverID The ID of the server to send it to.
-     * @param serverFlags The ServerFlags object.
+     * @param flags The ServerFlags object.
      */
-    public static void sendServerInfo(String serverID, ServerFlags serverFlags, String serverIDOwnedBy) {
+    public static void sendServerInfo(String serverID, ServerFlags flags, String serverIDOwnedBy) {
         getLogger().log(3, "Sending server info to &a" + serverID);
-        NetworkPlus.sendMessage(serverID, NetworkConfig.Channels.SERVER_FLAGS_CACHE.toString(), serverFlags.asMessage(serverIDOwnedBy));
+        NetworkPlus.sendMessage(serverID, NetworkConfig.Channels.SERVER_FLAGS_CACHE.toString(), flags.asMessage(serverIDOwnedBy));
+    }
+
+    public static void broadcastPartialServerInfo(String serverIDOwnedBy, ServerFlags flags)
+    {
+        //First, update this server.
+        ServerFlags serverFlags = NetworkServerCache.getInfo(serverIDOwnedBy);
+        if(serverFlags != null) {
+            serverFlags.merge(flags);
+        }
+
+        //Then, broadcast to everywhere else.
+        NetworkPlus.broadcastMessage(NetworkConfig.Channels.SERVER_FLAGS_CACHE.toString(),
+                new ServerMessage(serverIDOwnedBy, NetworkPlus.gson().toJson(flags))
+        );
     }
 
     public static void broadcastServerInfo() {
-        broadcastServerInfo(getServerInfo(), getServerID());
+        broadcastServerInfo(getServerID(), getServerInfo());
     }
 
     /**
      * Broadcasts a ServerFlags object.
-     * @param serverFlags The ServerFlags object.
+     * @param flags The ServerFlags object.
      */
-    public static void broadcastServerInfo(ServerFlags serverFlags, String serverIDOwnedBy) {
+    public static void broadcastServerInfo(String serverIDOwnedBy, ServerFlags flags)
+    {
+        //"Fake" the server recieving the info, since it can't recieve the broadcast.
+        NetworkActions.actionRecieveServerFlags(NetworkPlus.getServerID(), flags);
+
         getLogger().log(3, "Sending server info to all servers");
-        NetworkPlus.broadcastMessage(NetworkConfig.Channels.SERVER_FLAGS_CACHE.toString(), serverFlags.asMessage(serverIDOwnedBy));
+        NetworkPlus.broadcastMessage(NetworkConfig.Channels.SERVER_FLAGS_CACHE.toString(), flags.asMessage(serverIDOwnedBy));
     }
 
 }

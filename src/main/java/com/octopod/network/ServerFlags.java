@@ -24,28 +24,13 @@ public class ServerFlags {
      * The map of flags for this ServerInfo instance.
      * TODO: Make this HashMap a <String, String> instead. Need to settle on a way to serialize String arguments for lists first.
      */
-    private HashMap<String, Object> flags = new HashMap<>();
-
-    /**
-     * Creates the default ServerInfo.
-     */
-    public ServerFlags() {
-        this(currentGenerator.generate());
-    }
-
-    /**
-     * Creates a ServerInfo instance by flags.
-     * @param map A map containing the arguments for this object
-     */
-    public ServerFlags(HashMap<String, Object> map) {
-        flags = map;
-    }
+    private HashMap<String, Object> flagMap = new HashMap<>();
 
     /**
      * An interface that will generate the default ServerFlags object
      */
     public static interface Generator {
-        public HashMap<String, Object> generate();
+        public ServerFlags generate();
     }
 
     /**
@@ -53,34 +38,59 @@ public class ServerFlags {
      */
     private static Generator currentGenerator = new Generator() {
 
-        public HashMap<String, Object> generate() {
-            HashMap<String, Object> options = new HashMap<>();
-            options.put("serverID", NetworkPlus.getServerID());             //Server's username
-            options.put("serverName", NetworkConfig.getServerName());       //Server's config name
-            options.put("description", Bukkit.getServer().getMotd());       //Server's MOTD
-            options.put("maxPlayers", Bukkit.getServer().getMaxPlayers());  //Server's max players
-            options.put("whitelistedPlayers", new ArrayList<>(Arrays.asList(BukkitUtils.getWhitelistedPlayerNames()))); //Server's whitelisted players
-            options.put("hubPriority", NetworkConfig.isHub() ? NetworkConfig.getHubPriority() : -1); //Server's hub priority, or -1 if is not a hub.
-            options.put("version", NetworkPlus.getPluginVersion()); //Server's plugin version. (<build>-<commit>)
-            options.put("onlinePlayers", new ArrayList<>(Arrays.asList(BukkitUtils.getPlayerNames()))); //Server's online players.
-            options.put("queuedPlayers", NetworkQueueManager.instance.getQueueMembers());// Players queued for this server
-            options.put("serverStatus", true);
-            return options;
+        public ServerFlags generate()
+        {
+            ServerFlags flags = new ServerFlags();
+
+            //Server's identification name
+            flags.setFlag("serverID", NetworkPlus.getServerID());
+
+            //Server's config name (or ID if blank)
+            flags.setFlag("serverName", NetworkConfig.getServerName());
+
+            //Server's config description (or MOTD if blank)
+            flags.setFlag("description", Bukkit.getServer().getMotd());
+
+            //Server's maximum players
+            flags.setFlag("maxPlayers", Bukkit.getServer().getMaxPlayers());
+
+            //If the server's whitelist is enabled
+            flags.setFlag("serverWhitelistEnabled", Bukkit.getServer().hasWhitelist());
+
+            //Server's list of whitelisted players (empty list if whitelist is disabled)
+            flags.setFlag("whitelistedPlayers", new ArrayList<>(Arrays.asList(BukkitUtils.getWhitelistedPlayerNames())));
+
+            //Server's hub priority (-1 if not a hub)
+            flags.setFlag("hubPriority", NetworkConfig.isHub() ? NetworkConfig.getHubPriority() : -1);
+
+            //Server's plugin version
+            flags.setFlag("version", NetworkPlus.getPluginVersion());
+
+            //Server's list of online players
+            flags.setFlag("onlinePlayers", new ArrayList<>(Arrays.asList(BukkitUtils.getPlayerNames())));
+
+            //Players queued for this server.
+            flags.setFlag("queuedPlayers", NetworkQueueManager.instance.getQueueMembers());
+
+            //Status of the server (true if online, false if not)
+            flags.setFlag("serverStatus", true);
+
+            return flags;
         }
 
     };
 
-    public HashMap<String, Object> getFlags() {
-        return flags;
+    public static ServerFlags generateFlags() {
+        return currentGenerator.generate();
     }
 
     /**
      * Merges the map into this instance's option map.
-     * Used to "patch" the current flags.
-     * @param info
+     * Used to "patch" the current flagMap.
+     * @param flags
      */
-    public void merge(HashMap<String, Object> info) {
-        flags.putAll(info);
+    public void merge(ServerFlags flags) {
+        flagMap.putAll(flags.asMap());
     }
 
     /**
@@ -89,7 +99,7 @@ public class ServerFlags {
      * @param v The value.
      */
     public void setFlag(String k, Object v) {
-        flags.put(k, v);
+        flagMap.put(k, v);
     }
 
     /**
@@ -99,7 +109,7 @@ public class ServerFlags {
      * @return The value located at the key, or 'def' if the key doesn't exist.
      */
     public Object getFlag(String k, Object def) {
-        Object val = flags.get(k);
+        Object val = flagMap.get(k);
         if(val == null)
             return def;
             return val;
@@ -109,16 +119,8 @@ public class ServerFlags {
     public void setInteger(String k, Integer v) {setFlag(k, v);}
     public void setStringList(String k, ArrayList<String> v) {setFlag(k, v);}
 
-    public String getString(String k) {return (String) getFlag(k, "null");}
-
-    public Integer getInteger(String k) {
-        Object val = getFlag(k, -1);
-        if(val instanceof Integer)
-            return (Integer)val;
-        if(val instanceof Double)
-            return ((Double)val).intValue();
-            return null;
-    }
+    public String getString(String k) {return (String) getFlag(k, "[UNKNOWN]");}
+    public Integer getInteger(String k) {return ((Double)getFlag(k, -1)).intValue() ;}
     public ArrayList<String> getStringList(String k) {return new ArrayList<>((List<String>) getFlag(k, new ArrayList<String>()));}
 
     //A bunch of default getters
@@ -141,7 +143,20 @@ public class ServerFlags {
      */
     @Override
     public String toString() {
-        return NetworkPlus.gson().toJson(getFlags());
+        return NetworkPlus.gson().toJson(this);
+    }
+
+    /**
+     * Returns a ServerFlags object from a JSON string.
+     * @param json The JSON string.
+     * @return A ServerFlags object.
+     */
+    public static ServerFlags readFromJson(String json) {
+        return NetworkPlus.gson().fromJson(json, ServerFlags.class);
+    }
+
+    public HashMap<String, Object> asMap() {
+        return flagMap;
     }
 
     public ServerMessage asMessage() {
@@ -149,7 +164,7 @@ public class ServerFlags {
     }
 
     public ServerMessage asMessage(String serverID) {
-        return new ServerMessage(serverID, NetworkPlus.getServerInfo().toString());
+        return new ServerMessage(serverID, toString());
     }
 
 }

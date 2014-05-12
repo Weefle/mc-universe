@@ -1,5 +1,6 @@
 package com.octopod.network.events.server;
 
+import com.octopod.network.ServerFlags;
 import com.octopod.network.events.CancellableEvent;
 
 import java.util.HashMap;
@@ -11,9 +12,9 @@ import java.util.HashMap;
 public class ServerFlagsReceivedEvent extends CancellableEvent {
 
     String server;
-    HashMap<String, Object> flags;
+    ServerFlags flags;
 
-    public ServerFlagsReceivedEvent(String serverID, HashMap<String, Object> flags) {
+    public ServerFlagsReceivedEvent(String serverID, ServerFlags flags) {
         server = serverID;
         this.flags = flags;
     }
@@ -22,11 +23,11 @@ public class ServerFlagsReceivedEvent extends CancellableEvent {
         return server;
     }
 
-    public HashMap<String, Object> getFlags() {
+    public ServerFlags getFlags() {
         return flags;
     }
 
-    public void setFlags(HashMap<String, Object> flags) {
+    public void setFlags(ServerFlags flags) {
         this.flags = flags;
     }
 

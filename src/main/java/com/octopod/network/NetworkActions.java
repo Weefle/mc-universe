@@ -1,7 +1,6 @@
 package com.octopod.network;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gson.JsonSyntaxException;
@@ -36,15 +35,11 @@ public class NetworkActions {
 
         ServerFlags serverFlags = NetworkPlus.getServerInfo();
 
-        //"Fake" the server recieving its own info, for caching purposes.
-        NetworkActions.actionRecieveServerFlags(NetworkPlus.getServerID(), serverFlags.getFlags());
-
-        //Then, send the serverFlags across the network.
-        NetworkPlus.broadcastServerInfo(serverFlags, NetworkPlus.getServerID());
+        //Broadcast the serverFlags across the network.
+        NetworkPlus.broadcastServerInfo(NetworkPlus.getServerID(), serverFlags);
 
         //Then, request serverFlags from every server.
         NetworkPlus.requestServerInfo();
-
     }
 
     /**
@@ -54,7 +49,7 @@ public class NetworkActions {
      * @param serverID The ID of the server.
      * @param flags The flags representing information.
      */
-    public static void actionRecieveServerFlags(String serverID, HashMap<String, Object> flags) {
+    public static void actionRecieveServerFlags(String serverID, ServerFlags flags) {
 
         ServerFlagsReceivedEvent event = new ServerFlagsReceivedEvent(serverID, flags);
 
@@ -82,7 +77,7 @@ public class NetworkActions {
             }
 
             NetworkPlus.getLogger().verbose("Recieved server info from &a" + serverID + ":");
-            for(Map.Entry<String, Object> entry: serverInfo.getFlags().entrySet()) {
+            for(Map.Entry<String, Object> entry: serverInfo.asMap().entrySet()) {
                 NetworkPlus.getLogger().verbose("    &b" + entry.getKey() + ": &7" + entry.getValue());
             }
 
@@ -187,10 +182,10 @@ public class NetworkActions {
             if(args.length == 2) {
                 String serverID = args[0];
                 String json = args[1];
-                HashMap<String, Object> flags;
+                ServerFlags flags;
 
                 try {
-                    flags = Util.mapFromJson(json);
+                    flags = ServerFlags.readFromJson(json);
                     actionRecieveServerFlags(serverID, flags);
                     return;
                 } catch (JsonSyntaxException e) {

@@ -1,9 +1,6 @@
 package com.octopod.network.bukkit;
 
-import com.octopod.network.NetworkConfig;
-import com.octopod.network.NetworkPlus;
-import com.octopod.network.NetworkQueueManager;
-import com.octopod.network.ServerMessage;
+import com.octopod.network.*;
 import com.octopod.network.cache.NetworkCommandCache;
 import com.octopod.network.cache.NetworkHubCache;
 import com.octopod.network.cache.NetworkServerCache;
@@ -54,16 +51,10 @@ public class BukkitListener implements Listener {
 
     private void updatePlayers(List<String> players)
     {
-        HashMap<String, Object> options = new HashMap<>();
-        options.put("onlinePlayers", players);
+        ServerFlags flags = new ServerFlags();
+        flags.setFlag("onlinePlayers", players);
 
-        //First, update this server.
-        NetworkServerCache.getInfo(NetworkPlus.getServerID()).merge(options);
-
-        //Then, broadcast to everywhere else.
-        NetworkPlus.broadcastMessage(NetworkConfig.Channels.SERVER_FLAGS_CACHE.toString(),
-                new ServerMessage(NetworkPlus.getServerID(), NetworkPlus.gson().toJson(options))
-        );
+        NetworkPlus.broadcastPartialServerInfo(NetworkPlus.getServerID(), flags);
     }
 
 	@EventHandler
