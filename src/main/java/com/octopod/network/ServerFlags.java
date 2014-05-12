@@ -64,6 +64,7 @@ public class ServerFlags {
             options.put("version", NetworkPlus.getPluginVersion()); //Server's plugin version. (<build>-<commit>)
             options.put("onlinePlayers", new ArrayList<>(Arrays.asList(BukkitUtils.getPlayerNames()))); //Server's online players.
             options.put("queuedPlayers", NetworkQueueManager.instance.getQueueMembers());// Players queued for this server
+            options.put("serverStatus", true);
             return options;
         }
 
