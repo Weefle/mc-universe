@@ -23,7 +23,7 @@ public class NetworkLogger {
         if(NetworkConfig.getDebugMode() >= level || TESTING)
         {
             for(String message: messages) {
-                message = "&f[i" + level + "] &7" + message;
+                message = "&8[&6info&8] &7" + message;
 
                 BukkitUtils.console(message);
                 for(Player player: BukkitUtils.getPlayers()) {
