@@ -3,7 +3,6 @@ package com.octopod.network.bukkit;
 import com.octopod.network.*;
 import com.octopod.network.cache.NetworkCommandCache;
 import com.octopod.network.cache.NetworkHubCache;
-import com.octopod.network.cache.NetworkServerCache;
 import com.octopod.network.commands.NetworkCommand;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -54,7 +53,7 @@ public class BukkitListener implements Listener {
         ServerFlags flags = new ServerFlags();
         flags.setStringList("onlinePlayers", players);
 
-        NetworkPlus.broadcastPartialServerInfo(NetworkPlus.getServerID(), flags);
+        NetworkPlus.broadcastServerFlags(NetworkPlus.getServerID(), flags);
     }
 
 	@EventHandler

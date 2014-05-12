@@ -78,8 +78,8 @@ public class NetworkQueueManager {
 	 * Checks players online and updates the queue
 	 */
 	public void updateQueue() {
-		int serverSize = NetworkPlus.getServerInfo().getOnlinePlayers().size();
-		int maxServerSize = NetworkPlus.getServerInfo().getMaxPlayers();
+		int serverSize = NetworkPlus.getServerFlags().getOnlinePlayers().size();
+		int maxServerSize = NetworkPlus.getServerFlags().getMaxPlayers();
 		if (serverSize < maxServerSize) {
 			if (!getQueueMembers().isEmpty()) {
 				String toJoin = getQueueMembers().get(0);
@@ -138,10 +138,10 @@ public class NetworkQueueManager {
 						.toString();
 				String msg;
 				msg = "&cThere are currently &e"
-						+ NetworkPlus.getServerInfo().getOnlinePlayers() + "/"
-						+ NetworkPlus.getServerInfo().getMaxPlayers()
+						+ NetworkPlus.getServerFlags().getOnlinePlayers() + "/"
+						+ NetworkPlus.getServerFlags().getMaxPlayers()
 						+ "&c in "
-						+ NetworkPlus.getServerInfo().getServerName() + "."
+						+ NetworkPlus.getServerFlags().getServerName() + "."
 						+ System.lineSeparator()
 						+ "&cYour new queue position is: "
 						+ getQueuePosition(p.getName());

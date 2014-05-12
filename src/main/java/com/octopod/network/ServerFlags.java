@@ -101,7 +101,7 @@ public class ServerFlags {
      * @param key The key.
      * @param value The value.
      */
-    public void setFlag(String key, String value) {
+    public void setFlag(String key, Object value) {
         flagMap.put(key, value);
     }
 
@@ -119,9 +119,9 @@ public class ServerFlags {
     }
 
     public void setString(String key, String value) {setFlag(key, value);}
-    public void setBoolean(String key, Boolean value) {setFlag(key, value.toString());}
-    public void setInteger(String key, Integer value) {setFlag(key, value.toString());}
-    public void setStringList(String key, List<String> value) {setFlag(key, Util.generateArgs(value.toArray(new String[value.size()])));}
+    public void setBoolean(String key, Boolean value) {setFlag(key, value);}
+    public void setInteger(String key, Integer value) {setFlag(key, value.doubleValue());}
+    public void setStringList(String key, List<String> value) {setFlag(key, value);}
 
     public String getString(String key) {return (String)getFlag(key, "null");}
     public Boolean getBoolean(String key) {return (Boolean)getFlag(key, false);}
@@ -131,10 +131,15 @@ public class ServerFlags {
             return (Integer)value;
         if(value instanceof Double)
             return ((Double)value).intValue();
-            return null;
+            return -1;
     }
 
-    public ArrayList<String> getStringList(String key) {return new ArrayList<>((List<String>)getFlag(key, new ArrayList<>()));}
+    public ArrayList<String> getStringList(String key) {
+        Object value = getFlag(key, new ArrayList<String>());
+        if(value instanceof List)
+            return new ArrayList<>((List<String>)value);
+            return new ArrayList<>();
+    }
 
     //A bunch of default getters
 

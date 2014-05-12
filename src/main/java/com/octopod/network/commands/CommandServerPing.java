@@ -53,7 +53,7 @@ public class CommandServerPing extends NetworkCommand {
 
         NetworkPlus.getEventManager().registerListener(listener);
 
-        NetworkPlus.requestServerInfo(server);
+        NetworkPlus.requestServerFlags(server);
         listener.waitFor(timeout, 1);
 
         if((System.currentTimeMillis() - startTime) >= timeout) {
