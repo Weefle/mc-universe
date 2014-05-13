@@ -163,12 +163,12 @@ public class NetworkActions {
 		}
 
 		if (NetworkConfig.Channels.PLAYER_JOIN_QUEUE.equals(channel)) {
-			actionPlayerJoinQueueEvent(message.split(":")[0], senderID, Integer.parseInt(message.split(":")[1]));
+			actionPlayerJoinQueueEvent(args[0], senderID, Integer.parseInt(args[1]));
             return;
         }
 
 		if (NetworkConfig.Channels.PLAYER_LEAVE_QUEUE.equals(channel)) {
-			actionPlayerLeaveQueueEvent(message.split(":")[0], senderID);
+			actionPlayerLeaveQueueEvent(args[0], senderID);
             return;
         }
 
