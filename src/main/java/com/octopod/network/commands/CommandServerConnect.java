@@ -9,8 +9,8 @@ import com.octopod.network.cache.NetworkServerCache;
 
 public class CommandServerConnect extends NetworkCommand {
 
-    public CommandServerConnect(String root) {
-        super(root, "<command> <server>", NetworkPermission.NETWORK_SERVER_CONNECT,
+    public CommandServerConnect(String root, String... aliases) {
+        super(root, aliases, "<command> <server>", NetworkPermission.NETWORK_SERVER_CONNECT,
 
 			"Attempts to send you to another server. The console cannot run this command."
 

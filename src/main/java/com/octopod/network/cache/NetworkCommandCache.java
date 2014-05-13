@@ -34,6 +34,9 @@ public class NetworkCommandCache {
 		for(NetworkCommand command: commands) {
 			labelMap.put(command.getLabel(), command);
             classMap.put(command.getClass(), command);
+            for(String alias: command.getAliases()) {
+                labelMap.put(alias, command);
+            }
 		}
 	}
 

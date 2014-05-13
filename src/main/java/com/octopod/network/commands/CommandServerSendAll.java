@@ -7,8 +7,8 @@ import org.bukkit.command.CommandSender;
 
 public class CommandServerSendAll extends NetworkCommand {
 
-	public CommandServerSendAll(String root) {
-		super(root, "<command> <server>", NetworkPermission.NETWORK_SERVER_SENDALL,
+	public CommandServerSendAll(String root, String... aliases) {
+		super(root, aliases, "<command> <server>", NetworkPermission.NETWORK_SERVER_SENDALL,
 
 			"Sends all players to a server."
 

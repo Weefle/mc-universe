@@ -13,8 +13,8 @@ import java.util.Arrays;
  */
 public class CommandReload extends NetworkCommand {
 
-    public CommandReload(String root) {
-        super(root, "<command>", NetworkPermission.NETWORK_RELOAD,
+    public CommandReload(String root, String... aliases) {
+        super(root, aliases, "<command>", NetworkPermission.NETWORK_RELOAD,
             "Reloads the configuration of the plugin. Use -f as an argument to reload the entire plugin."
         );
     }

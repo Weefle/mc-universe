@@ -7,8 +7,8 @@ import org.bukkit.command.CommandSender;
 
 public class CommandFind extends NetworkCommand {
 
-	public CommandFind(String root) {
-		super(root, "<command> <player>", NetworkPermission.NETWORK_FIND,
+	public CommandFind(String root, String... aliases) {
+		super(root, aliases, "<command> <player>", NetworkPermission.NETWORK_FIND,
 
 			"Finds a player and attempts to return their location."
 

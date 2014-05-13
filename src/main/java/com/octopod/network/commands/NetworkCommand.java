@@ -12,11 +12,13 @@ import java.util.Arrays;
  */
 public abstract class NetworkCommand implements Comparable<NetworkCommand> {
 
+    protected String[] aliases;
 	protected String root, usage, description;
     protected NetworkPermission permission;
 
-	public NetworkCommand(String root, String usage, NetworkPermission permission, String description) {
-		this.root = root;
+	public NetworkCommand(String root, String[] aliases, String usage, NetworkPermission permission, String description) {
+		this.aliases = aliases;
+        this.root = root;
 		this.usage = usage;
 		this.description = description;
         this.permission = permission;
@@ -26,6 +28,10 @@ public abstract class NetworkCommand implements Comparable<NetworkCommand> {
 	public String getLabel() {
 		return root;
 	}
+
+    public String[] getAliases() {
+        return aliases;
+    }
 
 	public String getUsage() {
 		return usage.replaceAll("<command>", root);

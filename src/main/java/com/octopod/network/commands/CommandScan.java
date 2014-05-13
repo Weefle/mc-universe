@@ -10,8 +10,8 @@ import org.bukkit.command.CommandSender;
  */
 public class CommandScan extends NetworkCommand {
 
-    public CommandScan(String root) {
-        super(root, "<command>", NetworkPermission.NETWORK_SCAN,
+    public CommandScan(String root, String... aliases) {
+        super(root, aliases, "<command>", NetworkPermission.NETWORK_SCAN,
 
                 "Re-requests current server information from other servers."
 

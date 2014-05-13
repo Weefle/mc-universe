@@ -16,8 +16,8 @@ public class CommandMaster extends NetworkCommand {
 
 	public final static String PREFIX = ChatColor.DARK_GRAY + "[" + ChatColor.AQUA + "NXN" + ChatColor.DARK_GRAY + "] " + ChatColor.WHITE;
 
-	public CommandMaster(String root){
-		super(root, "<command> <arguments...>", NetworkPermission.NETWORK_MASTER,
+	public CommandMaster(String root, String... aliases){
+		super(root, aliases, "<command> <arguments...>", NetworkPermission.NETWORK_MASTER,
 
 			"Network general command."
 

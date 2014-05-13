@@ -11,8 +11,8 @@ import org.bukkit.command.CommandSender;
 
 public class CommandHelp extends NetworkCommand {
 
-    public CommandHelp(String root) {
-        super(root, "<command>", NetworkPermission.NETWORK_HELP,
+    public CommandHelp(String root, String... aliases) {
+        super(root, aliases, "<command>", NetworkPermission.NETWORK_HELP,
 			"Lists out avaliable commands."
 		);
 	}

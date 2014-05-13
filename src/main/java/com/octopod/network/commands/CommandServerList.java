@@ -14,8 +14,8 @@ import java.util.Map;
 
 public class CommandServerList extends NetworkCommand {
 
-	public CommandServerList(String root) {
-		super(root, "<command>", NetworkPermission.NETWORK_SERVER_LIST,
+	public CommandServerList(String root, String... aliases) {
+		super(root, aliases, "<command>", NetworkPermission.NETWORK_SERVER_LIST,
 
 			"Lists out avaliable servers."
 

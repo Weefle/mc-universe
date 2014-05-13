@@ -13,8 +13,8 @@ import org.bukkit.entity.Player;
  */
 public class CommandHub extends NetworkCommand {
 
-    public CommandHub(String root) {
-        super(root, "<command>", NetworkPermission.NETWORK_HUB,
+    public CommandHub(String root, String... aliases) {
+        super(root, aliases, "<command>", NetworkPermission.NETWORK_HUB,
 
             "Sends you to the hub server, starting at priority 0. Cannot be run by the console."
 

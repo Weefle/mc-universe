@@ -12,8 +12,8 @@ import java.util.Arrays;
 
 public class CommandMessage extends NetworkCommand {
 
-	public CommandMessage(String root) {
-		super(root, "<command> <player> <message>", NetworkPermission.NETWORK_MESSAGE,
+	public CommandMessage(String root, String... aliases) {
+		super(root, aliases, "<command> <player> <message>", NetworkPermission.NETWORK_MESSAGE,
 
 			"Sends all players to a server."
 

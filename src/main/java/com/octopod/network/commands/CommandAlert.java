@@ -9,8 +9,8 @@ import org.bukkit.command.CommandSender;
 
 public class CommandAlert extends NetworkCommand {
 
-	public CommandAlert(String root) {
-		super(root, "<command> <message...>", NetworkPermission.NETWORK_ALERT,
+	public CommandAlert(String root, String... aliases) {
+		super(root, aliases, "<command> <message...>", NetworkPermission.NETWORK_ALERT,
 
 			"Broadcasts a message to the entire network. " +
 			"Only servers that are running this plugin will recieve the alert."

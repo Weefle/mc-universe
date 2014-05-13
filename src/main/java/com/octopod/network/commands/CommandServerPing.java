@@ -11,8 +11,8 @@ import org.bukkit.command.CommandSender;
 
 public class CommandServerPing extends NetworkCommand {
 
-	public CommandServerPing(String root) {
-		super(root, "<command> <server>", NetworkPermission.NETWORK_SERVER_PING,
+	public CommandServerPing(String root, String... aliases) {
+		super(root, aliases, "<command> <server>", NetworkPermission.NETWORK_SERVER_PING,
 
 			"Pings a LilyPad server that is running this plugin."
 
