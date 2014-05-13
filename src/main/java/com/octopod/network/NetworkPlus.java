@@ -310,9 +310,6 @@ public class NetworkPlus {
      */
     public static void broadcastServerFlags(String serverIDOwnedBy, ServerFlags flags)
     {
-        //"Fake" the server recieving the info, since it can't recieve the broadcast.
-        NetworkActions.actionRecieveServerFlags(serverIDOwnedBy, flags);
-
         //Then, broadcast to everywhere else.
         getLogger().log(3, "Sending server info to all servers");
         NetworkPlus.broadcastMessage(NetworkConfig.Channels.SERVER_FLAGS_CACHE.toString(), flags.asMessage(serverIDOwnedBy));

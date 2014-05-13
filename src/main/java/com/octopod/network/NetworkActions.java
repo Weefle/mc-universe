@@ -130,10 +130,6 @@ public class NetworkActions {
      */
     public static void actionRecieveMessage(String senderID, String channel, ServerMessage serverMessage)
     {
-        //Return if sender is this server; Cannot self-message.
-        //In case different APIs don't allow self-messaging.
-        if(senderID.equals(NetworkPlus.getServerID())) return;
-
         MessageEvent event = new MessageEvent(senderID, channel, serverMessage);
 
         NetworkPlus.getEventManager().triggerEvent(event);
