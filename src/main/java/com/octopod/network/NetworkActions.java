@@ -37,7 +37,7 @@ public class NetworkActions {
         ServerFlags serverFlags = ServerFlags.generateFlags();
 
         //Broadcast the serverFlags across the network.
-        NetworkPlus.broadcastServerFlags(NetworkPlus.getServerID(), serverFlags);
+        NetworkPlus.broadcastServerFlags(serverFlags);
 
         //Then, request serverFlags from every server.
         NetworkPlus.requestServerFlags();
@@ -175,8 +175,10 @@ public class NetworkActions {
 
 		if(NetworkConfig.Channels.SERVER_FLAGS_REQUEST.equals(channel))
         {
-            NetworkPlus.sendServerFlags(senderID);
-            return;
+            if(!senderID.equals(NetworkPlus.getServerID())) {
+                NetworkPlus.sendServerFlags(senderID);
+                return;
+            }
         }
 
         if(NetworkConfig.Channels.SERVER_FLAGS_CACHE.equals(channel))
