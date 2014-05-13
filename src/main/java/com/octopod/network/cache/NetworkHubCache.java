@@ -27,10 +27,14 @@ public class NetworkHubCache {
     public static String getHub() {
         for(Integer p: hubMap.keySet()) {
 
-            Random rand = new Random();
             List<String> hubs = hubMap.get(p);
 
-            return hubs.get(rand.nextInt(hubs.size()));
+            if(hubs.size() == 1) {
+                return hubs.get(0);
+            } else {
+                Random rand = new Random();
+                return hubs.get(rand.nextInt(hubs.size()));
+            }
 
         }
         return null;

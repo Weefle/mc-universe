@@ -22,11 +22,6 @@ public class CommandHub extends NetworkCommand {
     }
 
     @Override
-    public boolean weakCommand() {
-        return false;
-    }
-
-    @Override
     protected boolean exec(CommandSender sender, String label, String[] args) {
 
         if(!(sender instanceof Player)) return false;
