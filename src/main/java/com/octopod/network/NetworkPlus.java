@@ -300,8 +300,8 @@ public class NetworkPlus {
         NetworkPlus.sendMessage(serverID, NetworkConfig.Channels.SERVER_FLAGS_CACHE.toString(), flags.asMessage(serverIDOwnedBy));
     }
 
-    public static void broadcastServerFlags() {
-        broadcastServerFlags(getServerID(), getServerFlags());
+    public static void broadcastServerFlags(ServerFlags flags) {
+        broadcastServerFlags(getServerID(), flags);
     }
 
     /**

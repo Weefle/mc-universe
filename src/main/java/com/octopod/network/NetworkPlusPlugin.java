@@ -109,7 +109,11 @@ public class NetworkPlusPlugin extends JavaPlugin {
         NetworkCommandCache.reset();
 
         NetworkPlus.getEventManager().unregisterAll();
-        //TODO: Patch this server's flags across the network to tell them that this server is offline.
+
+        ServerFlags flags = new ServerFlags();
+        flags.setBoolean("serverStatus", false);
+
+        NetworkPlus.broadcastServerFlags(flags);
 
     }
 
@@ -138,10 +142,10 @@ public class NetworkPlusPlugin extends JavaPlugin {
 
                 new CommandMaster       ("/net"),
                 new CommandReload       ("/greload"),
-                new CommandHub          ("/core"),
+                new CommandHub          ("/hub", "/core"),
                 new CommandHelp         ("/ghelp"),
-                new CommandServerList   ("/glist"),
-                new CommandServerConnect("/server"),
+                new CommandServerList   ("/servers", "/glist"),
+                new CommandServerConnect("/server", "/connect"),
                 new CommandAlert        ("/alert"),
                 new CommandServerPing   ("/ping"),
                 new CommandFind         ("/find"),
