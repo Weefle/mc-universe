@@ -31,7 +31,7 @@ public class EventManager {
 
     public void triggerEvent(final Event event) {
 
-        NetworkPlus.getLogger().verbose("Triggering event in thread: &a" + Thread.currentThread().getName());
+        NetworkPlus.getLogger().verbose("&7Triggering event &a" + event.getClass().getSimpleName() + "&7 in thread: &a" + Thread.currentThread().getName());
 
         List<EventMethod> listeners = collectListenersOf(event);
 
