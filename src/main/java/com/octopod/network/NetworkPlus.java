@@ -310,7 +310,6 @@ public class NetworkPlus {
      */
     public static void broadcastServerFlags(String serverIDOwnedBy, ServerFlags flags)
     {
-        //Then, broadcast to everywhere else.
         getLogger().log(3, "Sending server info to all servers");
         NetworkPlus.broadcastMessage(NetworkConfig.Channels.SERVER_FLAGS_CACHE.toString(), flags.asMessage(serverIDOwnedBy));
     }
