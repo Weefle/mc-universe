@@ -84,7 +84,7 @@ public class NetworkActions {
             NetworkServerCache.addServer(serverID, flags);
 
             NetworkPlus.getLogger().verbose("Recieved server info from &a" + serverID + ":");
-            for(Map.Entry<String, Object> entry: flags.asMap().entrySet()) {
+            for(Map.Entry<String, Object> entry: flags.toMap().entrySet()) {
                 NetworkPlus.getLogger().verbose("    &b" + entry.getKey() + ": &e" + entry.getValue() + "&e");
             }
 
@@ -126,7 +126,7 @@ public class NetworkActions {
     /**
      * Listens for when any message is recieved from any server.
      * This method is a gateway to other events and features.
-     * Refer to NetworkConfig.Channels to what each channel does.
+     * Refer to NetworkConfig.MessageChannel to what each channel does.
      */
     public static void actionRecieveMessage(String senderID, String channel, ServerMessage serverMessage)
     {
@@ -145,43 +145,43 @@ public class NetworkActions {
                 "&7 with &e" + args.length + "&7 arguments"
         );
 
-		if(NetworkConfig.Channels.SERVER_SENDALL.equals(channel))
+		if(MessageChannel.SERVER_SENDALL.equals(channel))
 		{
             for(String player: BukkitUtils.getPlayerNames())
                 NetworkPlus.sendPlayer(player, message);
             return;
 		}
 
-		if(NetworkConfig.Channels.PLAYER_MESSAGE.equals(channel))
+		if(MessageChannel.PLAYER_MESSAGE.equals(channel))
 		{
 			//TODO: Use the ServerMessage arguments to correctly send the 2nd argument (message) to the 1st argument (player)
             return;
 		}
 
-		if (NetworkConfig.Channels.PLAYER_JOIN_QUEUE.equals(channel)) {
+		if (MessageChannel.PLAYER_JOIN_QUEUE.equals(channel)) {
 			actionPlayerJoinQueueEvent(args[0], senderID, Integer.parseInt(args[1]));
             return;
         }
 
-		if (NetworkConfig.Channels.PLAYER_LEAVE_QUEUE.equals(channel)) {
+		if (MessageChannel.PLAYER_LEAVE_QUEUE.equals(channel)) {
 			actionPlayerLeaveQueueEvent(args[0], senderID);
             return;
         }
 
-		if(NetworkConfig.Channels.SERVER_ALERT.equals(channel)) {
+		if(MessageChannel.SERVER_ALERT.equals(channel)) {
 		    BukkitUtils.broadcastMessage(message);
             return;
         }
 
-		if(NetworkConfig.Channels.SERVER_FLAGS_REQUEST.equals(channel))
+		if(MessageChannel.SERVER_FLAGS_REQUEST.equals(channel))
         {
             if(!senderID.equals(NetworkPlus.getServerID())) {
                 NetworkPlus.sendServerFlags(senderID);
-                return;
             }
+            return;
         }
 
-        if(NetworkConfig.Channels.SERVER_FLAGS_CACHE.equals(channel))
+        if(MessageChannel.SERVER_FLAGS_CACHE.equals(channel))
         {
             if(args.length == 2) {
                 String serverID = args[0];
@@ -189,7 +189,7 @@ public class NetworkActions {
                 ServerFlags flags;
 
                 try {
-                    flags = ServerFlags.readFromJson(json);
+                    flags = ServerFlags.fromJson(json);
                     actionRecieveServerFlags(serverID, flags);
                     return;
                 } catch (JsonSyntaxException e) {

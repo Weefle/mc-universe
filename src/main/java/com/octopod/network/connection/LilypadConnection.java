@@ -46,7 +46,7 @@ public class LilypadConnection extends NetworkConnection {
         {
             String channel = event.getChannel(), serverID, message;
 
-            if(!channel.startsWith(NetworkConfig.getRequestPrefix())) {
+            if(!channel.startsWith(NetworkConfig.getChannelPrefix())) {
                 return;
             }
 

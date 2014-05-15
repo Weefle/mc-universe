@@ -26,6 +26,15 @@ public class ServerFlags {
     private HashMap<String, Object> flagMap = new HashMap<>();
 
     /**
+     * Returns a ServerFlags object from a JSON string.
+     * @param json The JSON string.
+     * @return A ServerFlags object.
+     */
+    public static ServerFlags fromJson(String json) {
+        return NetworkPlus.gson().fromJson(json, ServerFlags.class);
+    }
+
+    /**
      * An interface that will generate the default ServerFlags object
      */
     public static interface Generator {
@@ -51,28 +60,28 @@ public class ServerFlags {
             flags.setFlag("description", Bukkit.getServer().getMotd());
 
             //Server's maximum players
-            flags.setInteger("maxPlayers", Bukkit.getServer().getMaxPlayers());
+            flags.setFlag("maxPlayers", Bukkit.getServer().getMaxPlayers());
 
             //If the server's whitelist is enabled
-            flags.setBoolean("serverWhitelistEnabled", Bukkit.getServer().hasWhitelist());
+            flags.setFlag("serverWhitelistEnabled", Bukkit.getServer().hasWhitelist());
 
             //Server's list of whitelisted players (empty list if whitelist is disabled)
-            flags.setStringList("whitelistedPlayers", new ArrayList<>(Arrays.asList(BukkitUtils.getWhitelistedPlayerNames())));
+            flags.setFlag("whitelistedPlayers", new ArrayList<>(Arrays.asList(BukkitUtils.getWhitelistedPlayerNames())));
 
             //Server's hub priority (-1 if not a hub)
-            flags.setInteger("hubPriority", NetworkConfig.isHub() ? NetworkConfig.getHubPriority() : -1);
+            flags.setFlag("hubPriority", NetworkConfig.isHub() ? NetworkConfig.getHubPriority() : -1);
 
             //Server's plugin version
             flags.setFlag("version", NetworkPlus.getPluginVersion());
 
             //Server's list of online players
-            flags.setStringList("onlinePlayers", new ArrayList<>(Arrays.asList(BukkitUtils.getPlayerNames())));
+            flags.setFlag("onlinePlayers", new ArrayList<>(Arrays.asList(BukkitUtils.getPlayerNames())));
 
             //Players queued for this server.
-            flags.setStringList("queuedPlayers", NetworkQueueManager.instance.getQueueMembers());
+            flags.setFlag("queuedPlayers", NetworkQueueManager.instance.getQueueMembers());
 
             //Status of the server (true if online, false if not)
-            flags.setBoolean("serverStatus", true);
+            flags.setFlag("serverStatus", true);
 
             return flags;
         }
@@ -86,10 +95,10 @@ public class ServerFlags {
     /**
      * Merges the map into this instance's option map.
      * Used to "patch" the current flagMap.
-     * @param flags
+     * @param flags The ServerFlags to copy flags from.
      */
     public void merge(ServerFlags flags) {
-        flagMap.putAll(flags.asMap());
+        flagMap.putAll(flags.toMap());
     }
 
     public boolean hasFlag(String key) {
@@ -108,52 +117,67 @@ public class ServerFlags {
     /**
      * Gets the flag by key.
      * @param key The key.
-     * @param defaultValue The value to return if the key doesn't exist.
      * @return The value located at the key, or 'defaultValue' if the key doesn't exist.
      */
-    public Object getFlag(String key, Object defaultValue) {
-        Object val = flagMap.get(key);
-        if(val == null)
-            return defaultValue;
-            return val;
+    @SuppressWarnings("unchecked")
+    public <T> T getFlag(String key, Class<T> clazz, T defaultValue)
+    {
+        Object value;
+
+        if((value = flagMap.get(key)) == null) return defaultValue;
+
+        if(!clazz.isInstance(value)) {
+            throw new ClassCastException("Value for server flag '" + key + "' is not an instance of " + clazz.getName());
+        } else {
+            return (T)value;
+        }
     }
 
-    public void setString(String key, String value) {setFlag(key, value);}
-    public void setBoolean(String key, Boolean value) {setFlag(key, value);}
-    public void setInteger(String key, Integer value) {setFlag(key, value.doubleValue());}
-    public void setStringList(String key, List<String> value) {setFlag(key, value);}
-
-    public String getString(String key) {return (String)getFlag(key, "null");}
-    public Boolean getBoolean(String key) {return (Boolean)getFlag(key, false);}
-    public Integer getInteger(String key) {
-        Object value = getFlag(key, -1);
-        if(value instanceof Integer)
-            return (Integer)value;
-        if(value instanceof Double)
-            return ((Double)value).intValue();
-            return -1;
+    public <T> T getFlag(String key, Class<T> clazz) {
+        return getFlag(key, clazz, null);
     }
 
-    public ArrayList<String> getStringList(String key) {
-        Object value = getFlag(key, new ArrayList<String>());
-        if(value instanceof List)
-            return new ArrayList<>((List<String>)value);
-            return new ArrayList<>();
+    public Object getFlag(String key) {
+        return getFlag(key, Object.class);
+    }
+
+    public String getFlagString(String key) {
+        return getFlag(key, String.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<String> getFlagStringList(String key) {
+        return getFlag(key, (Class<List<String>>)(Class<?>)List.class);
+    }
+
+    public int getFlagInteger(String key) {
+        Object value = getFlag(key);
+        if(value != null) {
+            if(value instanceof Integer)
+                return (Integer)value;
+            if(value instanceof Double)
+                return ((Double)value).intValue();
+        }
+        return -1;
+    }
+
+    public boolean getFlagBoolean(String key) {
+        return getFlag(key, Boolean.class);
     }
 
     //A bunch of default getters
 
-    public String getServerID() {return getString("serverID");}
-    public String getServerName() {return getString("serverName");}
-    public String getDescription() {return getString("description");}
-    public String getVersion() {return getString("version");}
+    public String getServerID()     {return getFlagString("serverID");}
+    public String getServerName()   {return getFlagString("serverName");}
+    public String getDescription()  {return getFlagString("description");}
+    public String getVersion()      {return getFlagString("version");}
 
-    public Integer getMaxPlayers() {return getInteger("maxPlayers");}
-    public Integer getHubPriority() {return getInteger("hubPriority");}
+    public Integer getMaxPlayers()  {return getFlagInteger("maxPlayers");}
+    public Integer getHubPriority() {return getFlagInteger("hubPriority");}
 
-    public ArrayList<String> getWhitelistedPlayers() {return getStringList("whitelistedPlayers");}
-    public ArrayList<String> getOnlinePlayers() {return getStringList("onlinePlayers");}
-    public ArrayList<String> getQueuedPlayers() {return getStringList("queuedPlayers");}
+    public List<String> getWhitelistedPlayers() {return getFlagStringList("whitelistedPlayers");}
+    public List<String> getOnlinePlayers()      {return getFlagStringList("onlinePlayers");}
+    public List<String> getQueuedPlayers()      {return getFlagStringList("queuedPlayers");}
 
     /**
      * Gets this object returned as a JSON string.
@@ -164,24 +188,15 @@ public class ServerFlags {
         return NetworkPlus.gson().toJson(this);
     }
 
-    /**
-     * Returns a ServerFlags object from a JSON string.
-     * @param json The JSON string.
-     * @return A ServerFlags object.
-     */
-    public static ServerFlags readFromJson(String json) {
-        return NetworkPlus.gson().fromJson(json, ServerFlags.class);
-    }
-
-    public HashMap<String, Object> asMap() {
+    public HashMap<String, Object> toMap() {
         return flagMap;
     }
 
-    public ServerMessage asMessage() {
-        return asMessage(getString("username"));
+    public ServerMessage toServerMessage() {
+        return toServerMessage(getFlagString("username"));
     }
 
-    public ServerMessage asMessage(String serverID) {
+    public ServerMessage toServerMessage(String serverID) {
         return new ServerMessage(serverID, toString());
     }
 

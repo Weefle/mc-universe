@@ -198,7 +198,7 @@ public class NetworkPlus {
      * @param serverID The server the players will be sent to.
      */
     public static void sendAllPlayers(String serverFrom, String serverID) {
-        sendMessage(serverFrom, NetworkConfig.Channels.SERVER_SENDALL.toString(), new ServerMessage(serverID));
+        sendMessage(serverFrom, MessageChannel.SERVER_SENDALL.toString(), new ServerMessage(serverID));
     }
 
     /**
@@ -206,7 +206,7 @@ public class NetworkPlus {
      * @param serverID The server the players will be sent to.
      */
     public static void sendAllPlayers(String serverID) {
-        broadcastMessage(NetworkConfig.Channels.SERVER_SENDALL.toString(), new ServerMessage(serverID));
+        broadcastMessage(MessageChannel.SERVER_SENDALL.toString(), new ServerMessage(serverID));
     }
 
     //=========================================================================================//
@@ -240,7 +240,7 @@ public class NetworkPlus {
      * @param message The message to send.
      */
     public static void broadcastNetworkMessage(String serverID, String message) {
-        sendMessage(serverID, NetworkConfig.Channels.SERVER_ALERT.toString(), new ServerMessage(message));
+        sendMessage(serverID, MessageChannel.SERVER_ALERT.toString(), new ServerMessage(message));
     }
 
     /**
@@ -248,7 +248,7 @@ public class NetworkPlus {
      * @param message The message to send.
      */
     public static void broadcastNetworkMessage(String message) {
-        broadcastMessage(NetworkConfig.Channels.SERVER_ALERT.toString(), new ServerMessage(message));
+        broadcastMessage(MessageChannel.SERVER_ALERT.toString(), new ServerMessage(message));
     }
 
     /**
@@ -261,7 +261,7 @@ public class NetworkPlus {
         if(BukkitUtils.isPlayerOnline(player)) {
             BukkitUtils.sendMessage(player, message);
         } else {
-            broadcastMessage(NetworkConfig.Channels.PLAYER_MESSAGE.toString(), new ServerMessage(player, message));
+            broadcastMessage(MessageChannel.PLAYER_MESSAGE.toString(), new ServerMessage(player, message));
         }
     }
 
@@ -272,7 +272,7 @@ public class NetworkPlus {
      */
     public static void requestServerFlags() {
         getLogger().log(3, "Requesting info from all servers");
-        broadcastMessage(NetworkConfig.Channels.SERVER_FLAGS_REQUEST.toString());
+        broadcastMessage(MessageChannel.SERVER_FLAGS_REQUEST.toString());
     }
 
     /**
@@ -283,7 +283,7 @@ public class NetworkPlus {
      */
     public static void requestServerFlags(String serverID) {
         getLogger().log(3, "Requesting info from &a" + serverID);
-        sendMessage(serverID, NetworkConfig.Channels.SERVER_FLAGS_REQUEST.toString());
+        sendMessage(serverID, MessageChannel.SERVER_FLAGS_REQUEST.toString());
     }
 
     public static void sendServerFlags(String serverID) {
@@ -297,7 +297,7 @@ public class NetworkPlus {
      */
     public static void sendServerFlags(String serverID, ServerFlags flags, String serverIDOwnedBy) {
         getLogger().log(3, "Sending server info to &a" + serverID);
-        NetworkPlus.sendMessage(serverID, NetworkConfig.Channels.SERVER_FLAGS_CACHE.toString(), flags.asMessage(serverIDOwnedBy));
+        NetworkPlus.sendMessage(serverID, MessageChannel.SERVER_FLAGS_CACHE.toString(), flags.toServerMessage(serverIDOwnedBy));
     }
 
     public static void broadcastServerFlags(ServerFlags flags) {
@@ -311,7 +311,7 @@ public class NetworkPlus {
     public static void broadcastServerFlags(String serverIDOwnedBy, ServerFlags flags)
     {
         getLogger().log(3, "Sending server info to all servers");
-        NetworkPlus.broadcastMessage(NetworkConfig.Channels.SERVER_FLAGS_CACHE.toString(), flags.asMessage(serverIDOwnedBy));
+        NetworkPlus.broadcastMessage(MessageChannel.SERVER_FLAGS_CACHE.toString(), flags.toServerMessage(serverIDOwnedBy));
     }
 
 }

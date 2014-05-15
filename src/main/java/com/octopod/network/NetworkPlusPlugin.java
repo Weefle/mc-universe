@@ -111,7 +111,7 @@ public class NetworkPlusPlugin extends JavaPlugin {
         NetworkPlus.getEventManager().unregisterAll();
 
         ServerFlags flags = new ServerFlags();
-        flags.setBoolean("serverStatus", false);
+        flags.setFlag("serverStatus", false);
 
         NetworkPlus.broadcastServerFlags(flags);
 

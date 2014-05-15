@@ -60,7 +60,7 @@ public class CommandServerConnect extends NetworkCommand {
 			// Broadcast message to be added to queue
 			BukkitUtils.sendMessage(sender, "&c" + server
 					+ " is full. Adding you to queue.");
-			String channel = NetworkConfig.Channels.PLAYER_JOIN_QUEUE.toString();
+			String channel = MessageChannel.PLAYER_JOIN_QUEUE.toString();
 			if (!player.hasPermission(NetworkPermission.NETWORK_QUEUE_BYPASS
 					.toString())) {
 				NetworkPlus.broadcastMessage(channel,

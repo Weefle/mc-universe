@@ -51,7 +51,7 @@ public class BukkitListener implements Listener {
     private void updatePlayers(List<String> players)
     {
         ServerFlags flags = new ServerFlags();
-        flags.setStringList("onlinePlayers", players);
+        flags.setFlag("onlinePlayers", players);
 
         NetworkPlus.broadcastServerFlags(NetworkPlus.getServerID(), flags);
     }
