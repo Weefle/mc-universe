@@ -80,8 +80,8 @@ public class ServerFlags {
             //Players queued for this server.
             flags.setFlag("queuedPlayers", NetworkQueueManager.instance.getQueueMembers());
 
-            //Status of the server (true if online, false if not)
-            flags.setFlag("serverStatus", true);
+            //Time the server was last online (-1 if it's online right now)
+            flags.setFlag("serverLastOnline", -1L);
 
             return flags;
         }
@@ -159,6 +159,19 @@ public class ServerFlags {
                 return ((Double)value).intValue();
         }
         return -1;
+    }
+
+    public long getFlagLong(String key) {
+        Object value = getFlag(key);
+        if(value != null) {
+            if(value instanceof Long)
+                return (Long)value;
+            if(value instanceof Integer)
+                return (Integer)value;
+            if(value instanceof Double)
+                return ((Double)value).intValue();
+        }
+        return -1L;
     }
 
     public boolean getFlagBoolean(String key) {
