@@ -201,10 +201,6 @@ public class ServerFlags {
         return flagMap;
     }
 
-    public ServerMessage toServerMessage() {
-        return toServerMessage(getFlagString("username"));
-    }
-
     public ServerMessage toServerMessage(String serverID) {
         return new ServerMessage(serverID, toString());
     }
