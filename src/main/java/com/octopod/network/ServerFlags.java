@@ -50,9 +50,6 @@ public class ServerFlags {
         {
             ServerFlags flags = new ServerFlags();
 
-            //Server's identification name
-            flags.setFlag("serverID", NetworkPlus.getServerID());
-
             //Server's config name (or ID if blank)
             flags.setFlag("serverName", NetworkConfig.getServerName());
 
@@ -180,7 +177,6 @@ public class ServerFlags {
 
     //A bunch of default getters
 
-    public String getServerID()     {return getFlagString("serverID");}
     public String getServerName()   {return getFlagString("serverName");}
     public String getDescription()  {return getFlagString("description");}
     public String getVersion()      {return getFlagString("version");}
