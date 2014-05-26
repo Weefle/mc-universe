@@ -1,4 +1,4 @@
-package com.octopod.network.cache;
+package com.octopod.network;
 
 import com.octopod.network.commands.NetworkCommand;
 
@@ -6,9 +6,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NetworkCommandCache {
+public class CommandManager {
 
-    private NetworkCommandCache() {}
+    private CommandManager() {}
 
 	private static Map<String, NetworkCommand> labelMap = Collections.synchronizedMap(new HashMap<String, NetworkCommand>());
     private static Map<Class<? extends NetworkCommand>, NetworkCommand> classMap = Collections.synchronizedMap(new HashMap<Class<? extends NetworkCommand>, NetworkCommand>());

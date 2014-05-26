@@ -1,11 +1,11 @@
 package com.octopod.network.commands;
 
 import com.octopod.network.*;
+import com.octopod.network.ServerManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.octopod.network.bukkit.BukkitUtils;
-import com.octopod.network.cache.NetworkServerCache;
 
 public class CommandServerConnect extends NetworkCommand {
 
@@ -47,7 +47,7 @@ public class CommandServerConnect extends NetworkCommand {
 		// Checks if the server is full before sending them there.
 		if (NetworkPlus.isServerFull(server)) {
 			// Make sure they're not already in a queue
-			for (ServerFlags flags : NetworkServerCache.getServerMap().values()) {
+			for (ServerFlags flags : ServerManager.getServerMap().values()) {
 				if (flags.getQueuedPlayers().contains(player)) {
 					BukkitUtils.sendMessage(
 							sender,
@@ -60,7 +60,7 @@ public class CommandServerConnect extends NetworkCommand {
 			// Broadcast message to be added to queue
 			BukkitUtils.sendMessage(sender, "&c" + server
 					+ " is full. Adding you to queue.");
-			String channel = MessageChannel.PLAYER_JOIN_QUEUE.toString();
+			String channel = NetworkMessageChannel.PLAYER_JOIN_QUEUE.toString();
 			if (!player.hasPermission(NetworkPermission.NETWORK_QUEUE_BYPASS
 					.toString())) {
 				NetworkPlus.broadcastMessage(channel,

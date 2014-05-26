@@ -2,7 +2,7 @@ package com.octopod.network.modules.signs;
 
 import com.octopod.network.NetworkLogger;
 import com.octopod.network.NetworkPlus;
-import com.octopod.network.cache.NetworkCommandCache;
+import com.octopod.network.CommandManager;
 import com.octopod.network.commands.CommandServerConnect;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -67,7 +67,7 @@ public class SignBukkitListener implements Listener {
             Location loc = event.getClickedBlock().getLocation();
             SignDatabase db = SignPlugin.instance.getDatabase();
             if(db.getSign(loc) != null) {
-                NetworkCommandCache.getCommand(CommandServerConnect.class).onCommand(event.getPlayer(), "", new String[] {db.getSign(loc)});
+                CommandManager.getCommand(CommandServerConnect.class).onCommand(event.getPlayer(), "", new String[] {db.getSign(loc)});
             }
 
         }

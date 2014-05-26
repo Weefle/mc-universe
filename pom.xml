@@ -216,7 +216,7 @@
 		<dependency>
 			<groupId>com.octopod</groupId>
 			<artifactId>octolib</artifactId>
-			<version>0.1</version>
+			<version>0.1.1</version>
 		</dependency>
         <dependency>
             <groupId>lilypad.client.connect</groupId>
@@ -231,7 +231,7 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.2.4</version>
+            <version>2.3-SNAPSHOT</version>
         </dependency>
 	</dependencies>
 

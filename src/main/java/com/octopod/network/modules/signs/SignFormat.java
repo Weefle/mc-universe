@@ -1,7 +1,7 @@
 package com.octopod.network.modules.signs;
 
 import com.octopod.network.ServerFlags;
-import com.octopod.network.cache.NetworkServerCache;
+import com.octopod.network.ServerManager;
 import org.bukkit.ChatColor;
 
 /**
@@ -18,13 +18,13 @@ public class SignFormat {
     public String L1, L2, L3, L4;
 
     private String formatLine(String format, String server) {
-        ServerFlags serverInfo = NetworkServerCache.getInfo(server);
+        ServerFlags serverInfo = ServerManager.getFlags(server);
         if(serverInfo == null) {
             format = format.replaceAll("%server", server);
             format = format.replaceAll("%players", "0");
         } else {
             format = format.replaceAll("%server", serverInfo.getServerName());
-            format = format.replaceAll("%players", String.valueOf(NetworkServerCache.getOnlinePlayers(server).size()));
+            format = format.replaceAll("%players", String.valueOf(ServerManager.getOnlinePlayers(server).size()));
         }
         return ChatColor.translateAlternateColorCodes('&', format);
     }

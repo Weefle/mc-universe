@@ -4,8 +4,9 @@ import java.io.File;
 import java.util.List;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.LongSerializationPolicy;
 import com.octopod.network.bukkit.BukkitUtils;
-import com.octopod.network.cache.NetworkServerCache;
 import com.octopod.network.connection.NetworkConnection;
 import com.octopod.network.events.EventManager;
 
@@ -29,7 +30,7 @@ public class NetworkPlus {
     /**
      * An instance of Gson. Instead of always making new instances, just use this one.
      */
-    private static final Gson gson = new Gson();
+    private static final Gson gson = new GsonBuilder().setLongSerializationPolicy(LongSerializationPolicy.STRING).create();
 
     /**
      * The current instance of NetworkPlus.
@@ -98,7 +99,7 @@ public class NetworkPlus {
 
     public static ServerFlags getServerFlags(String serverID) {
         if(!isLoaded()) return null;
-        return NetworkServerCache.getInfo(serverID);
+        return ServerManager.getFlags(serverID);
     }
 
     public static NetworkConnection getConnection() {
@@ -144,7 +145,7 @@ public class NetworkPlus {
      * @return The List containing all the players.
      */
     public static List<String> getCachedPlayers() {
-        return NetworkServerCache.getAllOnlinePlayers();
+        return ServerManager.getAllOnlinePlayers();
     }
 
     /**
@@ -157,7 +158,7 @@ public class NetworkPlus {
     }
 
     public static String findPlayer(String player) {
-        return NetworkServerCache.findPlayer(player);
+        return ServerManager.findPlayer(player);
     }
 
     //=========================================================================================//
@@ -180,11 +181,11 @@ public class NetworkPlus {
 	 * @return If the server is full.
 	 */
 	public static boolean isServerFull(String server) {
-        ServerFlags flags = NetworkServerCache.getInfo(server);
+        ServerFlags flags = ServerManager.getFlags(server);
         if(flags == null) {
             return false;
         } else {
-		    return NetworkServerCache.getOnlinePlayers(server).size() >= flags.getMaxPlayers();
+		    return ServerManager.getOnlinePlayers(server).size() >= flags.getMaxPlayers();
         }
 	}
 
@@ -198,7 +199,7 @@ public class NetworkPlus {
      * @param serverID The server the players will be sent to.
      */
     public static void sendAllPlayers(String serverFrom, String serverID) {
-        sendMessage(serverFrom, MessageChannel.SERVER_SENDALL.toString(), new ServerMessage(serverID));
+        sendMessage(serverFrom, NetworkMessageChannel.SERVER_SENDALL.toString(), new ServerMessage(serverID));
     }
 
     /**
@@ -206,7 +207,7 @@ public class NetworkPlus {
      * @param serverID The server the players will be sent to.
      */
     public static void sendAllPlayers(String serverID) {
-        broadcastMessage(MessageChannel.SERVER_SENDALL.toString(), new ServerMessage(serverID));
+        broadcastMessage(NetworkMessageChannel.SERVER_SENDALL.toString(), new ServerMessage(serverID));
     }
 
     //=========================================================================================//
@@ -240,7 +241,7 @@ public class NetworkPlus {
      * @param message The message to send.
      */
     public static void broadcastNetworkMessage(String serverID, String message) {
-        sendMessage(serverID, MessageChannel.SERVER_ALERT.toString(), new ServerMessage(message));
+        sendMessage(serverID, NetworkMessageChannel.SERVER_ALERT.toString(), new ServerMessage(message));
     }
 
     /**
@@ -248,7 +249,7 @@ public class NetworkPlus {
      * @param message The message to send.
      */
     public static void broadcastNetworkMessage(String message) {
-        broadcastMessage(MessageChannel.SERVER_ALERT.toString(), new ServerMessage(message));
+        broadcastMessage(NetworkMessageChannel.SERVER_ALERT.toString(), new ServerMessage(message));
     }
 
     /**
@@ -261,7 +262,7 @@ public class NetworkPlus {
         if(BukkitUtils.isPlayerOnline(player)) {
             BukkitUtils.sendMessage(player, message);
         } else {
-            broadcastMessage(MessageChannel.PLAYER_MESSAGE.toString(), new ServerMessage(player, message));
+            broadcastMessage(NetworkMessageChannel.PLAYER_MESSAGE.toString(), new ServerMessage(player, message));
         }
     }
 
@@ -272,7 +273,7 @@ public class NetworkPlus {
      */
     public static void requestServerFlags() {
         getLogger().log(3, "Requesting info from all servers");
-        broadcastMessage(MessageChannel.SERVER_FLAGS_REQUEST.toString());
+        broadcastMessage(NetworkMessageChannel.SERVER_FLAGS_REQUEST.toString());
     }
 
     /**
@@ -283,7 +284,7 @@ public class NetworkPlus {
      */
     public static void requestServerFlags(String serverID) {
         getLogger().log(3, "Requesting info from &a" + serverID);
-        sendMessage(serverID, MessageChannel.SERVER_FLAGS_REQUEST.toString());
+        sendMessage(serverID, NetworkMessageChannel.SERVER_FLAGS_REQUEST.toString());
     }
 
     public static void sendServerFlags(String serverID) {
@@ -297,7 +298,7 @@ public class NetworkPlus {
      */
     public static void sendServerFlags(String serverID, ServerFlags flags, String serverIDOwnedBy) {
         getLogger().log(3, "Sending server info to &a" + serverID);
-        NetworkPlus.sendMessage(serverID, MessageChannel.SERVER_FLAGS_CACHE.toString(), flags.toServerMessage(serverIDOwnedBy));
+        NetworkPlus.sendMessage(serverID, NetworkMessageChannel.SERVER_FLAGS_CACHE.toString(), flags.toServerMessage(serverIDOwnedBy));
     }
 
     public static void broadcastServerFlags(ServerFlags flags) {
@@ -311,7 +312,7 @@ public class NetworkPlus {
     public static void broadcastServerFlags(String serverIDOwnedBy, ServerFlags flags)
     {
         getLogger().log(3, "Sending server info to all servers");
-        NetworkPlus.broadcastMessage(MessageChannel.SERVER_FLAGS_CACHE.toString(), flags.toServerMessage(serverIDOwnedBy));
+        NetworkPlus.broadcastMessage(NetworkMessageChannel.SERVER_FLAGS_CACHE.toString(), flags.toServerMessage(serverIDOwnedBy));
     }
 
 }

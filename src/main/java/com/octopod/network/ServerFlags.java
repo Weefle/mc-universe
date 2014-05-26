@@ -161,6 +161,11 @@ public class ServerFlags {
     public long getFlagLong(String key) {
         Object value = getFlag(key);
         if(value != null) {
+            if(value instanceof String) {
+                try {
+                    return Long.parseLong((String)value);
+                } catch (NumberFormatException e) {}
+            }
             if(value instanceof Long)
                 return (Long)value;
             if(value instanceof Integer)

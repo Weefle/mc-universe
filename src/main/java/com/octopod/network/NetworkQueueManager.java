@@ -68,7 +68,7 @@ public class NetworkQueueManager {
 		queue.remove(player);
 		alertPlayers(queuePos);
 
-		String channel_queueleave = MessageChannel.PLAYER_LEAVE_QUEUE
+		String channel_queueleave = NetworkMessageChannel.PLAYER_LEAVE_QUEUE
 				.toString();
 		NetworkPlus.broadcastMessage(channel_queueleave, new ServerMessage(
 				player));
@@ -134,7 +134,7 @@ public class NetworkQueueManager {
 		for (String player : queue) {
 			OfflinePlayer p = Bukkit.getOfflinePlayer(player);
 			if (getQueuePosition(p.getName()) >= fromQueuePos) {
-				String player_message = MessageChannel.PLAYER_MESSAGE
+				String player_message = NetworkMessageChannel.PLAYER_MESSAGE
 						.toString();
 				String msg;
 				msg = "&cThere are currently &e"

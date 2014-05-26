@@ -1,8 +1,8 @@
 package com.octopod.network.bukkit;
 
 import com.octopod.network.*;
-import com.octopod.network.cache.NetworkCommandCache;
-import com.octopod.network.cache.NetworkHubCache;
+import com.octopod.network.CommandManager;
+import com.octopod.network.HubManager;
 import com.octopod.network.commands.NetworkCommand;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -19,7 +19,7 @@ public class BukkitListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onCommand(PlayerCommandPreprocessEvent event)
     {
-        Map<String, NetworkCommand> commands = NetworkCommandCache.getCommands();
+        Map<String, NetworkCommand> commands = CommandManager.getCommands();
 
         String[] parsed = event.getMessage().split(" ");
 
@@ -75,7 +75,7 @@ public class BukkitListener implements Listener {
 	public void onPlayerKicked(PlayerKickEvent event)
     {
 
-        String hub = NetworkHubCache.getHub();
+        String hub = HubManager.getHub();
 
         if(hub != null && !hub.equals(NetworkPlus.getServerID())) {
             event.setCancelled(true);

@@ -1,4 +1,4 @@
-package com.octopod.network.cache;
+package com.octopod.network;
 
 import java.util.*;
 
@@ -6,7 +6,7 @@ import java.util.*;
  * @author Octopod
  *         Last updated on 2/26/14
  */
-public class NetworkHubCache {
+public class HubManager {
 
     private static Map<Integer, List<String>> hubMap = new TreeMap<>(new Comparator<Integer>() {
 

@@ -1,7 +1,5 @@
 package com.octopod.network;
 
-import com.octopod.network.cache.NetworkCommandCache;
-import com.octopod.network.cache.NetworkServerCache;
 import com.octopod.network.commands.*;
 import com.octopod.network.connection.LilypadConnection;
 import com.octopod.network.connection.NetworkConnection;
@@ -105,13 +103,13 @@ public class NetworkPlusPlugin extends JavaPlugin {
 
         connection.disconnect();
 
-        NetworkServerCache.reset();
-        NetworkCommandCache.reset();
+        ServerManager.reset();
+        CommandManager.reset();
 
         NetworkPlus.getEventManager().unregisterAll();
 
         ServerFlags flags = new ServerFlags();
-        flags.setFlag("serverStatus", false);
+        flags.setFlag("serverLastOnline", System.currentTimeMillis());
 
         NetworkPlus.broadcastServerFlags(flags);
 
@@ -138,21 +136,21 @@ public class NetworkPlusPlugin extends JavaPlugin {
         NetworkPlus.getEventManager().registerListener(networkActions);
         Bukkit.getPluginManager().registerEvents(bukkitListener, this);
 
-        NetworkCommandCache.registerCommand(
+        CommandManager.registerCommand(
 
-                new CommandMaster       ("/net"),
-                new CommandReload       ("/greload"),
-                new CommandHub          ("/hub", "/core"),
-                new CommandHelp         ("/ghelp"),
-                new CommandServerList   ("/servers", "/glist"),
+                new CommandMaster("/net"),
+                new CommandReload("/greload"),
+                new CommandHub("/hub", "/core"),
+                new CommandHelp("/ghelp"),
+                new CommandServerList("/servers", "/glist"),
                 new CommandServerConnect("/server", "/connect"),
-                new CommandAlert        ("/alert"),
-                new CommandServerPing   ("/ping"),
-                new CommandFind         ("/find"),
-                new CommandMessage      ("/msg"),
-                new CommandServerSend   ("/send"),
+                new CommandAlert("/alert"),
+                new CommandServerPing("/ping"),
+                new CommandFind("/find"),
+                new CommandMessage("/msg"),
+                new CommandServerSend("/send"),
                 new CommandServerSendAll("/sendall"),
-                new CommandScan         ("/gscan")
+                new CommandScan("/gscan")
 
         );
 

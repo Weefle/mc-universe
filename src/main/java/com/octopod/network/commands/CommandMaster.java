@@ -1,7 +1,7 @@
 package com.octopod.network.commands;
 
 import com.octopod.network.NetworkPermission;
-import com.octopod.network.cache.NetworkCommandCache;
+import com.octopod.network.CommandManager;
 import com.octopod.network.bukkit.BukkitUtils;
 import com.octopod.octolib.minecraft.ChatBuilder;
 import com.octopod.octolib.minecraft.ChatElement;
@@ -55,13 +55,13 @@ public class CommandMaster extends NetworkCommand {
 
 			switch(label){
 				case "help":
-					return NetworkCommandCache.getCommand(CommandHelp.class).onCommand(sender, label, args);
+					return CommandManager.getCommand(CommandHelp.class).onCommand(sender, label, args);
 				case "hub":
-				    return NetworkCommandCache.getCommand(CommandHub.class).onCommand(sender, label, args);
+				    return CommandManager.getCommand(CommandHub.class).onCommand(sender, label, args);
 				case "join":
-                    return NetworkCommandCache.getCommand(CommandServerConnect.class).onCommand(sender, label, args);
+                    return CommandManager.getCommand(CommandServerConnect.class).onCommand(sender, label, args);
 				case "list":
-                    return NetworkCommandCache.getCommand(CommandServerList.class).onCommand(sender, label, args);
+                    return CommandManager.getCommand(CommandServerList.class).onCommand(sender, label, args);
 				default:
 					break;
 			}
@@ -85,7 +85,7 @@ public class CommandMaster extends NetworkCommand {
 
     private void show_help(CommandSender sender, int page) {
 
-        List<NetworkCommand> commands = new ArrayList<>(NetworkCommandCache.getCommands().values());
+        List<NetworkCommand> commands = new ArrayList<>(CommandManager.getCommands().values());
         Collections.sort(commands, new Comparator<NetworkCommand>() {
 
             @Override
@@ -100,8 +100,8 @@ public class CommandMaster extends NetworkCommand {
         List<NetworkCommand> subList = commands.subList(startIndex, startIndex + PAGE_SIZE);
 
         BukkitUtils.sendMessage(sender, "&8-----------------------------------------------------", "");
-        BukkitUtils.sendMessage(sender, ChatUtils.toLegacy(new ChatBuilder().appendBlock(new ChatElement("&bNetworkPlus Commands"), 320, 2)), "");
-        BukkitUtils.sendMessage(sender, ChatUtils.toLegacy(new ChatBuilder().appendBlock(new ChatElement("&8Page " + (page + 1)), 320, 2)), "");
+        BukkitUtils.sendMessage(sender, ChatUtils.toLegacy(ChatUtils.blockElement(new ChatElement("&bNetworkPlus Commands"), 320, 2)), "");
+        BukkitUtils.sendMessage(sender, ChatUtils.toLegacy(ChatUtils.blockElement(new ChatElement("&8Page " + (page + 1)), 320, 2)), "");
         BukkitUtils.sendMessage(sender, "&8-----------------------------------------------------", "");
 
         for(NetworkCommand command: subList)

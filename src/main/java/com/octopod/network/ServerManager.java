@@ -1,13 +1,10 @@
-package com.octopod.network.cache;
-
-import com.octopod.network.NetworkPlus;
-import com.octopod.network.ServerFlags;
+package com.octopod.network;
 
 import java.util.*;
 
-public class NetworkServerCache {
+public class ServerManager {
 
-    private NetworkServerCache() {}
+    private ServerManager() {}
 
     public static void reset() {
         serverMap.clear();
@@ -49,7 +46,11 @@ public class NetworkServerCache {
 		return serverMap.containsKey(serverID);
 	}
 
-    public static ServerFlags getInfo(String serverID) {
+    public static Set<String> getAllServerIDs() {
+        return serverMap.keySet();
+    }
+
+    public static ServerFlags getFlags(String serverID) {
         if(serverExists(serverID)) {
             return serverMap.get(serverID);
         } else {

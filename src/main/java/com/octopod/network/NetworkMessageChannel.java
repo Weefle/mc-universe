@@ -8,7 +8,7 @@ package com.octopod.network;
 /**
  * The Messaging Channels to use.
  */
-public enum MessageChannel {
+public enum NetworkMessageChannel {
 
     /**
      *  Requests a server to add a player to their queue.
@@ -21,6 +21,18 @@ public enum MessageChannel {
      *  ARGS: Player, Server ID, Place (?)
      */
     PLAYER_LEAVE_QUEUE ("player.queue.leave"),
+
+    /**
+     * Requests a server to add a player to their ServerFlags entry.
+     * ARGS: Player, Server
+     */
+    PLAYER_JOIN_SERVER ("player.server.join"),
+
+    /**
+     * Requests a server to remove a player to their ServerFlags entry.
+     * ARGS: Player, Server
+     */
+    PLAYER_LEAVE_SERVER ("player.server.leave"),
 
     /**
      *  To be used in combination with broadcastMessage()
@@ -56,7 +68,7 @@ public enum MessageChannel {
 
     private String suffix;
 
-    private MessageChannel(String suffix) {
+    private NetworkMessageChannel(String suffix) {
         this.suffix = suffix;
     }
 

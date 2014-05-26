@@ -5,8 +5,6 @@ import java.util.Map;
 
 import com.google.gson.JsonSyntaxException;
 import com.octopod.network.bukkit.BukkitUtils;
-import com.octopod.network.cache.NetworkHubCache;
-import com.octopod.network.cache.NetworkServerCache;
 import com.octopod.network.events.network.NetworkConnectedEvent;
 import com.octopod.network.events.relays.MessageEvent;
 import com.octopod.network.events.server.PostServerFlagsReceivedEvent;
@@ -75,13 +73,13 @@ public class NetworkActions {
                 //Checks if this server is a hub (priority above 0)
                 int hubPriority = flags.getHubPriority();
                 if(hubPriority >= 0) {
-                    NetworkHubCache.addHub(serverID, hubPriority);
+                    HubManager.addHub(serverID, hubPriority);
                     NetworkPlus.getLogger().info("Server &a" + serverID + "&7 registered as hub @ priority &e" + hubPriority);
                 }
             }
 
             //Adds in the new flags
-            NetworkServerCache.addServer(serverID, flags);
+            ServerManager.addServer(serverID, flags);
 
             NetworkPlus.getLogger().verbose("Recieved server info from &a" + serverID + ":");
             for(Map.Entry<String, Object> entry: flags.toMap().entrySet()) {
@@ -91,6 +89,16 @@ public class NetworkActions {
             NetworkPlus.getEventManager().triggerEvent(new PostServerFlagsReceivedEvent(serverID, flags));
 
         }
+    }
+
+    public static void actionPlayerJoinServer(String player, String serverID)
+    {
+
+    }
+
+    public static void actionPlayerLeaveServer(String player, String serverID)
+    {
+
     }
 
 	/**
@@ -145,35 +153,35 @@ public class NetworkActions {
                 "&7 with &e" + args.length + "&7 arguments"
         );
 
-		if(MessageChannel.SERVER_SENDALL.equals(channel))
+		if(NetworkMessageChannel.SERVER_SENDALL.equals(channel))
 		{
             for(String player: BukkitUtils.getPlayerNames())
                 NetworkPlus.sendPlayer(player, message);
             return;
 		}
 
-		if(MessageChannel.PLAYER_MESSAGE.equals(channel))
+		if(NetworkMessageChannel.PLAYER_MESSAGE.equals(channel))
 		{
 			//TODO: Use the ServerMessage arguments to correctly send the 2nd argument (message) to the 1st argument (player)
             return;
 		}
 
-		if (MessageChannel.PLAYER_JOIN_QUEUE.equals(channel)) {
+		if (NetworkMessageChannel.PLAYER_JOIN_QUEUE.equals(channel)) {
 			actionPlayerJoinQueueEvent(args[0], senderID, Integer.parseInt(args[1]));
             return;
         }
 
-		if (MessageChannel.PLAYER_LEAVE_QUEUE.equals(channel)) {
+		if (NetworkMessageChannel.PLAYER_LEAVE_QUEUE.equals(channel)) {
 			actionPlayerLeaveQueueEvent(args[0], senderID);
             return;
         }
 
-		if(MessageChannel.SERVER_ALERT.equals(channel)) {
+		if(NetworkMessageChannel.SERVER_ALERT.equals(channel)) {
 		    BukkitUtils.broadcastMessage(message);
             return;
         }
 
-		if(MessageChannel.SERVER_FLAGS_REQUEST.equals(channel))
+		if(NetworkMessageChannel.SERVER_FLAGS_REQUEST.equals(channel))
         {
             if(!senderID.equals(NetworkPlus.getServerID())) {
                 NetworkPlus.sendServerFlags(senderID);
@@ -181,7 +189,7 @@ public class NetworkActions {
             return;
         }
 
-        if(MessageChannel.SERVER_FLAGS_CACHE.equals(channel))
+        if(NetworkMessageChannel.SERVER_FLAGS_CACHE.equals(channel))
         {
             if(args.length == 2) {
                 String serverID = args[0];

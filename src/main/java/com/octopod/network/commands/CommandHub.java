@@ -2,7 +2,7 @@ package com.octopod.network.commands;
 
 import com.octopod.network.NetworkPermission;
 import com.octopod.network.NetworkPlus;
-import com.octopod.network.cache.NetworkHubCache;
+import com.octopod.network.HubManager;
 import com.octopod.network.bukkit.BukkitUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -26,7 +26,7 @@ public class CommandHub extends NetworkCommand {
 
         if(!(sender instanceof Player)) return false;
 
-        String hub = NetworkHubCache.getHub();
+        String hub = HubManager.getHub();
 
         if(hub != null && !hub.equals(NetworkPlus.getServerID())) {
             BukkitUtils.sendMessage(sender, "&7You've been moved to the hub server &a" + hub + "&7.");
