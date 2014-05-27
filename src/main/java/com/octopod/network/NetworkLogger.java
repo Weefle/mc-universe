@@ -9,7 +9,7 @@ public class NetworkLogger {
      * If this is true, it will show all debug messages regardless of the "debug" config option.
      * THIS SHOULDN'T BE TRUE IN RELEASE BUILDS.
      */
-    private static final boolean TESTING = true;
+    private static final boolean TESTING = false;
 
     /**
      * Sends a message at a level to the console and players with the "network.debug.<level>" permission.
@@ -23,7 +23,7 @@ public class NetworkLogger {
         if(NetworkConfig.getDebugMode() >= level || TESTING)
         {
             for(String message: messages) {
-                message = "&8[&6info&8] &7" + message;
+                message = "&7" + message;
 
                 BukkitUtils.console(message);
                 for(Player player: BukkitUtils.getPlayers()) {

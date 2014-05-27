@@ -214,22 +214,43 @@ public class NetworkPlus {
     //  Request methods
     //=========================================================================================//
 
+    @Deprecated
     public static void sendMessage(String serverID, String channel) {
         sendMessage(serverID, channel, ServerMessage.EMPTY);
     }
 
+    @Deprecated
     public static void sendMessage(String serverID, String channel, ServerMessage message) {
         getConnection().sendMessage(serverID, channel, message.toString());
     }
 
+    @Deprecated
     public static void sendMessage(List<String> serverIDs, String channel, ServerMessage message) {
         getConnection().sendMessage(serverIDs, channel, message.toString());
     }
 
+    public static void sendMessage(String serverID, NetworkMessageChannel channel, ServerMessage message) {
+        sendMessage(serverID, channel.toString(), message);
+    }
+
+    public static void sendMessage(String serverID, NetworkMessageChannel channel) {
+        sendMessage(serverID, channel.toString());
+    }
+
+    public static void broadcastMessage(NetworkMessageChannel channel, ServerMessage message) {
+        broadcastMessage(channel.toString(), message);
+    }
+
+    public static void broadcastMessage(NetworkMessageChannel channel) {
+        broadcastMessage(channel.toString());
+    }
+
+    @Deprecated
     public static void broadcastMessage(String channel) {
         broadcastMessage(channel, ServerMessage.EMPTY);
     }
 
+    @Deprecated
     public static void broadcastMessage(String channel, ServerMessage message) {
         getConnection().broadcastMessage(channel, message.toString());
     }
@@ -241,7 +262,7 @@ public class NetworkPlus {
      * @param message The message to send.
      */
     public static void broadcastNetworkMessage(String serverID, String message) {
-        sendMessage(serverID, NetworkMessageChannel.SERVER_ALERT.toString(), new ServerMessage(message));
+        sendMessage(serverID, NetworkMessageChannel.SERVER_ALERT, new ServerMessage(message));
     }
 
     /**
@@ -249,7 +270,7 @@ public class NetworkPlus {
      * @param message The message to send.
      */
     public static void broadcastNetworkMessage(String message) {
-        broadcastMessage(NetworkMessageChannel.SERVER_ALERT.toString(), new ServerMessage(message));
+        broadcastMessage(NetworkMessageChannel.SERVER_ALERT, new ServerMessage(message));
     }
 
     /**
@@ -262,7 +283,7 @@ public class NetworkPlus {
         if(BukkitUtils.isPlayerOnline(player)) {
             BukkitUtils.sendMessage(player, message);
         } else {
-            broadcastMessage(NetworkMessageChannel.PLAYER_MESSAGE.toString(), new ServerMessage(player, message));
+            broadcastMessage(NetworkMessageChannel.PLAYER_MESSAGE, new ServerMessage(player, message));
         }
     }
 
@@ -273,7 +294,7 @@ public class NetworkPlus {
      */
     public static void requestServerFlags() {
         getLogger().log(3, "Requesting info from all servers");
-        broadcastMessage(NetworkMessageChannel.SERVER_FLAGS_REQUEST.toString());
+        broadcastMessage(NetworkMessageChannel.SERVER_FLAGS_REQUEST);
     }
 
     /**
@@ -284,7 +305,7 @@ public class NetworkPlus {
      */
     public static void requestServerFlags(String serverID) {
         getLogger().log(3, "Requesting info from &a" + serverID);
-        sendMessage(serverID, NetworkMessageChannel.SERVER_FLAGS_REQUEST.toString());
+        sendMessage(serverID, NetworkMessageChannel.SERVER_FLAGS_REQUEST);
     }
 
     public static void sendServerFlags(String serverID) {
@@ -298,7 +319,7 @@ public class NetworkPlus {
      */
     public static void sendServerFlags(String serverID, ServerFlags flags, String serverIDOwnedBy) {
         getLogger().log(3, "Sending server info to &a" + serverID);
-        NetworkPlus.sendMessage(serverID, NetworkMessageChannel.SERVER_FLAGS_CACHE.toString(), flags.toServerMessage(serverIDOwnedBy));
+        NetworkPlus.sendMessage(serverID, NetworkMessageChannel.SERVER_FLAGS_CACHE, flags.toServerMessage(serverIDOwnedBy));
     }
 
     public static void broadcastServerFlags(ServerFlags flags) {
@@ -312,7 +333,7 @@ public class NetworkPlus {
     public static void broadcastServerFlags(String serverIDOwnedBy, ServerFlags flags)
     {
         getLogger().log(3, "Sending server info to all servers");
-        NetworkPlus.broadcastMessage(NetworkMessageChannel.SERVER_FLAGS_CACHE.toString(), flags.toServerMessage(serverIDOwnedBy));
+        NetworkPlus.broadcastMessage(NetworkMessageChannel.SERVER_FLAGS_CACHE, flags.toServerMessage(serverIDOwnedBy));
     }
 
 }

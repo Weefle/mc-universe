@@ -1,6 +1,7 @@
 package com.octopod.network;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import com.google.gson.JsonSyntaxException;
@@ -92,13 +93,24 @@ public class NetworkActions {
     }
 
     public static void actionPlayerJoinServer(String player, String serverID)
-    {
+        {
+        ServerFlags flags = ServerManager.getFlags(serverID);
 
+        List<String> players = flags.getOnlinePlayers();
+        if(!players.contains(player))
+            players.add(player);
+
+        flags.setFlag("onlinePlayers", players);
     }
 
     public static void actionPlayerLeaveServer(String player, String serverID)
     {
+        ServerFlags flags = ServerManager.getFlags(serverID);
 
+        List<String> players = flags.getOnlinePlayers();
+        players.remove(player);
+
+        flags.setFlag("onlinePlayers", players);
     }
 
 	/**

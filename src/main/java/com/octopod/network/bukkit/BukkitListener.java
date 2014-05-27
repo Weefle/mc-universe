@@ -35,29 +35,16 @@ public class BukkitListener implements Listener {
         }
     }
 
-    private void updatePlayerJoined() {
-        List<String> players = new ArrayList<>();
-        players.addAll(Arrays.asList(BukkitUtils.getPlayerNames()));
-        updatePlayers(players);
+    private void updatePlayerJoined(String player) {
+        NetworkPlus.broadcastMessage(NetworkMessageChannel.PLAYER_JOIN_SERVER, new ServerMessage(NetworkPlus.getServerID(), player));
     }
 
     private void updatePlayerLeft(String player) {
-        List<String> players = new ArrayList<>();
-        players.addAll(Arrays.asList(BukkitUtils.getPlayerNames()));
-        players.remove(player);
-        updatePlayers(players);
-    }
-
-    private void updatePlayers(List<String> players)
-    {
-        ServerFlags flags = new ServerFlags();
-        flags.setFlag("onlinePlayers", players);
-
-        NetworkPlus.broadcastServerFlags(NetworkPlus.getServerID(), flags);
+        NetworkPlus.broadcastMessage(NetworkMessageChannel.PLAYER_LEAVE_SERVER, new ServerMessage(NetworkPlus.getServerID(), player));
     }
 
 	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent event) {updatePlayerJoined();}
+	public void onPlayerJoin(PlayerJoinEvent event) {updatePlayerJoined(event.getPlayer().getName());}
 	
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent event) 
