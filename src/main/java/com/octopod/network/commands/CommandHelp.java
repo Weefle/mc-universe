@@ -3,10 +3,9 @@ package com.octopod.network.commands;
 import com.octopod.network.NetworkPermission;
 import com.octopod.network.CommandManager;
 import com.octopod.network.bukkit.BukkitUtils;
-import com.octopod.octolib.minecraft.ChatBuilder;
-import com.octopod.octolib.minecraft.ChatElement;
-import com.octopod.octolib.minecraft.ChatUtils;
-import com.octopod.octolib.minecraft.ChatUtils.Color;
+import com.octopod.octal.minecraft.ChatElement;
+import com.octopod.octal.minecraft.ChatUtils;
+import com.octopod.octal.minecraft.ChatUtils.Color;
 import org.bukkit.command.CommandSender;
 
 public class CommandHelp extends NetworkCommand {

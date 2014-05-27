@@ -31,38 +31,38 @@ public class CommandServerPing extends NetworkCommand {
 			return true;
 		}
 
-        if(server.equals(NetworkPlus.getServerID())) {
-            BukkitUtils.sendMessage(sender, "&cCannot ping the server you're on!");
-            return true;
-        }
+		if(server.equals(NetworkPlus.getServerID())) {
+			BukkitUtils.sendMessage(sender, "&cCannot ping the server you're on!");
+			return true;
+		}
 
-        final SynchronizedListener listener = new SynchronizedListener<>(ServerFlagsReceivedEvent.class, new Listener<ServerFlagsReceivedEvent>()
-        {
-            @Override
-            public void onEvent(ServerFlagsReceivedEvent event)
-            {
-                if(event.getServer().equals(server)) {
-                    event.setUnlocked(true);
-                }
-            }
-        });
+		final SynchronizedListener listener = new SynchronizedListener<>(ServerFlagsReceivedEvent.class, new Listener<ServerFlagsReceivedEvent>()
+		{
+			@Override
+			public void onEvent(ServerFlagsReceivedEvent event)
+			{
+				if(event.getServer().equals(server)) {
+					event.setUnlocked(true);
+				}
+			}
+		});
 
-        long timeout = NetworkConfig.getRequestTimeout();
+		long timeout = NetworkConfig.getRequestTimeout();
 
-        long startTime = System.currentTimeMillis();
+		long startTime = System.currentTimeMillis();
 
-        NetworkPlus.getEventManager().registerListener(listener);
+		NetworkPlus.getEventManager().registerListener(listener);
 
-        NetworkPlus.requestServerFlags(server);
-        listener.waitFor(timeout, 1);
+		NetworkPlus.requestServerFlags(server);
+		listener.waitFor(timeout, 1);
 
-        if((System.currentTimeMillis() - startTime) >= timeout) {
+		if((System.currentTimeMillis() - startTime) >= timeout) {
 			BukkitUtils.sendMessage(sender, "&cPing timed out! The server isn't running this plugin?");
 		} else {
-            BukkitUtils.sendMessage(sender, "&aPing returned successfully in " + (System.currentTimeMillis() - startTime) + "ms!");
-        }
+			BukkitUtils.sendMessage(sender, "&aPing returned successfully in " + (System.currentTimeMillis() - startTime) + "ms!");
+		}
 
-        NetworkPlus.getEventManager().unregisterListener(listener);
+		NetworkPlus.getEventManager().unregisterListener(listener);
 
 		return true;
 

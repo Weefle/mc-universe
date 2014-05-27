@@ -109,29 +109,29 @@
                     <createDependencyReducedPom>false</createDependencyReducedPom>
 					<artifactSet>
 						<includes>
-							<include>com.octopod:octolib</include>
+							<include>com.octopod:octal</include>
                             <include>com.google.code.gson:gson</include>
 						</includes>
 					</artifactSet>
 					<filters>
 						<filter>
-							<artifact>com.octopod:octolib</artifact>
+							<artifact>com.octopod:octal</artifact>
 							<includes>
-								<include>com/octopod/octolib/minecraft/Chat**.class</include>
-                                <include>com/octopod/octolib/minecraft/AbstractPlayer.class</include>
-                                <include>com/octopod/octolib/minecraft/bukkit/BukkitPlayer.class</include>
-                                <include>com/octopod/octolib/minecraft/bukkit/BukkitPlayer.class</include>
-                                <include>com/octopod/octolib/common/IOUtils.class</include>
-                                <include>com/octopod/octolib/common/StringUtils.class</include>
-                                <include>com/octopod/octolib/common/FileUtil.class</include>
-                                <include>com/octopod/octolib/yaml/**.class</include>
+								<include>com/octopod/octal/minecraft/Chat**.class</include>
+                                <include>com/octopod/octal/minecraft/AbstractPlayer.class</include>
+                                <include>com/octopod/octal/minecraft/bukkit/BukkitPlayer.class</include>
+                                <include>com/octopod/octal/minecraft/bukkit/BukkitPlayer.class</include>
+                                <include>com/octopod/octal/common/IOUtils.class</include>
+                                <include>com/octopod/octal/common/StringUtils.class</include>
+                                <include>com/octopod/octal/common/FileUtil.class</include>
+                                <include>com/octopod/octal/yaml/**.class</include>
 							</includes>
 						</filter>
 					</filters>
                     <relocations>
                         <relocation>
-                            <pattern>com.octopod.octolib</pattern>
-                            <shadedPattern>com.octopod.network.octolib</shadedPattern>
+                            <pattern>com.octopod.octal</pattern>
+                            <shadedPattern>com.octopod.network.octal</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>com.google.gson</pattern>
@@ -215,7 +215,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.octopod</groupId>
-			<artifactId>octolib</artifactId>
+			<artifactId>octal</artifactId>
 			<version>0.1.1</version>
 		</dependency>
         <dependency>

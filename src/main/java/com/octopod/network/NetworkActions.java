@@ -188,6 +188,16 @@ public class NetworkActions {
             return;
         }
 
+        if (NetworkMessageChannel.PLAYER_JOIN_SERVER.equals(channel)) {
+            actionPlayerJoinServer(args[1], args[0]);
+            return;
+        }
+
+        if (NetworkMessageChannel.PLAYER_LEAVE_SERVER.equals(channel)) {
+            actionPlayerLeaveServer(args[1], args[0]);
+            return;
+        }
+
 		if(NetworkMessageChannel.SERVER_ALERT.equals(channel)) {
 		    BukkitUtils.broadcastMessage(message);
             return;
@@ -220,7 +230,7 @@ public class NetworkActions {
         }
 
         //If the code reaches this point, something has gone wrong.
-        NetworkPlus.getLogger().debug(
+        NetworkPlus.getLogger().info(
                 "Recieved incorrect arguments from server &a" + senderID,
                 "Channel: &b" + channel,
                 "Arguments: &e" + Arrays.asList(args)

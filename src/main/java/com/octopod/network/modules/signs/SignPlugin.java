@@ -2,7 +2,7 @@ package com.octopod.network.modules.signs;
 
 import com.octopod.network.NetworkPlus;
 import com.octopod.network.Util;
-import com.octopod.octolib.common.IOUtils;
+import com.octopod.octal.common.IOUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Sign;

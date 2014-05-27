@@ -9,7 +9,7 @@ public class NetworkLogger {
      * If this is true, it will show all debug messages regardless of the "debug" config option.
      * THIS SHOULDN'T BE TRUE IN RELEASE BUILDS.
      */
-    private static final boolean TESTING = false;
+    private static final boolean TESTING = true;
 
     /**
      * Sends a message at a level to the console and players with the "network.debug.<level>" permission.
