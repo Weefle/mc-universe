@@ -203,6 +203,7 @@ public class NetworkActions {
             return;
         }
 
+		//Cannot request ServerFlags from itself
 		if(NetworkMessageChannel.SERVER_FLAGS_REQUEST.equals(channel))
         {
             if(!senderID.equals(NetworkPlus.getServerID())) {
