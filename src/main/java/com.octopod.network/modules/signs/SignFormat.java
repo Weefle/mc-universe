@@ -1,7 +1,7 @@
 package com.octopod.network.modules.signs;
 
 import com.octopod.network.ServerFlags;
-import com.octopod.network.ServerManager;
+import com.octopod.network.server.ServerManager;
 import org.bukkit.ChatColor;
 
 /**

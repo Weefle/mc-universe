@@ -1,4 +1,7 @@
-package com.octopod.network;
+package com.octopod.network.server;
+
+import com.octopod.network.NetworkPlus;
+import com.octopod.network.ServerFlags;
 
 import java.util.*;
 

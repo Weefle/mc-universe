@@ -3,7 +3,7 @@ package com.octopod.network.commands;
 import com.octopod.network.NetworkPermission;
 import com.octopod.network.NetworkPlus;
 import com.octopod.network.ServerFlags;
-import com.octopod.network.ServerManager;
+import com.octopod.network.server.ServerManager;
 import com.octopod.octal.minecraft.ChatBuilder;
 import com.octopod.octal.minecraft.ChatUtils;
 import com.octopod.octal.minecraft.ChatUtils.*;

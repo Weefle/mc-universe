@@ -2,7 +2,7 @@ package com.octopod.network.commands;
 
 import com.octopod.network.NetworkPermission;
 import com.octopod.network.bukkit.BukkitUtils;
-import com.octopod.network.ServerManager;
+import com.octopod.network.server.ServerManager;
 import org.bukkit.command.CommandSender;
 
 public class CommandFind extends NetworkCommand {

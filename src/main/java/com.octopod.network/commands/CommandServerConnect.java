@@ -1,7 +1,7 @@
 package com.octopod.network.commands;
 
 import com.octopod.network.*;
-import com.octopod.network.ServerManager;
+import com.octopod.network.server.ServerManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

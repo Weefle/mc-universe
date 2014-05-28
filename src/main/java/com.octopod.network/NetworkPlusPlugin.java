@@ -5,6 +5,7 @@ import com.octopod.network.connection.LilypadConnection;
 import com.octopod.network.connection.NetworkConnection;
 import com.octopod.network.bukkit.BukkitListener;
 import com.octopod.network.modules.signs.SignPlugin;
+import com.octopod.network.server.ServerManager;
 import com.octopod.octal.minecraft.ChatUtils.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -102,17 +103,22 @@ public class NetworkPlusPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
 
-        connection.disconnect();
-
         ServerManager.reset();
         CommandManager.reset();
 
         NetworkPlus.getEventManager().unregisterAll();
 
-        ServerFlags flags = new ServerFlags();
-        flags.setFlag("serverLastOnline", System.currentTimeMillis());
+		if(connection != null)
+		{
+			if(connection.isConnected())
+			{
+				ServerFlags flags = new ServerFlags();
+				flags.setFlag("serverLastOnline", System.currentTimeMillis());
 
-        NetworkPlus.broadcastServerFlags(flags);
+				NetworkPlus.broadcastServerFlags(flags);
+			}
+			connection.disconnect();
+		}
 
     }
 
@@ -139,8 +145,6 @@ public class NetworkPlusPlugin extends JavaPlugin {
 			this.setEnabled(false);
 			return;
 		}
-
-        connection = new LilypadConnection(this);
 
         //Register all the listeners
         networkActions = new NetworkActions();
@@ -175,7 +179,8 @@ public class NetworkPlusPlugin extends JavaPlugin {
 
         new SignPlugin();
 
-        connection.connect();
+		connection = new LilypadConnection(this);
+		connection.connect();
 
 	}
 

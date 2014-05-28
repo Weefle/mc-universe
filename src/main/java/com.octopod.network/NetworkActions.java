@@ -10,6 +10,8 @@ import com.octopod.network.events.network.NetworkConnectedEvent;
 import com.octopod.network.events.relays.MessageEvent;
 import com.octopod.network.events.server.PostServerFlagsReceivedEvent;
 import com.octopod.network.events.server.ServerFlagsReceivedEvent;
+import com.octopod.network.server.ServerManager;
+import com.octopod.octal.minecraft.ChatUtils.ChatColor;
 
 /**
  * @author Octopod
@@ -93,24 +95,34 @@ public class NetworkActions {
     }
 
     public static void actionPlayerJoinServer(String player, String serverID)
-        {
+    {
         ServerFlags flags = ServerManager.getFlags(serverID);
 
-        List<String> players = flags.getOnlinePlayers();
-        if(!players.contains(player))
-            players.add(player);
+		if(flags != null) {
+			List<String> players = flags.getOnlinePlayers();
+			if(!players.contains(player))
+				players.add(player);
 
-        flags.setFlag("onlinePlayers", players);
+			flags.setFlag("onlinePlayers", players);
+		} else {
+			NetworkPlus.getLogger().info("Requesting missing flags from server " + ChatColor.GREEN + serverID);
+			NetworkPlus.requestServerFlags(serverID);
+		}
     }
 
     public static void actionPlayerLeaveServer(String player, String serverID)
     {
         ServerFlags flags = ServerManager.getFlags(serverID);
 
-        List<String> players = flags.getOnlinePlayers();
-        players.remove(player);
+		if(flags != null) {
+			List<String> players = flags.getOnlinePlayers();
+			players.remove(player);
 
-        flags.setFlag("onlinePlayers", players);
+			flags.setFlag("onlinePlayers", players);
+		} else {
+			NetworkPlus.getLogger().info("Requesting missing flags from server " + ChatColor.GREEN + serverID);
+			NetworkPlus.requestServerFlags(serverID);
+		}
     }
 
 	/**

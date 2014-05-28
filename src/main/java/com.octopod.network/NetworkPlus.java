@@ -9,6 +9,7 @@ import com.google.gson.LongSerializationPolicy;
 import com.octopod.network.bukkit.BukkitUtils;
 import com.octopod.network.connection.NetworkConnection;
 import com.octopod.network.events.EventManager;
+import com.octopod.network.server.ServerManager;
 
 /**
  * @author Octopod
