@@ -53,12 +53,25 @@ public class NetworkConfig {
 		return NetworkConfig.class.getClassLoader().getResourceAsStream("src/config.yml");
 	}
 
+	private static boolean isConfigOld()
+	{
+		InputStream defaultConfigInput = getDefaultConfig();
+		if(defaultConfigInput == null) return false;
+
+		YamlConfiguration defaultConfig = new YamlConfiguration(defaultConfigInput);
+
+		int defaultVersion = defaultConfig.getInteger("version", -1);
+		int version = getConfig().getInteger("version", -1);
+
+		return defaultVersion > version;
+	}
+
 	/**
 	 * Writes the default configuration (resource) into configFile.
 	 * Throws various errors.
 	 * @throws NullPointerException, IOException
 	 */
-	private static void resetConfig() throws NullPointerException, IOException {
+	private static void reset() throws NullPointerException, IOException {
 
 		//Backup the old config.yml if it exists
 		if(configFile.exists())
@@ -98,52 +111,31 @@ public class NetworkConfig {
 	 * Loads the configuration.
 	 * Each created instance of NetworkConfig will load a new config.
 	 */
-	public static void reloadConfig()
+	public static void load() throws Exception
 	{
 		NetworkPlus.getLogger().info("Loading Net+ configuration...");
 
-		InputStream defaultConfigInput = getDefaultConfig();
+		//A config.yml doesn't exist, so create a new one.
+		if(!configFile.exists()) {reset();}
 
-		YamlConfiguration defaultConfig = new YamlConfiguration(defaultConfigInput);
+		//Sets the current configuration from config.yml.
+		setConfig(new YamlConfiguration(configFile));
 
-		try {
-			//A config.yml doesn't exist, so create a new one.
-			if(!configFile.exists()) resetConfig();
+		//Check if the version of the default config is newer, or the current configuration is missing keys.
+		if (isConfigOld() || objectsNull(
+				TIMEOUT = Long.valueOf(getConfig().getInteger("request-timeout")),
+				DEBUG_MODE = getConfig().getInteger("debug-messages"),
+				CHANNEL_PREFIX = getConfig().getString("channel-prefix"),
+				HUB_ENABLED = getConfig().getBoolean("hub-enabled"),
+				HUB_PRIORITY = getConfig().getInteger("hub-priority"),
+				SERVER_NAME = getConfig().getString("name"),
 
-			//Sets the current configuration from config.yml.
-			setConfig(new YamlConfiguration(configFile));
-
-			int defaultVersion = defaultConfig != null ? defaultConfig.getInteger("version", -1) : -1;
-			int version = getConfig().getInteger("version", -1);
-
-			//Check if the version of the default config is newer, or the current configuration is missing keys.
-			if ((defaultVersion > version) ||
-				objectsNull(
-						TIMEOUT = Long.valueOf(getConfig().getInteger("request-timeout")),
-						DEBUG_MODE = getConfig().getInteger("debug-messages"),
-						CHANNEL_PREFIX = getConfig().getString("channel-prefix"),
-						HUB_ENABLED = getConfig().getBoolean("hub-enabled"),
-						HUB_PRIORITY = getConfig().getInteger("hub-priority"),
-						SERVER_NAME = getConfig().getString("name"),
-
-						CONNECTION_ATTEMPTS_MAX = config.getInteger("connection-attempts-max"),
-						CONNECTION_ATTEMPTS_INTERVAL = Long.valueOf(config.getInteger("connection-attempts-interval", 1000))
-				)
-			) {
-				//Reset the config to the default and loads that up.
-				resetConfig();
-				config.load(configFile);
-			}
-
-		//Something errored out while writing/reading the configuration.
-		} catch (Exception e) {
-			NetworkPlus.getLogger().info(
-					ChatColor.RED + "Something went wrong while loading Network's configuration.",
-					ChatColor.RED + "This can usually happen if the plugin was loaded using unsafe methods.",
-					ChatColor.RED + "If a restart doesn't fix it, report the error in the console.",
-					ChatColor.RED + "The plugin will continue operating under default values."
-			);
-			e.printStackTrace();
+				CONNECTION_ATTEMPTS_MAX = config.getInteger("connection-attempts-max"),
+				CONNECTION_ATTEMPTS_INTERVAL = Long.valueOf(config.getInteger("connection-attempts-interval", 1000))
+		)) {
+			//Reset the config to the default and loads that up.
+			reset();
+			getConfig().load(configFile);
 		}
 
 		NetworkPlus.getLogger().info(ChatColor.GREEN + "Successfully loaded configuration!");

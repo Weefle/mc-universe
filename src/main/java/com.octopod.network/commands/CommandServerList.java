@@ -115,7 +115,7 @@ public class CommandServerList extends NetworkCommand {
 								flags.getDescription(),
 								ChatColor.DARK_GRAY + "-------------------------------------",
 								ChatColor.YELLOW + "Click to join this server!"
-						).run("/server" + serverID).
+						).run("/server " + serverID).
                         sp().
 						append(ChatColor.DARK_GRAY + "|").
                         sp().

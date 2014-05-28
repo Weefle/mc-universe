@@ -3,6 +3,7 @@ package com.octopod.network.commands;
 import com.octopod.network.NetworkConfig;
 import com.octopod.network.NetworkPermission;
 import com.octopod.network.NetworkPlus;
+import com.octopod.octal.minecraft.ChatUtils.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
@@ -25,8 +26,13 @@ public class CommandReload extends NetworkCommand {
         if(Arrays.asList(args).contains("-f")) {
             NetworkPlus.getPlugin().reload();
         } else {
-            NetworkConfig.reloadConfig();
-			NetworkPlus.broadcastServerFlags(NetworkPlus.getServerFlags());
+            try {
+				NetworkConfig.load();
+				NetworkPlus.broadcastServerFlags(NetworkPlus.getServerFlags());
+			} catch (Exception e) {
+				NetworkPlus.getLogger().info(ChatColor.RED + "Unable to reload!");
+			}
+
         }
 
         return true;

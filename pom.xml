@@ -50,14 +50,14 @@
 
         <resources>
             <resource>
-                <directory>.</directory>
+                <directory>src/main/resources</directory>
                 <filtering>true</filtering>
                 <includes>
                     <include>plugin.yml</include>
                 </includes>
             </resource>
             <resource>
-                <directory>.</directory>
+                <directory>src/main/resources</directory>
                 <filtering>false</filtering>
                 <includes>
                     <include>config.yml</include>

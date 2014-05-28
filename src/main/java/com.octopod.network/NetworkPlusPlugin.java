@@ -126,7 +126,19 @@ public class NetworkPlusPlugin extends JavaPlugin {
         logger = new NetworkLogger();
 
 		//Configuration loading
-		NetworkConfig.reloadConfig();
+		try {
+			NetworkConfig.load();
+		} catch (Exception e) {
+			NetworkPlus.getLogger().info(
+					ChatColor.RED + "Something went wrong while loading Network's configuration.",
+					ChatColor.RED + "This can usually happen if the plugin was loaded using unsafe methods.",
+					ChatColor.RED + "The plugin will now be disabled.",
+					ChatColor.RED + "If a restart doesn't fix it, report the error in the console."
+			);
+			e.printStackTrace();
+			this.setEnabled(false);
+			return;
+		}
 
         connection = new LilypadConnection(this);
 
