@@ -1,11 +1,9 @@
 package com.octopod.network;
 
-import com.octopod.network.bukkit.BukkitUtils;
 import com.octopod.octal.common.IOUtils;
 import com.octopod.octal.minecraft.ChatUtils;
+import com.octopod.octal.minecraft.ChatUtils.ChatColor;
 import com.octopod.octal.yaml.YamlConfiguration;
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -13,7 +11,15 @@ import java.util.Date;
 
 public class NetworkConfig {
 
+	/**
+	 * The file in which to load the configuration from.
+	 */
 	private final static File configFile = new File(NetworkPlus.getDataFolder(), "config.yml");
+
+	/**
+	 * The currently active configuration.
+	 */
+	private static YamlConfiguration config = null;
 
 	//These formats use String.format()
 	public static String FORMAT_ALERT = 		"&8[&bAlert&8]&6 %s";
@@ -34,7 +40,7 @@ public class NetworkConfig {
 	private static Integer CONNECTION_ATTEMPTS_MAX = 10;
 	private static Long    CONNECTION_ATTEMPTS_INTERVAL = 1000L;
 
-	private static boolean nullCheck(Object... objects) {
+	private static boolean objectsNull(Object... objects) {
 		for(Object o: objects) {
 			if(o == null) {
 				return true;
@@ -43,8 +49,17 @@ public class NetworkConfig {
 		return false;
 	}
 
-	private static void writeConfig(CommandSender sender) throws IOException
-	{
+	private static InputStream getDefaultConfig() {
+		return NetworkConfig.class.getClassLoader().getResourceAsStream("config_4.yml");
+	}
+
+	/**
+	 * Writes the default configuration (resource) into configFile.
+	 * Throws various errors.
+	 * @throws NullPointerException, IOException
+	 */
+	private static void resetConfig() throws NullPointerException, IOException {
+
 		//Backup the old config.yml if it exists
 		if(configFile.exists())
 		{
@@ -56,34 +71,23 @@ public class NetworkConfig {
 			Util.write(backupConfigFile, fileInputStream);
 			IOUtils.closeSilent(fileInputStream);
 
-			BukkitUtils.sendMessage(sender, "&eBackup saved as " + fileName);
+			NetworkPlus.getLogger().info("Old configuration renamed to " + fileName);
 		}
 
-		writeDefaultConfig(sender);
-	}
+		InputStream defaultConfigInput = getDefaultConfig();
 
-	/**
-	 * Writes the default configuration (resource) into configFile.
-	 * Throws various errors.
-	 * @param sender Who to send the messages to.
-	 * @throws NullPointerException, IOException
-	 */
-	private static void writeDefaultConfig(CommandSender sender) throws NullPointerException, IOException {
-
-		InputStream defaultConfigInput = NetworkConfig.class.getClassLoader().getResourceAsStream("config.yml");
-
-		BukkitUtils.sendMessage(sender, "&eWriting default configuration to config.yml.");
+		NetworkPlus.getLogger().info("Writing default configuration to config.yml.");
 
 		try {
 			Util.write(configFile, defaultConfigInput);
 		} catch (NullPointerException e) {
-			BukkitUtils.sendMessage(sender, "&cCouldn't find the internal configuration file.");
+			NetworkPlus.getLogger().info("Couldn't find the internal configuration file.");
 			throw e;
 		} catch (FileNotFoundException e) {
-			BukkitUtils.sendMessage(sender, "&cThe config.yml doesn't exist in your folder. If you see this message, I will personally give you 5$");
+			NetworkPlus.getLogger().info("The config.yml doesn't exist in your folder. If you see this message, I will personally give you 5$");
 			throw e;
 		} catch (IOException e) {
-			BukkitUtils.sendMessage(sender, "&cCouldn't write to the config.yml. Try checking the file's permissions?");
+			NetworkPlus.getLogger().info("Couldn't write to the config.yml. Try checking the file's permissions?");
 			throw e;
 		} finally {
 			IOUtils.closeSilent(defaultConfigInput);
@@ -94,70 +98,65 @@ public class NetworkConfig {
 	 * Loads the configuration.
 	 * Each created instance of NetworkConfig will load a new config.
 	 */
-	public static void reloadConfig() {reloadConfig(Bukkit.getConsoleSender());}
+	public static void reloadConfig()
+	{
+		NetworkPlus.getLogger().info("Loading Net+ configuration...");
 
-	public static void reloadConfig(CommandSender sender) {
+		InputStream defaultConfigInput = getDefaultConfig();
 
-		BukkitUtils.sendMessage(sender, "&7Loading configuration...");
-
-		InputStream defaultConfigInput = NetworkPlusPlugin.class.getClassLoader().getResourceAsStream("config.yml");
-
-		//This is the single YAML configuration we should use.
-		YamlConfiguration config;
-
-		YamlConfiguration defaultConfig = null;
-		if(defaultConfigInput != null) try {
-			defaultConfig = new YamlConfiguration(defaultConfigInput);
-		} catch (Exception e) {}
+		YamlConfiguration defaultConfig = new YamlConfiguration(defaultConfigInput);
 
 		try {
-
 			//A config.yml doesn't exist, so create a new one.
-			if(!configFile.exists()) {
-				writeConfig(sender);
-			}
+			if(!configFile.exists()) resetConfig();
 
-			config = new YamlConfiguration(configFile);
+			//Sets the current configuration from config.yml.
+			setConfig(new YamlConfiguration(configFile));
+
+			int defaultVersion = defaultConfig != null ? defaultConfig.getInteger("version", 0) : 0;
+			int version = getConfig().getInteger("version", -1);
 
 			//Check if the version of the default config is newer, or the current configuration is missing keys.
-			if (
-				(defaultConfig != null && defaultConfig.getInteger("version", 0) > config.getInteger("version", -1)) ||
-				nullCheck(
-					TIMEOUT =           Long.valueOf(config.getInteger("request-timeout")),
-					DEBUG_MODE =        config.getInteger("debug-messages"),
-					CHANNEL_PREFIX =    config.getString("channel-prefix"),
-					HUB_ENABLED =       config.getBoolean("hub-enabled"),
-					HUB_PRIORITY =      config.getInteger("hub-priority"),
-					SERVER_NAME =       config.getString("name"),
+			if ((defaultVersion > version) ||
+				objectsNull(
+						TIMEOUT = Long.valueOf(getConfig().getInteger("request-timeout")),
+						DEBUG_MODE = getConfig().getInteger("debug-messages"),
+						CHANNEL_PREFIX = getConfig().getString("channel-prefix"),
+						HUB_ENABLED = getConfig().getBoolean("hub-enabled"),
+						HUB_PRIORITY = getConfig().getInteger("hub-priority"),
+						SERVER_NAME = getConfig().getString("name"),
 
-					CONNECTION_ATTEMPTS_MAX =       config.getInteger("connection-attempts-max"),
-					CONNECTION_ATTEMPTS_INTERVAL =  Long.valueOf(config.getInteger("connection-attempts-interval", 1000))
+						CONNECTION_ATTEMPTS_MAX = config.getInteger("connection-attempts-max"),
+						CONNECTION_ATTEMPTS_INTERVAL = Long.valueOf(config.getInteger("connection-attempts-interval", 1000))
 				)
 			) {
-				writeConfig(sender);
+				//Reset the config to the default and loads that up.
+				resetConfig();
 				config.load(configFile);
 			}
 
 		//Something errored out while writing/reading the configuration.
 		} catch (Exception e) {
-			BukkitUtils.sendMessage(sender, "&cSomething went wrong while loading Network's configuration.");
-			BukkitUtils.sendMessage(sender, "&cThis can usually happen if the plugin was loaded using unsafe methods.");
-			BukkitUtils.sendMessage(sender, "&cIf a restart doesn't fix it, report the error in the console.");
-			BukkitUtils.sendMessage(sender, "&cThe plugin will continue operating under default values.");
+			NetworkPlus.getLogger().info(
+					ChatColor.RED + "Something went wrong while loading Network's configuration.",
+					ChatColor.RED + "This can usually happen if the plugin was loaded using unsafe methods.",
+					ChatColor.RED + "If a restart doesn't fix it, report the error in the console.",
+					ChatColor.RED + "The plugin will continue operating under default values."
+			);
 			e.printStackTrace();
 		} finally {
 			IOUtils.closeSilent(defaultConfigInput);
 		}
 
-		BukkitUtils.sendMessage(sender, "TIMEOUT: &a" + TIMEOUT);
-		BukkitUtils.sendMessage(sender, "DEBUG_MODE: &a" + DEBUG_MODE);
-		BukkitUtils.sendMessage(sender, "CHANNEL_PREFIX: &a\"" + CHANNEL_PREFIX + "\"");
-		BukkitUtils.sendMessage(sender, "HUB_ENABLED: &a" + HUB_ENABLED);
-		BukkitUtils.sendMessage(sender, "HUB_PRIORITY: &a" + HUB_PRIORITY);
-		BukkitUtils.sendMessage(sender, "SERVER_NAME: &a\"" + getServerName() + "\"");
+		NetworkPlus.getLogger().info(ChatColor.GREEN + "Successfully loaded configuration!");
+	}
 
-		BukkitUtils.sendMessage(sender, "&7Successfully loaded configuration!");
+	private static void setConfig(YamlConfiguration config) {
+		NetworkConfig.config = config;
+	}
 
+	public static YamlConfiguration getConfig() {
+		return config;
 	}
 
 	public static Boolean isHub() {return HUB_ENABLED;}
