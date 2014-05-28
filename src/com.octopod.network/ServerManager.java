@@ -1,7 +1,5 @@
 package com.octopod.network;
 
-import java.util.*;
-
 public class ServerManager {
 
     private ServerManager() {}

@@ -3,8 +3,6 @@ package com.octopod.network.events.server;
 import com.octopod.network.ServerFlags;
 import com.octopod.network.events.CancellableEvent;
 
-import java.util.HashMap;
-
 /**
  * @author Octopod
  *         Created on 3/26/14

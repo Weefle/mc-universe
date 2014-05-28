@@ -5,7 +5,6 @@ import com.octopod.octal.minecraft.ChatUtils;
 import com.octopod.octal.minecraft.ChatUtils.ChatColor;
 import com.octopod.octal.yaml.YamlConfiguration;
 
-import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -50,7 +49,7 @@ public class NetworkConfig {
 	}
 
 	private static InputStream getDefaultConfig() {
-		return NetworkConfig.class.getClassLoader().getResourceAsStream("config_4.yml");
+		return NetworkConfig.class.getClassLoader().getResourceAsStream("src/config_4.yml");
 	}
 
 	/**
@@ -104,7 +103,10 @@ public class NetworkConfig {
 
 		InputStream defaultConfigInput = getDefaultConfig();
 
-		YamlConfiguration defaultConfig = new YamlConfiguration(defaultConfigInput);
+		if(defaultConfigInput != null) {
+			YamlConfiguration defaultConfig = new YamlConfiguration(defaultConfigInput);
+			IOUtils.closeSilent(defaultConfigInput);
+		}
 
 		try {
 			//A config.yml doesn't exist, so create a new one.
@@ -113,7 +115,7 @@ public class NetworkConfig {
 			//Sets the current configuration from config.yml.
 			setConfig(new YamlConfiguration(configFile));
 
-			int defaultVersion = defaultConfig != null ? defaultConfig.getInteger("version", 0) : 0;
+			int defaultVersion = defaultConfig != null ? defaultConfig.getInteger("version", -1) : -1;
 			int version = getConfig().getInteger("version", -1);
 
 			//Check if the version of the default config is newer, or the current configuration is missing keys.
@@ -144,8 +146,6 @@ public class NetworkConfig {
 					ChatColor.RED + "The plugin will continue operating under default values."
 			);
 			e.printStackTrace();
-		} finally {
-			IOUtils.closeSilent(defaultConfigInput);
 		}
 
 		NetworkPlus.getLogger().info(ChatColor.GREEN + "Successfully loaded configuration!");
