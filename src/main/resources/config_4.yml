@@ -1,5 +1,5 @@
 #Don't change this line!
-version: 2
+version: 4
 #=================================
 #Network Settings
 
@@ -11,8 +11,8 @@ channel-prefix: 'network'
 #Information Settings
 
 name: ''
-description: ''
-categories: []
+#description: ''
+#categories: []
 
 #=================================
 #Hub Control Settings
@@ -23,14 +23,14 @@ hub-enabled: false
 #Advanced Settings
 
 hub-priority: 0
-hub-conflict-resolver: RANDOM
+#hub-conflict-resolver: RANDOM
 
 #The amount of time, in ms, to wait for responses from servers.
 #If a server fails to respond, a command involving requests might take as long as the timeout.
 request-timeout: 500
 
 #Whether to show debug messages or not. 1 = enabled, 2 = verbose
-debug-messages: 0
+debug-messages: 1
 
 #=================================
 
