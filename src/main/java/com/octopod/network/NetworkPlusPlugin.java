@@ -5,6 +5,7 @@ import com.octopod.network.connection.LilypadConnection;
 import com.octopod.network.connection.NetworkConnection;
 import com.octopod.network.bukkit.BukkitListener;
 import com.octopod.network.modules.signs.SignPlugin;
+import com.octopod.octal.minecraft.ChatUtils.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -124,10 +125,10 @@ public class NetworkPlusPlugin extends JavaPlugin {
 
         logger = new NetworkLogger();
 
-        connection = new LilypadConnection(this);
+		//Configuration loading
+		NetworkConfig.reloadConfig();
 
-        //Configuration loading
-        NetworkConfig.reloadConfig();
+        connection = new LilypadConnection(this);
 
         //Register all the listeners
         networkActions = new NetworkActions();
@@ -155,9 +156,9 @@ public class NetworkPlusPlugin extends JavaPlugin {
         );
 
         if(NetworkPlus.isTestBuild()) {
-            NetworkPlus.getLogger().log(0, "You are running a test build of &fNetworkPlus&7!");
+            NetworkPlus.getLogger().log(0, "You are running a test build of " + ChatColor.GOLD + "NetworkPlus" + ChatColor.GRAY + "!");
         } else {
-            NetworkPlus.getLogger().log(0, "Successfully loaded &fNetworkPlus&7 &6" + getPluginVersion());
+            NetworkPlus.getLogger().log(0, "Successfully loaded " + ChatColor.GOLD + "NetworkPlus " + getPluginVersion());
         }
 
         new SignPlugin();
