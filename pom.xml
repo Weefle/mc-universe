@@ -45,19 +45,22 @@
     </contributors>
 
 	<build>
+        <sourceDirectory>src</sourceDirectory>
+        <testSourceDirectory>test</testSourceDirectory>
+
         <resources>
             <resource>
-                <directory>src/main/resources</directory>
+                <directory>.</directory>
                 <filtering>true</filtering>
                 <includes>
                     <include>plugin.yml</include>
                 </includes>
             </resource>
             <resource>
-                <directory>src/main/resources</directory>
+                <directory>.</directory>
                 <filtering>false</filtering>
                 <includes>
-                    <include>config_4.yml</include>
+                    <include>config.yml</include>
                 </includes>
             </resource>
         </resources>

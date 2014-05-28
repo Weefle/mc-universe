@@ -5,6 +5,7 @@ import com.octopod.octal.minecraft.ChatUtils;
 import com.octopod.octal.minecraft.ChatUtils.ChatColor;
 import com.octopod.octal.yaml.YamlConfiguration;
 
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -49,7 +50,7 @@ public class NetworkConfig {
 	}
 
 	private static InputStream getDefaultConfig() {
-		return NetworkConfig.class.getClassLoader().getResourceAsStream("src/config_4.yml");
+		return NetworkConfig.class.getClassLoader().getResourceAsStream("src/config.yml");
 	}
 
 	/**
@@ -103,10 +104,7 @@ public class NetworkConfig {
 
 		InputStream defaultConfigInput = getDefaultConfig();
 
-		if(defaultConfigInput != null) {
-			YamlConfiguration defaultConfig = new YamlConfiguration(defaultConfigInput);
-			IOUtils.closeSilent(defaultConfigInput);
-		}
+		YamlConfiguration defaultConfig = new YamlConfiguration(defaultConfigInput);
 
 		try {
 			//A config.yml doesn't exist, so create a new one.
