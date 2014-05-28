@@ -1,10 +1,7 @@
 package com.octopod.network.connection;
 
 import com.google.gson.JsonParseException;
-import com.octopod.network.NetworkActions;
-import com.octopod.network.NetworkConfig;
-import com.octopod.network.NetworkPlusPlugin;
-import com.octopod.network.ServerMessage;
+import com.octopod.network.*;
 import com.octopod.network.bukkit.BukkitUtils;
 
 import lilypad.client.connect.api.Connect;
@@ -117,14 +114,16 @@ public class LilypadConnection extends NetworkConnection {
                 {
                     if(!connection.isConnected()) {
                         BukkitUtils.console("Waiting for LilyPad to connect...");
-                        int connectionAttempts = 0;
 
-                        //Waits for LilyPad to be connected
-                        while(!connection.isConnected() && connectionAttempts < 10) {
+                        int connectionAttempts = 0;
+						int maxConnectionAttempts = NetworkConfig.getConnectionMaxAttempts();
+						long connectionAttemptInterval = NetworkConfig.getConnectionAttemptInterval();
+
+                        while(!connection.isConnected() && connectionAttempts < maxConnectionAttempts) {
                             try {
                                 BukkitUtils.console("Waiting for LilyPad connection... " + connectionAttempts);
                                 synchronized(this) {
-                                    wait(1000);
+                                    wait(connectionAttemptInterval);
                                 }
                             } catch (InterruptedException e) {}
                             connectionAttempts++;
@@ -155,7 +154,7 @@ public class LilypadConnection extends NetworkConnection {
      */
     private Result sendRequest(Request request) {
         try {
-            return connection.request(request).awaitUninterruptibly(500);
+            return connection.request(request).awaitUninterruptibly(NetworkConfig.getRequestTimeout());
         } catch (RequestException e) {
             e.printStackTrace();
             return null;
