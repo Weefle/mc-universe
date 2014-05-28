@@ -44,21 +44,21 @@ public class CommandServerList extends NetworkCommand {
 
 		List<ChatBuilder> lines = new ArrayList<>();
 
-//		lines.add(new ChatBuilder("+---------------------------------------------------+").color(Color.DARK_GRAY));
+//		lines.add(new ChatBuilder("+---------------------------------------------------+").color(ChatColor.DARK_GRAY));
 //
 //		lines.add(new ChatBuilder().
 //				appendLegacy("&8\u2019| ").
-//				append(ChatUtils.blockElement(new ChatElement(Color.GRAY + "Server"), 150, 0)).
+//				append(ChatUtils.blockElement(new ChatElement(ChatColor.GRAY + "Server"), 150, 0)).
 //				appendLegacy("&8| ").
-//				append(ChatUtils.blockElement(new ChatElement(Color.GRAY + "Players"), 150, 0)).
+//				append(ChatUtils.blockElement(new ChatElement(ChatColor.GRAY + "Players"), 150, 0)).
 //				appendLegacy("&8|")
 //		);
 //
-//		lines.add(new ChatBuilder("+---------------------------------------------------+").color(Color.DARK_GRAY));
+//		lines.add(new ChatBuilder("+---------------------------------------------------+").color(ChatColor.DARK_GRAY));
 
-		lines.add(new ChatBuilder(Color.DARK_GRAY + "-------------------------------------"));
-		lines.add(new ChatBuilder(" " + Color.AQUA + "Servers"));
-		lines.add(new ChatBuilder(Color.DARK_GRAY + "-------------------------------------"));
+		lines.add(new ChatBuilder(ChatColor.DARK_GRAY + "-------------------------------------"));
+		lines.add(new ChatBuilder(" " + ChatColor.AQUA + "Servers"));
+		lines.add(new ChatBuilder(ChatColor.DARK_GRAY + "-------------------------------------"));
 
 		for(Entry<String, ServerFlags> entry: flagMap.entrySet()) {
 
@@ -85,19 +85,19 @@ public class CommandServerList extends NetworkCommand {
 				cb.
 //						appendLegacy("&8\u2019| ").
 						sp().
-						append(Color.GRAY + "||||").
+						append(ChatColor.GRAY + "||||").
 						tooltip(
 								flags.getServerName(),
 								flags.getDescription(),
-								Color.DARK_GRAY + "-------------------------------------",
-								Color.GRAY + "You're on this server!"
+								ChatColor.DARK_GRAY + "-------------------------------------",
+								ChatColor.GRAY + "You're on this server!"
 						).
                         sp().
-						append(Color.DARK_GRAY + "|").
+						append(ChatColor.DARK_GRAY + "|").
                         sp().
-                        append(Color.WHITE + flags.getServerName()).
+                        append(ChatColor.WHITE + flags.getServerName()).
                         sp().
-						append(Color.AQUA + "(" + playerCount + ")");
+						append(ChatColor.AQUA + "(" + playerCount + ")");
 //						append(ChatUtils.blockElement(new ChatElement(ChatUtils.colorize(
 //								"&f" + flags.getServerName())), 132, 0)).
 //						appendLegacy("&8| ").
@@ -110,19 +110,19 @@ public class CommandServerList extends NetworkCommand {
 				cb.
 //						appendLegacy("&8\u2019| ").
 						sp().
-						append(Color.GREEN + "||||").
+						append(ChatColor.GREEN + "||||").
                         tooltip(
 								flags.getServerName(),
 								flags.getDescription(),
-								Color.DARK_GRAY + "-------------------------------------",
-								Color.YELLOW + "Click to join this server!"
+								ChatColor.DARK_GRAY + "-------------------------------------",
+								ChatColor.YELLOW + "Click to join this server!"
 						).run("/server" + serverID).
                         sp().
-						append(Color.DARK_GRAY + "|").
+						append(ChatColor.DARK_GRAY + "|").
                         sp().
-						append(Color.WHITE + flags.getServerName()).
+						append(ChatColor.WHITE + flags.getServerName()).
                         sp().
-						append(Color.AQUA + "(" + playerCount + ")");
+						append(ChatColor.AQUA + "(" + playerCount + ")");
 //						append(ChatUtils.blockElement(new ChatElement(ChatUtils.colorize(
 //								"&f" + flags.getServerName())), 132, 0)).
 //						appendLegacy("&8| ").
@@ -148,7 +148,7 @@ public class CommandServerList extends NetworkCommand {
 				cb.
 //						appendLegacy("&8\u2019| ").
 						sp().
-						append(Color.RED + "||||").
+						append(ChatColor.RED + "||||").
 						tooltip(ChatUtils.colorize(
 
 								flags.getServerName() + "\n" +
@@ -158,11 +158,11 @@ public class CommandServerList extends NetworkCommand {
 
 						)).
 						sp().
-						append(Color.DARK_GRAY + "|").
+						append(ChatColor.DARK_GRAY + "|").
 						sp().
-						append(Color.WHITE + flags.getServerName()).
+						append(ChatColor.WHITE + flags.getServerName()).
 						sp().
-                        append(Color.AQUA + "(0)");
+                        append(ChatColor.AQUA + "(0)");
 //						append(ChatUtils.blockElement(new ChatElement(ChatUtils.colorize(
 //								"&f" + flags.getServerName())), 132, 0)).
 //						appendLegacy("&8| ").
@@ -174,8 +174,8 @@ public class CommandServerList extends NetworkCommand {
 			}
 		}
 
-//		lines.add(new ChatBuilder("+---------------------------------------------------+").color(Color.DARK_GRAY));
-		lines.add(new ChatBuilder(Color.DARK_GRAY + "-------------------------------------"));
+//		lines.add(new ChatBuilder("+---------------------------------------------------+").color(ChatColor.DARK_GRAY));
+		lines.add(new ChatBuilder(ChatColor.DARK_GRAY + "-------------------------------------"));
 
 		for(ChatBuilder builder: lines) {builder.send(player);}
 
