@@ -25,7 +25,8 @@ public class CommandReload extends NetworkCommand {
         if(Arrays.asList(args).contains("-f")) {
             NetworkPlus.getPlugin().reload();
         } else {
-            NetworkConfig.reloadConfig(sender);
+            NetworkConfig.reloadConfig();
+			NetworkPlus.broadcastServerFlags(NetworkPlus.getServerFlags());
         }
 
         return true;
