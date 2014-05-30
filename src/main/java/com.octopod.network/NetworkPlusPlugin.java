@@ -1,11 +1,13 @@
 package com.octopod.network;
 
+import com.octopod.network.bukkit.BukkitUtils;
 import com.octopod.network.commands.*;
 import com.octopod.network.connection.LilypadConnection;
 import com.octopod.network.connection.NetworkConnection;
 import com.octopod.network.bukkit.BukkitListener;
-import com.octopod.network.modules.signs.SignPlugin;
-import com.octopod.network.server.ServerManager;
+import com.octopod.network.database.LocalServerDatabase;
+import com.octopod.network.database.ServerDatabase;
+import com.octopod.network.signs.SignPlugin;
 import com.octopod.octal.minecraft.ChatUtils.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -21,31 +23,22 @@ public class NetworkPlusPlugin extends JavaPlugin {
     private static NetworkPlusPlugin instance;
 
     /**
-     * The current instance of NetworkLogger.
-     */
-    private NetworkLogger logger;
-
-    /**
      * The current instance of the NetworkPlus connection.
      */
 	private NetworkConnection connection;
+
+	/**
+	 * The current instance of the ServerDatabase.
+	 */
+	private ServerDatabase serverDB;
 
     /**
      * The current instance of listeners we use for Bukkit.
      */
 	private BukkitListener bukkitListener = null;
 
-    /**
-     * The current instance of system listeners we use for this plugin.
-     */
-	private NetworkActions networkActions = null;
-
     public BukkitListener getBukkitListener() {
         return bukkitListener;
-    }
-
-    public NetworkActions getNetworkActions() {
-        return networkActions;
     }
 
     /**
@@ -64,11 +57,9 @@ public class NetworkPlusPlugin extends JavaPlugin {
         return this.getDescription().getVersion();
     }
 
-    /**
-     * Gets the current NetworkLogger instance.
-     * @return The NetworkLogger instance.
-     */
-    public NetworkLogger logger() {return logger;}
+	public ServerDatabase getServerDB() {
+		return serverDB;
+	}
 
     /**
      * Returns the LilyPad connection.
@@ -103,7 +94,8 @@ public class NetworkPlusPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
 
-        ServerManager.reset();
+		if(serverDB != null) {serverDB.onShutdown();}
+
         CommandManager.reset();
 
         NetworkPlus.getEventManager().unregisterAll();
@@ -128,14 +120,13 @@ public class NetworkPlusPlugin extends JavaPlugin {
         instance = this;
 
         new NetworkPlus(this);
-
-        logger = new NetworkLogger();
+        new NPLogger();
 
 		//Configuration loading
 		try {
-			NetworkConfig.load();
+			NPConfig.load();
 		} catch (Exception e) {
-			NetworkPlus.getLogger().info(
+			NetworkPlus.getLogger().i(
 					ChatColor.RED + "Something went wrong while loading Network's configuration.",
 					ChatColor.RED + "This can usually happen if the plugin was loaded using unsafe methods.",
 					ChatColor.RED + "The plugin will now be disabled.",
@@ -147,10 +138,8 @@ public class NetworkPlusPlugin extends JavaPlugin {
 		}
 
         //Register all the listeners
-        networkActions = new NetworkActions();
         bukkitListener = new BukkitListener();
 
-        NetworkPlus.getEventManager().registerListener(networkActions);
         Bukkit.getPluginManager().registerEvents(bukkitListener, this);
 
         CommandManager.registerCommand(
@@ -171,10 +160,15 @@ public class NetworkPlusPlugin extends JavaPlugin {
 
         );
 
+		serverDB = new LocalServerDatabase();
+		serverDB.onStartup();
+
+		BukkitUtils.broadcastMessage(NetworkPlus.getPrefix() + "Using database type " + ChatColor.GREEN + serverDB.getName());
+
         if(NetworkPlus.isTestBuild()) {
-            NetworkPlus.getLogger().log(0, "You are running a test build of " + ChatColor.GOLD + "NetworkPlus" + ChatColor.GRAY + "!");
+            NetworkPlus.getLogger().i("You are running a test build of " + ChatColor.GOLD + "NetworkPlus" + ChatColor.GRAY + "!");
         } else {
-            NetworkPlus.getLogger().log(0, "Successfully loaded " + ChatColor.GOLD + "NetworkPlus " + getPluginVersion());
+            NetworkPlus.getLogger().i("Successfully loaded " + ChatColor.GOLD + "NetworkPlus " + getPluginVersion());
         }
 
         new SignPlugin();

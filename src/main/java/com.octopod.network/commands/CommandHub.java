@@ -1,6 +1,6 @@
 package com.octopod.network.commands;
 
-import com.octopod.network.NetworkPermission;
+import com.octopod.network.NPPermission;
 import com.octopod.network.NetworkPlus;
 import com.octopod.network.HubManager;
 import com.octopod.network.bukkit.BukkitUtils;
@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 public class CommandHub extends NetworkCommand {
 
     public CommandHub(String root, String... aliases) {
-        super(root, aliases, "<command>", NetworkPermission.NETWORK_HUB,
+        super(root, aliases, "<command>", NPPermission.NETWORK_HUB,
 
             "Sends you to the hub server, starting at priority 0. Cannot be run by the console."
 

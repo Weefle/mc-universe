@@ -12,6 +12,18 @@ import java.util.List;
  */
 public class Util {
 
+	public static void writeAsync(final File file, final String text) {
+		new Thread() {
+			public void run() {
+				try {
+					write(file, text);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}.start();
+	}
+
     public static void write(File file, String text) throws IOException
     {
         write(file, new ByteArrayInputStream(text.getBytes()));

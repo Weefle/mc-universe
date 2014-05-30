@@ -8,7 +8,7 @@ package com.octopod.network;
 /**
  * The Messaging Channels to use.
  */
-public enum NetworkMessageChannel {
+public enum NPChannel {
 
     /**
      *  Requests a server to add a player to their queue.
@@ -17,7 +17,7 @@ public enum NetworkMessageChannel {
     PLAYER_JOIN_QUEUE ("player.queue.join"),
 
     /**
-     *  Requests a server to remove a player from their queue.
+     *  Requests a server to clear a player from their queue.
      *  ARGS: Player, Server ID, Place (?)
      */
     PLAYER_LEAVE_QUEUE ("player.queue.leave"),
@@ -29,7 +29,7 @@ public enum NetworkMessageChannel {
     PLAYER_JOIN_SERVER ("player.server.join"),
 
     /**
-     * Requests a server to remove a player to their ServerFlags entry.
+     * Requests a server to clear a player to their ServerFlags entry.
      * ARGS: Player, Server
      */
     PLAYER_LEAVE_SERVER ("player.server.leave"),
@@ -68,7 +68,7 @@ public enum NetworkMessageChannel {
 
     private String suffix;
 
-    private NetworkMessageChannel(String suffix) {
+    private NPChannel(String suffix) {
         this.suffix = suffix;
     }
 
@@ -82,7 +82,7 @@ public enum NetworkMessageChannel {
     }
 
     public String toString() {
-        return NetworkConfig.getChannelPrefix() + '.' + suffix;
+        return NPConfig.getChannelPrefix() + '.' + suffix;
     }
 
 }

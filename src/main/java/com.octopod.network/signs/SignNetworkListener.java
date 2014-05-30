@@ -1,4 +1,4 @@
-package com.octopod.network.modules.signs;
+package com.octopod.network.signs;
 
 import com.octopod.network.events.EventHandler;
 import com.octopod.network.events.player.NetworkPlayerJoinEvent;

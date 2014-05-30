@@ -1,6 +1,6 @@
 package com.octopod.network.commands;
 
-import com.octopod.network.NetworkPermission;
+import com.octopod.network.NPPermission;
 import com.octopod.network.NetworkPlus;
 import org.bukkit.command.CommandSender;
 
@@ -11,7 +11,7 @@ import org.bukkit.command.CommandSender;
 public class CommandScan extends NetworkCommand {
 
     public CommandScan(String root, String... aliases) {
-        super(root, aliases, "<command>", NetworkPermission.NETWORK_SCAN,
+        super(root, aliases, "<command>", NPPermission.NETWORK_SCAN,
 
                 "Re-requests current server information from other servers."
 

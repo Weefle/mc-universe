@@ -1,6 +1,6 @@
-package com.octopod.network.modules.signs;
+package com.octopod.network.signs;
 
-import com.octopod.network.NetworkLogger;
+import com.octopod.network.NPLogger;
 import com.octopod.network.NetworkPlus;
 import com.octopod.network.CommandManager;
 import com.octopod.network.commands.CommandServerConnect;
@@ -19,7 +19,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
  */
 public class SignBukkitListener implements Listener {
 
-    private NetworkLogger logger = NetworkPlus.getLogger();
+    private NPLogger logger = NetworkPlus.getLogger();
 
     @EventHandler
     public void onSignPlace(SignChangeEvent event) {
@@ -36,7 +36,7 @@ public class SignBukkitListener implements Listener {
                 SignPlugin.instance.saveDatabase();
                 SignPlugin.instance.updateSign(event, new SignFormat(server));
             } else {
-                logger.info("&7Server &a'" + server + "'&7 doesn't exist or isn't online!");
+                logger.i("&7Server &a'" + server + "'&7 doesn't exist or isn't online!");
             }
 
         }
@@ -49,7 +49,7 @@ public class SignBukkitListener implements Listener {
         Location loc = event.getBlock().getLocation();
         SignDatabase db = SignPlugin.instance.getDatabase();
         if(db.getSign(loc) != null) {
-            if(!event.getPlayer().hasPermission("network.sign.remove")) {
+            if(!event.getPlayer().hasPermission("network.sign.clear")) {
                 event.setCancelled(true);
             } else {
                 db.removeSign(loc);

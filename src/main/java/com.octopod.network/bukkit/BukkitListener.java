@@ -36,11 +36,11 @@ public class BukkitListener implements Listener {
     }
 
     private void updatePlayerJoined(String player) {
-        NetworkPlus.broadcastMessage(NetworkMessageChannel.PLAYER_JOIN_SERVER, new ServerMessage(NetworkPlus.getServerID(), player));
+        NetworkPlus.broadcastMessage(NPChannel.PLAYER_JOIN_SERVER, new NPMessage(NetworkPlus.getServerID(), player));
     }
 
     private void updatePlayerLeft(String player) {
-        NetworkPlus.broadcastMessage(NetworkMessageChannel.PLAYER_LEAVE_SERVER, new ServerMessage(NetworkPlus.getServerID(), player));
+        NetworkPlus.broadcastMessage(NPChannel.PLAYER_LEAVE_SERVER, new NPMessage(NetworkPlus.getServerID(), player));
     }
 
 	@EventHandler
@@ -50,12 +50,12 @@ public class BukkitListener implements Listener {
 	public void onPlayerLeave(PlayerQuitEvent event) 
 	{
 		updatePlayerLeft(event.getPlayer().getName());
-		if (NetworkQueueManager.instance.isQueued(event.getPlayer()
+		if (QueueManager.instance.isQueued(event.getPlayer()
 				.getName())) {
-			NetworkQueueManager.instance
+			QueueManager.instance
 					.remove(event.getPlayer().getName());
 		}
-		NetworkQueueManager.instance.updateQueue();
+		QueueManager.instance.updateQueue();
 	}
 	
 	@EventHandler(ignoreCancelled = true)
@@ -67,7 +67,7 @@ public class BukkitListener implements Listener {
         if(hub != null && !hub.equals(NetworkPlus.getServerID())) {
             event.setCancelled(true);
 
-            BukkitUtils.sendMessage(event.getPlayer(), NetworkPlus.prefix() + "&7You've been moved to the hub server:");
+            BukkitUtils.sendMessage(event.getPlayer(), "&7You've been moved to the hub server:");
             BukkitUtils.sendMessage(event.getPlayer(), "&c\"" + event.getReason() + "\"");
             NetworkPlus.sendPlayer(event.getPlayer().getName(), hub);
         }

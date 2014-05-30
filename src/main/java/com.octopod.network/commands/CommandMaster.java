@@ -1,6 +1,6 @@
 package com.octopod.network.commands;
 
-import com.octopod.network.NetworkPermission;
+import com.octopod.network.NPPermission;
 import com.octopod.network.CommandManager;
 import com.octopod.network.bukkit.BukkitUtils;
 import com.octopod.octal.minecraft.ChatElement;
@@ -16,7 +16,7 @@ public class CommandMaster extends NetworkCommand {
 	public final static String PREFIX = ChatColor.DARK_GRAY + "[" + ChatColor.AQUA + "NXN" + ChatColor.DARK_GRAY + "] " + ChatColor.WHITE;
 
 	public CommandMaster(String root, String... aliases){
-		super(root, aliases, "<command> <arguments...>", NetworkPermission.NETWORK_MASTER,
+		super(root, aliases, "<command> <arguments...>", NPPermission.NETWORK_MASTER,
 
 			"Network general command."
 

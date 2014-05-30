@@ -9,7 +9,7 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class NetworkConfig {
+public class NPConfig {
 
 	/**
 	 * The file in which to load the configuration from.
@@ -50,7 +50,7 @@ public class NetworkConfig {
 	}
 
 	private static InputStream getDefaultConfig() {
-		return NetworkConfig.class.getClassLoader().getResourceAsStream("src/config.yml");
+		return NPConfig.class.getClassLoader().getResourceAsStream("src/config.yml");
 	}
 
 	private static boolean isConfigOld()
@@ -84,23 +84,23 @@ public class NetworkConfig {
 			Util.write(backupConfigFile, fileInputStream);
 			IOUtils.closeSilent(fileInputStream);
 
-			NetworkPlus.getLogger().info("Old configuration renamed to " + fileName);
+			NetworkPlus.getLogger().i("Old configuration renamed to " + fileName);
 		}
 
 		InputStream defaultConfigInput = getDefaultConfig();
 
-		NetworkPlus.getLogger().info("Writing default configuration to config.yml.");
+		NetworkPlus.getLogger().i("Writing default configuration to config.yml.");
 
 		try {
 			Util.write(configFile, defaultConfigInput);
 		} catch (NullPointerException e) {
-			NetworkPlus.getLogger().info("Couldn't find the internal configuration file.");
+			NetworkPlus.getLogger().i("Couldn't find the internal configuration file.");
 			throw e;
 		} catch (FileNotFoundException e) {
-			NetworkPlus.getLogger().info("The config.yml doesn't exist in your folder. If you see this message, I will personally give you 5$");
+			NetworkPlus.getLogger().i("The config.yml doesn't exist in your folder. If you see this message, I will personally give you 5$");
 			throw e;
 		} catch (IOException e) {
-			NetworkPlus.getLogger().info("Couldn't write to the config.yml. Try checking the file's permissions?");
+			NetworkPlus.getLogger().i("Couldn't write to the config.yml. Try checking the file's permissions?");
 			throw e;
 		} finally {
 			IOUtils.closeSilent(defaultConfigInput);
@@ -113,7 +113,7 @@ public class NetworkConfig {
 	 */
 	public static void load() throws Exception
 	{
-		NetworkPlus.getLogger().info("Loading Net+ configuration...");
+		NetworkPlus.getLogger().i("Loading Net+ configuration...");
 
 		//A config.yml doesn't exist, so create a new one.
 		if(!configFile.exists()) {reset();}
@@ -138,11 +138,11 @@ public class NetworkConfig {
 			getConfig().load(configFile);
 		}
 
-		NetworkPlus.getLogger().info(ChatColor.GREEN + "Successfully loaded configuration!");
+		NetworkPlus.getLogger().i(ChatColor.GREEN + "Successfully loaded configuration!");
 	}
 
 	private static void setConfig(YamlConfiguration config) {
-		NetworkConfig.config = config;
+		NPConfig.config = config;
 	}
 
 	public static YamlConfiguration getConfig() {

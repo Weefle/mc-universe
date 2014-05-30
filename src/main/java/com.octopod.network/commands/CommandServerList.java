@@ -1,9 +1,8 @@
 package com.octopod.network.commands;
 
-import com.octopod.network.NetworkPermission;
+import com.octopod.network.NPPermission;
 import com.octopod.network.NetworkPlus;
 import com.octopod.network.ServerFlags;
-import com.octopod.network.server.ServerManager;
 import com.octopod.octal.minecraft.ChatBuilder;
 import com.octopod.octal.minecraft.ChatUtils;
 import com.octopod.octal.minecraft.ChatUtils.*;
@@ -21,7 +20,7 @@ import java.util.Map.Entry;
 public class CommandServerList extends NetworkCommand {
 
 	public CommandServerList(String root, String... aliases) {
-		super(root, aliases, "<command>", NetworkPermission.NETWORK_SERVER_LIST,
+		super(root, aliases, "<command>", NPPermission.NETWORK_SERVER_LIST,
 
 			"Lists out avaliable servers."
 
@@ -36,7 +35,7 @@ public class CommandServerList extends NetworkCommand {
 
 		List<Map.Entry<String, ServerFlags>> offlineServers = new ArrayList<>();
 
-		Map<String, ServerFlags> flagMap = ServerManager.getServerMap();
+		Map<String, ServerFlags> flagMap = NetworkPlus.getServerDB().toMap();
 
 		//Gets the size of all players on the network via LilyPad and gets the difference from the total known players.
 		//int unlistedPlayerCount = NetworkPlus.getNetworkedPlayers().size() - totalPlayers;

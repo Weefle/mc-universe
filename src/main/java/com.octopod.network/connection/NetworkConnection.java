@@ -1,6 +1,6 @@
 package com.octopod.network.connection;
 
-import com.octopod.network.NetworkActions;
+import com.octopod.network.NPActions;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import java.util.List;
 public abstract class NetworkConnection {
 
     protected void triggerConnection() {
-        NetworkActions.actionNetworkConnected();
+        NPActions.actionNetworkConnected();
     }
 
     public abstract String getConnectionType();

@@ -1,16 +1,15 @@
 package com.octopod.network.commands;
 
+import com.octopod.network.NPConfig;
+import com.octopod.network.NPPermission;
 import com.octopod.network.NetworkPlus;
-import com.octopod.network.NetworkPlusPlugin;
-import com.octopod.network.NetworkConfig;
-import com.octopod.network.NetworkPermission;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.CommandSender;
 
 public class CommandAlert extends NetworkCommand {
 
 	public CommandAlert(String root, String... aliases) {
-		super(root, aliases, "<command> <message...>", NetworkPermission.NETWORK_ALERT,
+		super(root, aliases, "<command> <message...>", NPPermission.NETWORK_ALERT,
 
 			"Broadcasts a message to the entire network. " +
 			"Only servers that are running this plugin will recieve the alert."
@@ -23,7 +22,7 @@ public class CommandAlert extends NetworkCommand {
 
 		String message = StringUtils.join(args, " ");
 
-		NetworkPlus.broadcastNetworkMessage(String.format(NetworkConfig.FORMAT_ALERT, message));
+		NetworkPlus.broadcastNetworkMessage(String.format(NPConfig.FORMAT_ALERT, message));
 
 		return true;
 

@@ -1,14 +1,14 @@
 package com.octopod.network.commands;
 
+import com.octopod.network.NPPermission;
 import com.octopod.network.NetworkPlus;
 import com.octopod.network.bukkit.BukkitUtils;
-import com.octopod.network.NetworkPermission;
 import org.bukkit.command.CommandSender;
 
 public class CommandServerSendAll extends NetworkCommand {
 
 	public CommandServerSendAll(String root, String... aliases) {
-		super(root, aliases, "<command> <server>", NetworkPermission.NETWORK_SERVER_SENDALL,
+		super(root, aliases, "<command> <server>", NPPermission.NETWORK_SERVER_SENDALL,
 
 			"Sends all players to a server."
 

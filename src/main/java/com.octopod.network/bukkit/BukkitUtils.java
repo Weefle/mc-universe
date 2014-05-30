@@ -1,7 +1,6 @@
 package com.octopod.network.bukkit;
 
 import com.octopod.network.NetworkPlus;
-import com.octopod.network.NetworkPlusPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -119,7 +118,7 @@ public class BukkitUtils {
     }
 
     public static void console(String message) {
-        console(message, NetworkPlus.prefix());
+        console(message, NetworkPlus.getPrefix());
     }
 
     public static void console(String message, String prefix) {

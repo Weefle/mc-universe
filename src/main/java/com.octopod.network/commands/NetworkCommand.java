@@ -1,6 +1,6 @@
 package com.octopod.network.commands;
 
-import com.octopod.network.NetworkPermission;
+import com.octopod.network.NPPermission;
 import com.octopod.network.bukkit.BukkitUtils;
 import org.bukkit.command.CommandSender;
 
@@ -14,9 +14,9 @@ public abstract class NetworkCommand implements Comparable<NetworkCommand> {
 
     protected String[] aliases;
 	protected String root, usage, description;
-    protected NetworkPermission permission;
+    protected NPPermission permission;
 
-	public NetworkCommand(String root, String[] aliases, String usage, NetworkPermission permission, String description) {
+	public NetworkCommand(String root, String[] aliases, String usage, NPPermission permission, String description) {
 		this.aliases = aliases;
         this.root = root;
 		this.usage = usage;

@@ -6,7 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 
-public class NetworkQueueManager {
+public class QueueManager {
 
 	/**
 	 * This class handles the queue system
@@ -15,7 +15,7 @@ public class NetworkQueueManager {
 	/**
 	 * The current instance of the NetworkQueueManager
 	 */
-	public static NetworkQueueManager instance = new NetworkQueueManager();
+	public static QueueManager instance = new QueueManager();
 
 	/**
 	 * The current instance of this servers queue
@@ -27,7 +27,7 @@ public class NetworkQueueManager {
 	 */
 	private int vipInQueue;
 
-	public NetworkQueueManager() {
+	public QueueManager() {
 		queue = new ArrayList<>();
 	}
 
@@ -68,9 +68,9 @@ public class NetworkQueueManager {
 		queue.remove(player);
 		alertPlayers(queuePos);
 
-		String channel_queueleave = NetworkMessageChannel.PLAYER_LEAVE_QUEUE
+		String channel_queueleave = NPChannel.PLAYER_LEAVE_QUEUE
 				.toString();
-		NetworkPlus.broadcastMessage(channel_queueleave, new ServerMessage(
+		NetworkPlus.broadcastMessage(channel_queueleave, new NPMessage(
 				player));
 	}
 
@@ -134,7 +134,7 @@ public class NetworkQueueManager {
 		for (String player : queue) {
 			OfflinePlayer p = Bukkit.getOfflinePlayer(player);
 			if (getQueuePosition(p.getName()) >= fromQueuePos) {
-				String player_message = NetworkMessageChannel.PLAYER_MESSAGE
+				String player_message = NPChannel.PLAYER_MESSAGE
 						.toString();
 				String msg;
 				msg = "&cThere are currently &e"
@@ -145,7 +145,7 @@ public class NetworkQueueManager {
 						+ System.lineSeparator()
 						+ "&cYour new queue position is: "
 						+ getQueuePosition(p.getName());
-				NetworkPlus.broadcastMessage(player_message, new ServerMessage(
+				NetworkPlus.broadcastMessage(player_message, new NPMessage(
 						msg));
 				p.getPlayer().playSound(p.getPlayer().getLocation(),
 						Sound.NOTE_PIANO, 1, 1);

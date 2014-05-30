@@ -51,7 +51,7 @@ public class ServerFlags {
             ServerFlags flags = new ServerFlags();
 
             //Server's config name (or ID if blank)
-            flags.setFlag("serverName", NetworkConfig.getServerName());
+            flags.setFlag("serverName", NPConfig.getServerName());
 
             //Server's config description (or MOTD if blank)
             flags.setFlag("description", Bukkit.getServer().getMotd());
@@ -66,7 +66,7 @@ public class ServerFlags {
             flags.setFlag("whitelistedPlayers", new ArrayList<>(Arrays.asList(BukkitUtils.getWhitelistedPlayerNames())));
 
             //Server's hub priority (-1 if not a hub)
-            flags.setFlag("hubPriority", NetworkConfig.isHub() ? NetworkConfig.getHubPriority() : -1);
+            flags.setFlag("hubPriority", NPConfig.isHub() ? NPConfig.getHubPriority() : -1);
 
             //Server's plugin version
             flags.setFlag("version", NetworkPlus.getPluginVersion());
@@ -75,7 +75,7 @@ public class ServerFlags {
             flags.setFlag("onlinePlayers", new ArrayList<>(Arrays.asList(BukkitUtils.getPlayerNames())));
 
             //Players queued for this server.
-            flags.setFlag("queuedPlayers", NetworkQueueManager.instance.getQueueMembers());
+            flags.setFlag("queuedPlayers", QueueManager.instance.getQueueMembers());
 
             //Time the server was last online (-1 if it's online right now)
             flags.setFlag("serverLastOnline", -1L);
@@ -206,8 +206,8 @@ public class ServerFlags {
         return flagMap;
     }
 
-    public ServerMessage toServerMessage(String serverID) {
-        return new ServerMessage(serverID, toString());
+    public NPMessage toServerMessage(String serverID) {
+        return new NPMessage(serverID, toString());
     }
 
 }

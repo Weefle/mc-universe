@@ -1,14 +1,14 @@
 package com.octopod.network.commands;
 
-import com.octopod.network.NetworkPermission;
+import com.octopod.network.NPPermission;
+import com.octopod.network.NetworkPlus;
 import com.octopod.network.bukkit.BukkitUtils;
-import com.octopod.network.server.ServerManager;
 import org.bukkit.command.CommandSender;
 
 public class CommandFind extends NetworkCommand {
 
 	public CommandFind(String root, String... aliases) {
-		super(root, aliases, "<command> <player>", NetworkPermission.NETWORK_FIND,
+		super(root, aliases, "<command> <player>", NPPermission.NETWORK_FIND,
 
 			"Finds a player and attempts to return their location."
 
@@ -29,7 +29,7 @@ public class CommandFind extends NetworkCommand {
 
 		String player = args[0];
 
-		String server = ServerManager.findPlayer(player);
+		String server = NetworkPlus.getServerDB().findPlayer(player);
 
 		if(server == null) {
 			BukkitUtils.sendMessage(sender, "&cThis player was not found.");

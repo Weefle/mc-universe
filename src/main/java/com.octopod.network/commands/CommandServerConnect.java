@@ -1,7 +1,6 @@
 package com.octopod.network.commands;
 
 import com.octopod.network.*;
-import com.octopod.network.server.ServerManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -10,7 +9,7 @@ import com.octopod.network.bukkit.BukkitUtils;
 public class CommandServerConnect extends NetworkCommand {
 
     public CommandServerConnect(String root, String... aliases) {
-        super(root, aliases, "<command> <server>", NetworkPermission.NETWORK_SERVER_CONNECT,
+        super(root, aliases, "<command> <server>", NPPermission.NETWORK_SERVER_CONNECT,
 
 			"Attempts to send you to another server. The console cannot run this command."
 
@@ -47,7 +46,7 @@ public class CommandServerConnect extends NetworkCommand {
 		// Checks if the server is full before sending them there.
 		if (NetworkPlus.isServerFull(server)) {
 			// Make sure they're not already in a queue
-			for (ServerFlags flags : ServerManager.getServerMap().values()) {
+			for (ServerFlags flags : NetworkPlus.getServerDB().toMap().values()) {
 				if (flags.getQueuedPlayers().contains(player)) {
 					BukkitUtils.sendMessage(
 							sender,
@@ -60,17 +59,17 @@ public class CommandServerConnect extends NetworkCommand {
 			// Broadcast message to be added to queue
 			BukkitUtils.sendMessage(sender, "&c" + server
 					+ " is full. Adding you to queue.");
-			String channel = NetworkMessageChannel.PLAYER_JOIN_QUEUE.toString();
-			if (!player.hasPermission(NetworkPermission.NETWORK_QUEUE_BYPASS
+			String channel = NPChannel.PLAYER_JOIN_QUEUE.toString();
+			if (!player.hasPermission(NPPermission.NETWORK_QUEUE_BYPASS
 					.toString())) {
 				NetworkPlus.broadcastMessage(channel,
-                        new ServerMessage(player.getName(), server, "0")
+                        new NPMessage(player.getName(), server, "0")
                 );
 			} else {
-				int vipInQueue = NetworkQueueManager.instance
+				int vipInQueue = QueueManager.instance
 						.getVIPQueueMembers();
 				NetworkPlus.broadcastMessage(channel,
-                        new ServerMessage(player.getName(), server, String.valueOf(vipInQueue + 1))
+                        new NPMessage(player.getName(), server, String.valueOf(vipInQueue + 1))
                 );
 			}
 			return true;

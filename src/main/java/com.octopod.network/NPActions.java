@@ -10,13 +10,12 @@ import com.octopod.network.events.network.NetworkConnectedEvent;
 import com.octopod.network.events.relays.MessageEvent;
 import com.octopod.network.events.server.PostServerFlagsReceivedEvent;
 import com.octopod.network.events.server.ServerFlagsReceivedEvent;
-import com.octopod.network.server.ServerManager;
 import com.octopod.octal.minecraft.ChatUtils.ChatColor;
 
 /**
  * @author Octopod
  */
-public class NetworkActions {
+public class NPActions {
 
     /**
      * Listens for when this plugin is connected according to the NetworkConnection instance.
@@ -29,7 +28,7 @@ public class NetworkActions {
         NetworkPlus.getEventManager().triggerEvent(event);
 
         BukkitUtils.broadcastMessage(
-                "&7Successfully connected via &a" +
+                NetworkPlus.getPrefix() + "&7Successfully connected via &a" +
                 NetworkPlus.getConnection().getConnectionType() +
                 "&7!"
         );
@@ -66,7 +65,7 @@ public class NetworkActions {
                     //Checks for mismatched plugin versions between servers, and warns the server owners.
                     String version = flags.getVersion();
                     if(!version.equals("TEST_BUILD") && !version.equals(NetworkPlus.getPluginVersion())) {
-                        NetworkPlus.getLogger().info("&a" + serverID + "&7: Running &6Net+&7 version &6" + (version.equals("") ? "No Version" : version));
+                        NetworkPlus.getLogger().i("&a" + serverID + "&7: Running &6Net+&7 version &6" + (version.equals("") ? "No Version" : version));
                     }
                 }
             }
@@ -77,16 +76,16 @@ public class NetworkActions {
                 int hubPriority = flags.getHubPriority();
                 if(hubPriority >= 0) {
                     HubManager.addHub(serverID, hubPriority);
-                    NetworkPlus.getLogger().info("Server &a" + serverID + "&7 registered as hub @ priority &e" + hubPriority);
+                    NetworkPlus.getLogger().i("Server &a" + serverID + "&7 registered as hub @ priority &e" + hubPriority);
                 }
             }
 
             //Adds in the new flags
-            ServerManager.addServer(serverID, flags);
+            NetworkPlus.getServerDB().set(serverID, flags);
 
-            NetworkPlus.getLogger().verbose("Recieved server info from &a" + serverID + ":");
+            NetworkPlus.getLogger().v("Recieved server info from &a" + serverID + ":");
             for(Map.Entry<String, Object> entry: flags.toMap().entrySet()) {
-                NetworkPlus.getLogger().verbose("    &b" + entry.getKey() + ": &e" + entry.getValue() + "&e");
+                NetworkPlus.getLogger().v("    &b" + entry.getKey() + ": &e" + entry.getValue() + "&e");
             }
 
             NetworkPlus.getEventManager().triggerEvent(new PostServerFlagsReceivedEvent(serverID, flags));
@@ -96,7 +95,7 @@ public class NetworkActions {
 
     public static void actionPlayerJoinServer(String player, String serverID)
     {
-        ServerFlags flags = ServerManager.getFlags(serverID);
+        ServerFlags flags = NetworkPlus.getServerDB().get(serverID);
 
 		if(flags != null) {
 			List<String> players = flags.getOnlinePlayers();
@@ -105,14 +104,14 @@ public class NetworkActions {
 
 			flags.setFlag("onlinePlayers", players);
 		} else {
-			NetworkPlus.getLogger().info("Requesting missing flags from server " + ChatColor.GREEN + serverID);
+			NetworkPlus.getLogger().i("Requesting missing flags from server " + ChatColor.GREEN + serverID);
 			NetworkPlus.requestServerFlags(serverID);
 		}
     }
 
     public static void actionPlayerLeaveServer(String player, String serverID)
     {
-        ServerFlags flags = ServerManager.getFlags(serverID);
+        ServerFlags flags = NetworkPlus.getServerDB().get(serverID);
 
 		if(flags != null) {
 			List<String> players = flags.getOnlinePlayers();
@@ -120,7 +119,7 @@ public class NetworkActions {
 
 			flags.setFlag("onlinePlayers", players);
 		} else {
-			NetworkPlus.getLogger().info("Requesting missing flags from server " + ChatColor.GREEN + serverID);
+			NetworkPlus.getLogger().i("Requesting missing flags from server " + ChatColor.GREEN + serverID);
 			NetworkPlus.requestServerFlags(serverID);
 		}
     }
@@ -131,27 +130,27 @@ public class NetworkActions {
 	 */
 	public static void actionPlayerJoinQueueEvent(String player, String serverID,
         int queuePosition) {
-		NetworkPlus.getLogger().debug(
+		NetworkPlus.getLogger().d(
 				"&b" + player + " &7joined the queue for &a" + serverID
 						+ " &7in position: &a" + queuePosition);
 		// If the message is to this server, add to queue.
 		if (serverID
 				.equalsIgnoreCase(NetworkPlus.getServerFlags().getServerName())) {
-			NetworkQueueManager.instance.add(player, queuePosition);
+			QueueManager.instance.add(player, queuePosition);
 		}
 	}
 
 	/**
 	 * Runs the action for when any players leaves the queue on the network.
-     * This method should remove the player from the respective queue.
+     * This method should clear the player from the respective queue.
 	 */
 	public static void actionPlayerLeaveQueueEvent(String player, String serverID) {
-		NetworkPlus.getLogger().debug(
+		NetworkPlus.getLogger().d(
 				"&b" + player + " &7left the queue for &a" + serverID);
 		// If the server is this server, update queue.
 		if (serverID
 				.equalsIgnoreCase(NetworkPlus.getServerFlags().getServerName())) {
-			NetworkQueueManager.instance.updateQueue();
+			QueueManager.instance.updateQueue();
 		}
 	}
 
@@ -160,63 +159,63 @@ public class NetworkActions {
      * This method is a gateway to other events and features.
      * Refer to NetworkConfig.MessageChannel to what each channel does.
      */
-    public static void actionRecieveMessage(String senderID, String channel, ServerMessage serverMessage)
+    public static void actionRecieveMessage(String senderID, String channel, NPMessage NPMessage)
     {
-        MessageEvent event = new MessageEvent(senderID, channel, serverMessage);
+        MessageEvent event = new MessageEvent(senderID, channel, NPMessage);
 
         NetworkPlus.getEventManager().triggerEvent(event);
 
         if(event.isCancelled()) return;
 
-        String message = serverMessage.toString();
-        String[] args = serverMessage.getArgs();
+        String message = NPMessage.toString();
+        String[] args = NPMessage.getArgs();
 
-        NetworkPlus.getLogger().verbose(
-                "Recieved message from &a" + senderID +
-                "&7 on channel &b" + channel +
-                "&7 with &e" + args.length + "&7 arguments"
-        );
+        NetworkPlus.getLogger().v(
+				"Recieved message from &a" + senderID +
+						"&7 on channel &b" + channel +
+						"&7 with &e" + args.length + "&7 arguments"
+		);
 
-		if(NetworkMessageChannel.SERVER_SENDALL.equals(channel))
+		if(NPChannel.SERVER_SENDALL.equals(channel))
 		{
             for(String player: BukkitUtils.getPlayerNames())
                 NetworkPlus.sendPlayer(player, message);
             return;
 		}
 
-		if(NetworkMessageChannel.PLAYER_MESSAGE.equals(channel))
+		if(NPChannel.PLAYER_MESSAGE.equals(channel))
 		{
 			//TODO: Use the ServerMessage arguments to correctly send the 2nd argument (message) to the 1st argument (player)
             return;
 		}
 
-		if (NetworkMessageChannel.PLAYER_JOIN_QUEUE.equals(channel)) {
+		if (NPChannel.PLAYER_JOIN_QUEUE.equals(channel)) {
 			actionPlayerJoinQueueEvent(args[0], senderID, Integer.parseInt(args[1]));
             return;
         }
 
-		if (NetworkMessageChannel.PLAYER_LEAVE_QUEUE.equals(channel)) {
+		if (NPChannel.PLAYER_LEAVE_QUEUE.equals(channel)) {
 			actionPlayerLeaveQueueEvent(args[0], senderID);
             return;
         }
 
-        if (NetworkMessageChannel.PLAYER_JOIN_SERVER.equals(channel)) {
+        if (NPChannel.PLAYER_JOIN_SERVER.equals(channel)) {
             actionPlayerJoinServer(args[1], args[0]);
             return;
         }
 
-        if (NetworkMessageChannel.PLAYER_LEAVE_SERVER.equals(channel)) {
+        if (NPChannel.PLAYER_LEAVE_SERVER.equals(channel)) {
             actionPlayerLeaveServer(args[1], args[0]);
             return;
         }
 
-		if(NetworkMessageChannel.SERVER_ALERT.equals(channel)) {
+		if(NPChannel.SERVER_ALERT.equals(channel)) {
 		    BukkitUtils.broadcastMessage(message);
             return;
         }
 
 		//Cannot request ServerFlags from itself
-		if(NetworkMessageChannel.SERVER_FLAGS_REQUEST.equals(channel))
+		if(NPChannel.SERVER_FLAGS_REQUEST.equals(channel))
         {
             if(!senderID.equals(NetworkPlus.getServerID())) {
                 NetworkPlus.sendServerFlags(senderID);
@@ -224,7 +223,7 @@ public class NetworkActions {
             return;
         }
 
-        if(NetworkMessageChannel.SERVER_FLAGS_CACHE.equals(channel))
+        if(NPChannel.SERVER_FLAGS_CACHE.equals(channel))
         {
             if(args.length == 2) {
                 String serverID = args[0];
@@ -237,17 +236,17 @@ public class NetworkActions {
                     return;
                 } catch (JsonSyntaxException e) {
                     //Unable to parse JSON, just move to the bottom.
-                    NetworkPlus.getLogger().debug("Unable to parse JSON String as HashMap");
+                    NetworkPlus.getLogger().d("Unable to parse JSON String as HashMap");
                 }
             }
         }
 
         //If the code reaches this point, something has gone wrong.
-        NetworkPlus.getLogger().info(
-                "Recieved incorrect arguments from server &a" + senderID,
-                "Channel: &b" + channel,
-                "Arguments: &e" + Arrays.asList(args)
-        );
+        NetworkPlus.getLogger().i(
+				"Recieved incorrect arguments from server &a" + senderID,
+				"Channel: &b" + channel,
+				"Arguments: &e" + Arrays.asList(args)
+		);
 
 	}
 

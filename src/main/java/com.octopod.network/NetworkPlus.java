@@ -8,8 +8,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.LongSerializationPolicy;
 import com.octopod.network.bukkit.BukkitUtils;
 import com.octopod.network.connection.NetworkConnection;
+import com.octopod.network.database.ServerDatabase;
 import com.octopod.network.events.EventManager;
-import com.octopod.network.server.ServerManager;
+import com.octopod.octal.minecraft.ChatUtils.ChatColor;
 
 /**
  * @author Octopod
@@ -19,14 +20,14 @@ public class NetworkPlus {
 
     public NetworkPlus(NetworkPlusPlugin plugin) {
         instance = this;
-        this.plugin = plugin;
+        NetworkPlus.plugin = plugin;
     }
 
-    /**
-     * A prefix to use before server messages.
-     * TODO: add this to NetworkConfig
-     */
-    private static final String messagePrefix = "&8[&6Net+&8] &7";
+	/**
+	 * A prefix to use before server messages.
+	 * TODO: add this to NetworkConfig
+	 */
+	private static final String PREFIX = ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + "Net+" + ChatColor.DARK_GRAY + "] ";
 
     /**
      * An instance of Gson. Instead of always making new instances, just use this one.
@@ -54,7 +55,7 @@ public class NetworkPlus {
      */
     public static Gson gson() {return gson;}
 
-    public static String prefix() {return messagePrefix;}
+	public static String getPrefix() {return PREFIX;}
 
     public static boolean isLoaded() {
         return (plugin != null);
@@ -84,9 +85,9 @@ public class NetworkPlus {
         return getPlugin().getDescription().getVersion();
     }
 
-    public static NetworkLogger getLogger() {
+    public static NPLogger getLogger() {
         if(!isLoaded()) return null;
-        return plugin.logger();
+        return NPLogger.getLogger();
     }
 
     /**
@@ -100,7 +101,7 @@ public class NetworkPlus {
 
     public static ServerFlags getServerFlags(String serverID) {
         if(!isLoaded()) return null;
-        return ServerManager.getFlags(serverID);
+        return getServerDB().get(serverID);
     }
 
     public static NetworkConnection getConnection() {
@@ -146,7 +147,7 @@ public class NetworkPlus {
      * @return The List containing all the players.
      */
     public static List<String> getCachedPlayers() {
-        return ServerManager.getAllOnlinePlayers();
+        return getServerDB().getAllOnlinePlayers();
     }
 
     /**
@@ -159,12 +160,16 @@ public class NetworkPlus {
     }
 
     public static String findPlayer(String player) {
-        return ServerManager.findPlayer(player);
+        return getServerDB().findPlayer(player);
     }
 
     //=========================================================================================//
     //  Server Cache methods
     //=========================================================================================//
+
+	public static ServerDatabase getServerDB() {
+		return plugin.getServerDB();
+	}
 
     /**
      * Gets if the server with this username is online.
@@ -182,11 +187,11 @@ public class NetworkPlus {
 	 * @return If the server is full.
 	 */
 	public static boolean isServerFull(String server) {
-        ServerFlags flags = ServerManager.getFlags(server);
+        ServerFlags flags = getServerDB().get(server);
         if(flags == null) {
             return false;
         } else {
-		    return ServerManager.getOnlinePlayers(server).size() >= flags.getMaxPlayers();
+		    return getServerDB().getOnlinePlayers(server).size() >= flags.getMaxPlayers();
         }
 	}
 
@@ -200,7 +205,7 @@ public class NetworkPlus {
      * @param serverID The server the players will be sent to.
      */
     public static void sendAllPlayers(String serverFrom, String serverID) {
-        sendMessage(serverFrom, NetworkMessageChannel.SERVER_SENDALL.toString(), new ServerMessage(serverID));
+        sendMessage(serverFrom, NPChannel.SERVER_SENDALL.toString(), new NPMessage(serverID));
     }
 
     /**
@@ -208,7 +213,7 @@ public class NetworkPlus {
      * @param serverID The server the players will be sent to.
      */
     public static void sendAllPlayers(String serverID) {
-        broadcastMessage(NetworkMessageChannel.SERVER_SENDALL.toString(), new ServerMessage(serverID));
+        broadcastMessage(NPChannel.SERVER_SENDALL.toString(), new NPMessage(serverID));
     }
 
     //=========================================================================================//
@@ -217,42 +222,42 @@ public class NetworkPlus {
 
     @Deprecated
     public static void sendMessage(String serverID, String channel) {
-        sendMessage(serverID, channel, ServerMessage.EMPTY);
+        sendMessage(serverID, channel, NPMessage.EMPTY);
     }
 
     @Deprecated
-    public static void sendMessage(String serverID, String channel, ServerMessage message) {
+    public static void sendMessage(String serverID, String channel, NPMessage message) {
         getConnection().sendMessage(serverID, channel, message.toString());
     }
 
     @Deprecated
-    public static void sendMessage(List<String> serverIDs, String channel, ServerMessage message) {
+    public static void sendMessage(List<String> serverIDs, String channel, NPMessage message) {
         getConnection().sendMessage(serverIDs, channel, message.toString());
     }
 
-    public static void sendMessage(String serverID, NetworkMessageChannel channel, ServerMessage message) {
+    public static void sendMessage(String serverID, NPChannel channel, NPMessage message) {
         sendMessage(serverID, channel.toString(), message);
     }
 
-    public static void sendMessage(String serverID, NetworkMessageChannel channel) {
+    public static void sendMessage(String serverID, NPChannel channel) {
         sendMessage(serverID, channel.toString());
     }
 
-    public static void broadcastMessage(NetworkMessageChannel channel, ServerMessage message) {
+    public static void broadcastMessage(NPChannel channel, NPMessage message) {
         broadcastMessage(channel.toString(), message);
     }
 
-    public static void broadcastMessage(NetworkMessageChannel channel) {
+    public static void broadcastMessage(NPChannel channel) {
         broadcastMessage(channel.toString());
     }
 
     @Deprecated
     public static void broadcastMessage(String channel) {
-        broadcastMessage(channel, ServerMessage.EMPTY);
+        broadcastMessage(channel, NPMessage.EMPTY);
     }
 
     @Deprecated
-    public static void broadcastMessage(String channel, ServerMessage message) {
+    public static void broadcastMessage(String channel, NPMessage message) {
         getConnection().broadcastMessage(channel, message.toString());
     }
 
@@ -263,7 +268,7 @@ public class NetworkPlus {
      * @param message The message to send.
      */
     public static void broadcastNetworkMessage(String serverID, String message) {
-        sendMessage(serverID, NetworkMessageChannel.SERVER_ALERT, new ServerMessage(message));
+        sendMessage(serverID, NPChannel.SERVER_ALERT, new NPMessage(message));
     }
 
     /**
@@ -271,7 +276,7 @@ public class NetworkPlus {
      * @param message The message to send.
      */
     public static void broadcastNetworkMessage(String message) {
-        broadcastMessage(NetworkMessageChannel.SERVER_ALERT, new ServerMessage(message));
+        broadcastMessage(NPChannel.SERVER_ALERT, new NPMessage(message));
     }
 
     /**
@@ -284,7 +289,7 @@ public class NetworkPlus {
         if(BukkitUtils.isPlayerOnline(player)) {
             BukkitUtils.sendMessage(player, message);
         } else {
-            broadcastMessage(NetworkMessageChannel.PLAYER_MESSAGE, new ServerMessage(player, message));
+            broadcastMessage(NPChannel.PLAYER_MESSAGE, new NPMessage(player, message));
         }
     }
 
@@ -294,8 +299,8 @@ public class NetworkPlus {
      * This might cause messages to be recieved on the SERVER_RESPONSE and SERVER_REQUEST channel.
      */
     public static void requestServerFlags() {
-        getLogger().log(3, "Requesting info from all servers");
-        broadcastMessage(NetworkMessageChannel.SERVER_FLAGS_REQUEST);
+        getLogger().v("Requesting info from all servers");
+        broadcastMessage(NPChannel.SERVER_FLAGS_REQUEST);
     }
 
     /**
@@ -305,8 +310,8 @@ public class NetworkPlus {
      * @param serverID The server to request information from.
      */
     public static void requestServerFlags(String serverID) {
-        getLogger().log(3, "Requesting info from &a" + serverID);
-        sendMessage(serverID, NetworkMessageChannel.SERVER_FLAGS_REQUEST);
+        getLogger().v("Requesting info from &a" + serverID);
+        sendMessage(serverID, NPChannel.SERVER_FLAGS_REQUEST);
     }
 
     public static void sendServerFlags(String serverID) {
@@ -319,8 +324,8 @@ public class NetworkPlus {
      * @param flags The ServerFlags object.
      */
     public static void sendServerFlags(String serverID, ServerFlags flags, String serverIDOwnedBy) {
-        getLogger().log(3, "Sending server info to &a" + serverID);
-        NetworkPlus.sendMessage(serverID, NetworkMessageChannel.SERVER_FLAGS_CACHE, flags.toServerMessage(serverIDOwnedBy));
+        getLogger().v("Sending server info to &a" + serverID);
+        NetworkPlus.sendMessage(serverID, NPChannel.SERVER_FLAGS_CACHE, flags.toServerMessage(serverIDOwnedBy));
     }
 
     public static void broadcastServerFlags(ServerFlags flags) {
@@ -333,8 +338,8 @@ public class NetworkPlus {
      */
     public static void broadcastServerFlags(String serverIDOwnedBy, ServerFlags flags)
     {
-        getLogger().log(3, "Sending server info to all servers");
-        NetworkPlus.broadcastMessage(NetworkMessageChannel.SERVER_FLAGS_CACHE, flags.toServerMessage(serverIDOwnedBy));
+        getLogger().v("Sending server info to all servers");
+        NetworkPlus.broadcastMessage(NPChannel.SERVER_FLAGS_CACHE, flags.toServerMessage(serverIDOwnedBy));
     }
 
 }

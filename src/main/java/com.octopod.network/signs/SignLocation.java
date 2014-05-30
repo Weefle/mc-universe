@@ -1,4 +1,4 @@
-package com.octopod.network.modules.signs;
+package com.octopod.network.signs;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

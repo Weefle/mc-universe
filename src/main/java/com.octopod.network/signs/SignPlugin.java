@@ -1,4 +1,4 @@
-package com.octopod.network.modules.signs;
+package com.octopod.network.signs;
 
 import com.octopod.network.NetworkPlus;
 import com.octopod.network.Util;
@@ -35,7 +35,7 @@ public class SignPlugin {
     private static SignDatabase database;
 
     public static void resetDatabase() {
-        NetworkPlus.getLogger().info("Resetting &6NetSign &7database...");
+        NetworkPlus.getLogger().i("Resetting &6NetSign &7database...");
         database = new SignDatabase();
         saveDatabase();
     }
@@ -100,7 +100,7 @@ public class SignPlugin {
                 IOUtils.closeSilent(is);
                 database = NetworkPlus.gson().fromJson(sb.toString(), SignDatabase.class);
             } catch (Exception e) {
-                NetworkPlus.getLogger().info("An error has occured while deserializing signs.db!");
+                NetworkPlus.getLogger().i("An error has occured while deserializing signs.db!");
                 resetDatabase();
             }
         }
@@ -110,7 +110,7 @@ public class SignPlugin {
 
         updateAllSigns();
 
-        NetworkPlus.getLogger().info("&6NetSign &7functionality experimental!");
+        NetworkPlus.getLogger().i("&6NetSign &7functionality experimental!");
 
     }
 

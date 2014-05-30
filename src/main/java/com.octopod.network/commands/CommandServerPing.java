@@ -1,9 +1,9 @@
 package com.octopod.network.commands;
 
-import com.octopod.network.NetworkConfig;
+import com.octopod.network.NPConfig;
+import com.octopod.network.NPPermission;
 import com.octopod.network.NetworkPlus;
 import com.octopod.network.bukkit.BukkitUtils;
-import com.octopod.network.NetworkPermission;
 import com.octopod.network.events.Listener;
 import com.octopod.network.events.SynchronizedListener;
 import com.octopod.network.events.server.ServerFlagsReceivedEvent;
@@ -12,7 +12,7 @@ import org.bukkit.command.CommandSender;
 public class CommandServerPing extends NetworkCommand {
 
 	public CommandServerPing(String root, String... aliases) {
-		super(root, aliases, "<command> <server>", NetworkPermission.NETWORK_SERVER_PING,
+		super(root, aliases, "<command> <server>", NPPermission.NETWORK_SERVER_PING,
 
 			"Pings a LilyPad server that is running this plugin."
 
@@ -47,7 +47,7 @@ public class CommandServerPing extends NetworkCommand {
 			}
 		});
 
-		long timeout = NetworkConfig.getRequestTimeout();
+		long timeout = NPConfig.getRequestTimeout();
 
 		long startTime = System.currentTimeMillis();
 

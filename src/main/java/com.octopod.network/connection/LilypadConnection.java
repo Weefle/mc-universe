@@ -43,7 +43,7 @@ public class LilypadConnection extends NetworkConnection {
         {
             String channel = event.getChannel(), serverID, message;
 
-            if(!channel.startsWith(NetworkConfig.getChannelPrefix())) {
+            if(!channel.startsWith(NPConfig.getChannelPrefix())) {
                 return;
             }
 
@@ -55,8 +55,8 @@ public class LilypadConnection extends NetworkConnection {
             }
 
             try {
-                ServerMessage serverMessage = ServerMessage.parse(message);
-                NetworkActions.actionRecieveMessage(serverID, channel, serverMessage);
+                NPMessage serverMessage = NPMessage.parse(message);
+                NPActions.actionRecieveMessage(serverID, channel, serverMessage);
             } catch (JsonParseException e) {
                 //The message probably isn't even a JSON, just ignore it.
             }
@@ -116,8 +116,8 @@ public class LilypadConnection extends NetworkConnection {
                         BukkitUtils.console("Waiting for LilyPad to connect...");
 
                         int connectionAttempts = 0;
-						int maxConnectionAttempts = NetworkConfig.getConnectionMaxAttempts();
-						long connectionAttemptInterval = NetworkConfig.getConnectionAttemptInterval();
+						int maxConnectionAttempts = NPConfig.getConnectionMaxAttempts();
+						long connectionAttemptInterval = NPConfig.getConnectionAttemptInterval();
 
                         while(!connection.isConnected() && connectionAttempts < maxConnectionAttempts) {
                             try {
@@ -154,7 +154,7 @@ public class LilypadConnection extends NetworkConnection {
      */
     private Result sendRequest(Request request) {
         try {
-            return connection.request(request).awaitUninterruptibly(NetworkConfig.getRequestTimeout());
+            return connection.request(request).awaitUninterruptibly(NPConfig.getRequestTimeout());
         } catch (RequestException e) {
             e.printStackTrace();
             return null;

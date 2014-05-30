@@ -1,14 +1,14 @@
 package com.octopod.network.events.relays;
 
-import com.octopod.network.ServerMessage;
+import com.octopod.network.NPMessage;
 import com.octopod.network.events.CancellableEvent;
 
 public class MessageEvent extends CancellableEvent {
 
 	String username, channel;
-    ServerMessage message;
+    NPMessage message;
 	
-	public MessageEvent(String username, String channel, ServerMessage message) {
+	public MessageEvent(String username, String channel, NPMessage message) {
 		this.username = username;
 		this.channel = channel;
 		this.message = message;
@@ -23,7 +23,7 @@ public class MessageEvent extends CancellableEvent {
 		return channel;
 	}
 
-    public ServerMessage getServerMessage() {
+    public NPMessage getServerMessage() {
         return message;
     }
 

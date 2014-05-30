@@ -1,7 +1,7 @@
 package com.octopod.network.commands;
 
-import com.octopod.network.NetworkConfig;
-import com.octopod.network.NetworkPermission;
+import com.octopod.network.NPConfig;
+import com.octopod.network.NPPermission;
 import com.octopod.network.NetworkPlus;
 import com.octopod.octal.minecraft.ChatUtils.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -15,7 +15,7 @@ import java.util.Arrays;
 public class CommandReload extends NetworkCommand {
 
     public CommandReload(String root, String... aliases) {
-        super(root, aliases, "<command>", NetworkPermission.NETWORK_RELOAD,
+        super(root, aliases, "<command>", NPPermission.NETWORK_RELOAD,
             "Reloads the configuration of the plugin. Use -f as an argument to reload the entire plugin."
         );
     }
@@ -27,10 +27,10 @@ public class CommandReload extends NetworkCommand {
             NetworkPlus.getPlugin().reload();
         } else {
             try {
-				NetworkConfig.load();
+				NPConfig.load();
 				NetworkPlus.broadcastServerFlags(NetworkPlus.getServerFlags());
 			} catch (Exception e) {
-				NetworkPlus.getLogger().info(ChatColor.RED + "Unable to reload!");
+				NetworkPlus.getLogger().i(ChatColor.RED + "Unable to reload!");
 			}
 
         }

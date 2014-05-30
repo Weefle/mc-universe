@@ -1,14 +1,14 @@
 package com.octopod.network.commands;
 
+import com.octopod.network.NPPermission;
 import com.octopod.network.NetworkPlus;
 import com.octopod.network.bukkit.BukkitUtils;
-import com.octopod.network.NetworkPermission;
 import org.bukkit.command.CommandSender;
 
 public class CommandServerSend extends NetworkCommand {
 
 	public CommandServerSend(String root, String... aliases) {
-		super(root, aliases,"<command> <player> <server>", NetworkPermission.NETWORK_SERVER_SEND,
+		super(root, aliases,"<command> <player> <server>", NPPermission.NETWORK_SERVER_SEND,
 
 			"Sends a player to a server."
 
