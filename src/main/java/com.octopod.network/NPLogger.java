@@ -3,8 +3,6 @@ package com.octopod.network;
 import com.octopod.network.bukkit.BukkitUtils;
 import com.octopod.octal.minecraft.ChatUtils;
 import com.octopod.octal.minecraft.ChatUtils.ChatColor;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 public class NPLogger {
 
@@ -31,7 +29,7 @@ public class NPLogger {
      * @param level The level of the message.
      * @param messages An array of messages to send.
      */
-    public void log(NPLoggerLevel level, String... messages)
+    public void log(NPLogLevel level, String... messages)
     {
 		for(String message: messages)
 		{
@@ -41,23 +39,23 @@ public class NPLogger {
     }
 
     public void i(String... messages) {
-		if(NPConfig.getDebugMode() >= NPLoggerLevel.INFO.getLevel())
-        	log(NPLoggerLevel.INFO, messages);
+		if(NPConfig.getDebugMode() >= NPLogLevel.INFO.getLevel())
+        	log(NPLogLevel.INFO, messages);
     }
 
 	public void warn(String... messages) {
-		if(NPConfig.getDebugMode() >= NPLoggerLevel.WARNING.getLevel())
-			log(NPLoggerLevel.WARNING, messages);
+		if(NPConfig.getDebugMode() >= NPLogLevel.WARNING.getLevel())
+			log(NPLogLevel.WARNING, messages);
 	}
 
     public void d(String... messages) {
-		if(NPConfig.getDebugMode() >= NPLoggerLevel.DEBUG.getLevel())
-			log(NPLoggerLevel.DEBUG, messages);
+		if(NPConfig.getDebugMode() >= NPLogLevel.DEBUG.getLevel())
+			log(NPLogLevel.DEBUG, messages);
     }
 
     public void v(String... messages) {
-		if(NPConfig.getDebugMode() >= NPLoggerLevel.VERBOSE.getLevel())
-			log(NPLoggerLevel.VERBOSE, messages);
+		if(NPConfig.getDebugMode() >= NPLogLevel.VERBOSE.getLevel())
+			log(NPLogLevel.VERBOSE, messages);
     }
 
 }
