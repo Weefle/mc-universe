@@ -1,0 +1,11 @@
+name: NetworkPlus
+main: com.octopod.networkplus.server.bukkit.BukkitNetworkPlusPlugin
+version: ${version}
+softdepend: ['LilyPad-Connect']
+permissions:
+    network.server.connect:
+        default: true
+    network.server.list:
+        default: true
+    network.main:
+        default: true 
