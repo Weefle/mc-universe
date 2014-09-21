@@ -13,9 +13,9 @@
     </properties>
 
     <scm>
-        <connection>scm:git:http://git@gitlab.nixium.com:TheOctopod/network.git</connection>
-        <developerConnection>scm:git:http://git@gitlab.nixium.com:TheOctopod/network.git</developerConnection>
-        <url>scm:git:http://gitlab.nixium.com/TheOctopod/network</url>
+        <connection>scm:git:http://git@github.com:TheOctopod/NetworkPlus.git</connection>
+        <developerConnection>scm:git:http://git@github.com:TheOctopod/NetworkPlus.git</developerConnection>
+        <url>scm:git:http://github.com/TheOctopod/NetworkPlus</url>
     </scm>
 
     <developers>
