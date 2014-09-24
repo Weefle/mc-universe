@@ -117,25 +117,18 @@
                         <filter>
                             <artifact>com.octopod:octal</artifact>
                             <includes>
-                                <include>com/octopod/octal/minecraft/Chat**.class</include>
-                                <include>com/octopod/octal/minecraft/AbstractPlayer.class</include>
-                                <include>com/octopod/octal/minecraft/bukkit/BukkitPlayer.class</include>
-                                <include>com/octopod/octal/minecraft/bukkit/BukkitPlayer.class</include>
-                                <include>com/octopod/octal/common/IOUtils.class</include>
-                                <include>com/octopod/octal/common/StringUtils.class</include>
-                                <include>com/octopod/octal/common/FileUtil.class</include>
-                                <include>com/octopod/octal/yaml/**.class</include>
+                                <include>com/octopod/util/minecraft/Chat**.class</include>
+                                <include>com/octopod/util/common/FileUtil.class</include>
+                                <include>com/octopod/util/common/IOUtils.class</include>
+                                <include>com/octopod/util/configuration/Configuration.class</include>
+                                <include>com/octopod/util/configuration/yaml/YamlConfiguration.class</include>
                             </includes>
                         </filter>
                     </filters>
                     <relocations>
                         <relocation>
-                            <pattern>com.octopod.octal</pattern>
-                            <shadedPattern>com.octopod.network.octal</shadedPattern>
-                        </relocation>
-                        <relocation>
                             <pattern>com.google.gson</pattern>
-                            <shadedPattern>com.octopod.network.lib.com.google.gson</shadedPattern>
+                            <shadedPattern>com.octopod.lib.com.google.gson</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>

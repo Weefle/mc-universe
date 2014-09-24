@@ -1,4 +1,4 @@
-package com.octopod.networkplus.server;
+package com.octopod.networkplus;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,6 +8,31 @@ import java.util.Map;
  */
 public class CachedServerInfo implements ServerInfo
 {
+	public CachedServerInfo() {}
+
+	public CachedServerInfo(String encoded)
+	{
+		try
+		{
+			values = NetworkPlus.getSerializer().decode(encoded, mapOf(ServerValue.class, Object.class));
+		}
+		catch (NetworkDecodeException e)
+		{
+			values = new HashMap<>();
+		}
+	}
+
+	public CachedServerInfo(Map<ServerValue, Object> values)
+	{
+		this.values = values == null ? new HashMap<ServerValue, Object>() : values;
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <K, V> Class<Map<K, V>> mapOf(Class<K> key, Class<V> value)
+	{
+		return (Class<Map<K, V>>)(Class<?>)Map.class;
+	}
+
 	private Map<ServerValue, Object> values = new HashMap<>();
 
 	@SuppressWarnings("unchecked")
@@ -27,8 +52,18 @@ public class CachedServerInfo implements ServerInfo
 		return infoType.expectedType().cast(values.get(infoType));
 	}
 
+	public Map<ServerValue, Object> getValues()
+	{
+		return values;
+	}
+
 	public boolean containsValue(ServerValue infoType)
 	{
 		return values.containsKey(infoType);
+	}
+
+	public String encode()
+	{
+		return NetworkPlus.getSerializer().encode(values);
 	}
 }

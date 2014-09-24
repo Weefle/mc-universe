@@ -1,6 +1,6 @@
 package com.octopod.networkplus.server.bukkit;
 
-import com.octopod.networkplus.server.PlayerOfflineException;
+import com.octopod.networkplus.PlayerOfflineException;
 import com.octopod.networkplus.server.ServerConsole;
 import com.octopod.networkplus.server.ServerInterface;
 import com.octopod.networkplus.server.ServerPlayer;

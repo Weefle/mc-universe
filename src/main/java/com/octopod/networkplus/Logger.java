@@ -1,24 +1,17 @@
-package com.octopod.networkplus.server;
+package com.octopod.networkplus;
 
-import com.octopod.networkplus.NetworkPlus;
+import com.octopod.networkplus.server.ServerInterface;
 
 /**
  * @author Octopod - octopodsquad@gmail.com
  */
-public class ServerLogger
+public class Logger
 {
 	ServerInterface server = null;
 
-	/**
-	 * Gets the current ServerInterface. if ServerInterface is null, it will
-	 * get it from NetworkPlus instead.
-	 *
-	 * @return the current instance of ServerInterface
-	 */
-	private ServerInterface getServer()
+	public Logger(ServerInterface server)
 	{
-		if(server == null) server = NetworkPlus.getInstance().getServer();
-		return server;
+		this.server = server;
 	}
 
 	/**
@@ -29,7 +22,8 @@ public class ServerLogger
 	 */
 	public void log(LoggerLevel level, String message)
 	{
-		getServer().broadcast(message, level.getPermission().toString());
+		server.broadcast(message, level.getPermission().toString());
+		server.console(message);
 	}
 
 	/**
@@ -64,18 +58,18 @@ public class ServerLogger
 
 	public static enum LoggerLevel
 	{
-		INFO(ServerPermission.LOGGER_INFO),
-		WARNING(ServerPermission.LOGGER_WARNING),
-		VERBOSE(ServerPermission.LOGGER_VERBOSE);
+		INFO(Permission.LOGGER_INFO),
+		WARNING(Permission.LOGGER_WARNING),
+		VERBOSE(Permission.LOGGER_VERBOSE);
 
-		ServerPermission permission;
+		Permission permission;
 
-		private LoggerLevel(ServerPermission perm)
+		private LoggerLevel(Permission perm)
 		{
 			permission = perm;
 		}
 
-		public ServerPermission getPermission()
+		public Permission getPermission()
 		{
 			return permission;
 		}

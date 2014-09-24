@@ -1,6 +1,6 @@
 package com.octopod.networkplus.database;
 
-import com.octopod.networkplus.server.ServerInfo;
+import com.octopod.networkplus.ServerInfo;
 
 import java.util.Collection;
 

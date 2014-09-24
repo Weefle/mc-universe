@@ -1,14 +1,16 @@
 package com.octopod.networkplus.server.bukkit;
 
-import com.octopod.networkplus.NetworkPlusConfig;
 import com.octopod.networkplus.NetworkPlus;
 import com.octopod.networkplus.NetworkPlusPlugin;
-import com.octopod.networkplus.network.lilypad.LilypadConnection;
+import com.octopod.networkplus.command.CommandGetInfo;
+import com.octopod.networkplus.command.CommandPing;
+import com.octopod.networkplus.server.ServerInterface;
 import lilypad.client.connect.api.Connect;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -17,19 +19,37 @@ import java.io.InputStream;
 public class BukkitNetworkPlusPlugin extends JavaPlugin implements NetworkPlusPlugin
 {
 	@Override
+	public ServerInterface getServerInterface()
+	{
+		return new BukkitServerInterface();
+	}
+
+	@Override
 	public void onEnable()
 	{
-		NetworkPlus networkPlus = NetworkPlus.getInstance();
+		NetworkPlus.init(this);
 
-		networkPlus.setServer(new BukkitServerInterface());
-		networkPlus.setConfig(new NetworkPlusConfig(this, networkPlus.getLogger()));
-		networkPlus.setConnection(new LilypadConnection(this, networkPlus.getLogger()));
+		NetworkPlus.getCommandManager().registerCommand(
+			new CommandPing("/ping"),
+			new CommandGetInfo("/serverinfo")
+		);
+
+		Bukkit.getPluginManager().registerEvents(new BukkitListener(), this);
+
+		try {
+			NetworkPlus.reloadConfig();
+		} catch (IOException e) {
+			NetworkPlus.getServer().console("Error Loading Config: " + e.getMessage());
+			Bukkit.getPluginManager().disablePlugin(this);
+		}
+
+		NetworkPlus.getConnection().connect();
 	}
 
 	@Override
 	public void onDisable()
 	{
-
+		NetworkPlus.getConnection().disconnect();
 	}
 
 	@Override

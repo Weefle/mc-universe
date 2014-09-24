@@ -1,17 +1,19 @@
-package com.octopod.networkplus.server;
+package com.octopod.networkplus;
+
+import com.octopod.networkplus.server.ServerCommandSource;
 
 import java.util.Arrays;
 
 /**
  * @author Octopod - octopodsquad@gmail.com
  */
-public abstract class ServerCommand implements Comparable<ServerCommand> {
+public abstract class Command implements Comparable<Command> {
 
 	protected String[] aliases;
 	protected String root, usage, description;
-	protected ServerPermission permission;
+	protected Permission permission;
 
-	public ServerCommand(String root, String[] aliases, String usage, ServerPermission permission, String description) {
+	public Command(String root, String[] aliases, String usage, Permission permission, String description) {
 		this.aliases = aliases;
 		this.root = root;
 		this.usage = usage;
@@ -43,11 +45,15 @@ public abstract class ServerCommand implements Comparable<ServerCommand> {
 		return false;
 	}
 
-	protected abstract boolean exec(ServerCommandSender sender, String label, String[] args);
+	protected abstract boolean exec(ServerCommandSource sender, String label, String[] args);
 
-	public boolean startCommand(ServerCommandSender sender, String label, String[] args) {
+	public boolean startCommand(ServerCommandSource sender, String label, String[] args) {
 
-		if(sender.hasPermission(permission)) return false;
+		if(!sender.hasPermission(permission))
+		{
+			sender.sendMessage("&cSorry, you don't have permission to use this command.");
+			return true;
+		}
 
 		//If number of arguments matches required for this command
 		if(numArgs() == null || Arrays.asList(numArgs()).contains(args.length)) {
@@ -70,7 +76,7 @@ public abstract class ServerCommand implements Comparable<ServerCommand> {
 	}
 
 	@Override
-	public int compareTo(ServerCommand command) {
+	public int compareTo(Command command) {
 		return this.getLabel().compareTo(command.getLabel());
 	}
 

@@ -1,7 +1,6 @@
 package com.octopod.networkplus.network.lilypad;
 
-import com.octopod.networkplus.NetworkPlus;
-import com.octopod.networkplus.event.events.NetworkMessageEvent;
+import com.octopod.networkplus.NetworkPlusListener;
 import lilypad.client.connect.api.event.EventListener;
 import lilypad.client.connect.api.event.MessageEvent;
 
@@ -26,7 +25,7 @@ public class LilypadListener
 			return;
 		}
 
-		NetworkPlus.getInstance().getEventManager().triggerEvent(new NetworkMessageEvent(serverID, channel, message));
+		NetworkPlusListener.onRecieveMessage(serverID, channel, message);
 //            try {
 //                NetworkMessage serverMessage = NetworkMessage.parse(message);
 //

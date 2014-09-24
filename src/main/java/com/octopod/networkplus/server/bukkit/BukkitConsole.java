@@ -1,7 +1,7 @@
 package com.octopod.networkplus.server.bukkit;
 
+import com.octopod.networkplus.Permission;
 import com.octopod.networkplus.server.ServerConsole;
-import com.octopod.networkplus.server.ServerPermission;
 import com.octopod.util.minecraft.ChatUtils;
 import org.bukkit.command.ConsoleCommandSender;
 
@@ -36,7 +36,7 @@ public class BukkitConsole implements ServerConsole
 	}
 
 	@Override
-	public boolean hasPermission(ServerPermission permission)
+	public boolean hasPermission(Permission permission)
 	{
 		return console.hasPermission(permission.toString());
 	}

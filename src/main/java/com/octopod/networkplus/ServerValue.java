@@ -1,4 +1,4 @@
-package com.octopod.networkplus.server;
+package com.octopod.networkplus;
 
 import java.util.List;
 
@@ -30,7 +30,7 @@ public enum ServerValue
 	public String toString() {return name().toLowerCase();}
 
 	@SuppressWarnings("unchecked")
-	public static <T> Class<List<T>> listOf(Class<T> type)
+	private static <T> Class<List<T>> listOf(Class<T> type)
 	{
 		return (Class<List<T>>)(Class<?>)List.class;
 	}

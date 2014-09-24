@@ -1,7 +1,7 @@
 package com.octopod.networkplus.server.bukkit;
 
 import com.octopod.networkplus.NetworkPlus;
-import com.octopod.networkplus.server.ServerPermission;
+import com.octopod.networkplus.Permission;
 import com.octopod.networkplus.server.ServerPlayer;
 import com.octopod.util.minecraft.ChatUtils;
 import net.minecraft.server.v1_7_R4.ChatSerializer;
@@ -42,9 +42,9 @@ public class BukkitPlayer implements ServerPlayer
 	}
 
 	@Override
-	public boolean hasPermission(ServerPermission permission)
+	public boolean hasPermission(Permission permission)
 	{
-		return player.hasPermission(permission.toString());
+		return player.hasPermission(permission.getNode());
 	}
 
 	@Override
@@ -56,6 +56,6 @@ public class BukkitPlayer implements ServerPlayer
 	@Override
 	public void redirect(String serverID)
 	{
-		NetworkPlus.getInstance().getConnection().redirectPlayer(this, serverID);
+		NetworkPlus.getConnection().redirectPlayer(this, serverID);
 	}
 }

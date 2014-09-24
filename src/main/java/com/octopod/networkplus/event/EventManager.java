@@ -29,9 +29,9 @@ public class EventManager {
 		listeners.clear();
 	}
 
-    public void triggerEvent(final Event event) {
+    public void callEvent(final Event event) {
 
-        NetworkPlus.getInstance().getLogger().v("&7Triggering event &a" + event.getClass().getSimpleName() + "&7 in thread: &a" + Thread.currentThread().getName());
+        //NetworkPlus.getLogger().v("&7Triggering event &a" + event.getClass().getSimpleName() + "&7 in thread: &a" + Thread.currentThread().getName());
 
         List<EventMethod> listeners = collectListenersOf(event);
 
@@ -60,7 +60,7 @@ public class EventManager {
                             continue;
 
                         //Try to use argument expectedType to find Event expectedType.
-                        if(!event.getClass().equals(argTypes[0])) {
+                        if(!Event.class.equals(Event.class) && !event.getClass().equals(argTypes[0])) {
                             //If the listener is instanceof ListenerIdentifier, getProperty the expectedType
 //                            if(!ListenerIdentifier.class.isInstance(listener)) {
 //                                continue;
@@ -104,7 +104,7 @@ public class EventManager {
                         try {
                             method.invoke(object, event);
                         } catch (Exception e) {
-							ServerInterface server = NetworkPlus.getInstance().getServer();
+							ServerInterface server = NetworkPlus.getServer();
                             server.console("&cFailed to invoke method " + method.getName() + "(" + Arrays.asList(method.getParameterTypes()) + ")");
                             server.console("&cUsing arguments of types (" + event.getClass() + ")");
                         }

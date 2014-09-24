@@ -1,14 +1,10 @@
 package com.octopod.networkplus;
 
-import com.octopod.networkplus.server.ServerLogger;
 import com.octopod.util.common.FileUtil;
+import com.octopod.util.common.IOUtils;
 import com.octopod.util.configuration.yaml.YamlConfiguration;
-import com.octopod.util.minecraft.ChatUtils.ChatColor;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 /**
  * @author Octopod - octopodsquad@gmail.com
@@ -22,11 +18,11 @@ public class NetworkPlusConfig
 
 	private NetworkPlusPlugin plugin = null;
 
-	private ServerLogger logger = null;
+	private Logger logger = null;
 
 	private File file;
 
-	public NetworkPlusConfig(NetworkPlusPlugin plugin, ServerLogger logger)
+	public NetworkPlusConfig(NetworkPlusPlugin plugin, Logger logger)
 	{
 		this.logger = logger;
 		this.plugin = plugin;
@@ -49,12 +45,17 @@ public class NetworkPlusConfig
 
 	private boolean isConfigOld()
 	{
-		try(InputStream defaultConfigInput = readInternalConfig())
+		InputStream input = readInternalConfig();
+		if(input != null)
 		{
-			YamlConfiguration config = new YamlConfiguration(defaultConfigInput);
+			YamlConfiguration config = new YamlConfiguration(input);
+			logger.i(NetworkPlus.prefix() + "&7Internal Config Version: &6" + config.getInt("version", 0));
+			logger.i(NetworkPlus.prefix() + "&7Local Config Version: &6" + getConfig().getInt("version", -1));
+			IOUtils.closeSilent(input);
 			return config.getInt("version", 0) > getConfig().getInt("version", -1);
+		} else {
+			return false;
 		}
-		catch(Exception e) {return false;}
 	}
 
 	/**
@@ -69,25 +70,34 @@ public class NetworkPlusConfig
 		if (file.exists())
 		{
 			String fileName = "config.yml.old";
-			File backupConfigFile = new File(plugin.getPluginFolder(), fileName);
-
 			//Copy the old config to this new backup config.
-			try (InputStream is = readLocalConfig()) {
-				FileUtil.write(backupConfigFile, is);
+			InputStream input = readLocalConfig();
+			if(input != null)
+			{
+				FileUtil.write(new File(plugin.getPluginFolder(), fileName), input);
+				IOUtils.closeSilent(input);
 			}
-			logger.i("Old configuration renamed to " + fileName);
+			logger.i(NetworkPlus.prefix() + "&7Old configuration renamed to &6" + fileName);
 		}
-		try (InputStream is = readInternalConfig())
+
+		InputStream input = readInternalConfig();
+		if(input != null)
 		{
-			if (is == null) throw new IOException("Couldn't find the internal configuration file.");
+			YamlConfiguration config = new YamlConfiguration(readInternalConfig());
 
-			YamlConfiguration config = new YamlConfiguration(is);
-
-			logger.i("Writing default configuration to config.yml, version " + config.getInt("version"));
-
-			FileUtil.write(file, is);
+			try {
+				FileUtil.write(file, input);
+				logger.i(NetworkPlus.prefix() + "&7New config created, version: &6" + config.getInt("version"));
+			} catch (IOException e)
+			{
+				logger.i(NetworkPlus.prefix() + "&cError writing configuration!");
+				e.printStackTrace();
+			}
 
 			return config;
+		} else
+		{
+			throw new IOException("Couldn't find the internal configuration file.");
 		}
 	}
 
@@ -97,33 +107,28 @@ public class NetworkPlusConfig
 	 */
 	public void load() throws IOException
 	{
-		logger.i("Loading Net+ configuration...");
+		logger.i("&8====== &7LOADING NETWORKPLUS CONFIGURATION &8======");
 
 		if (!file.exists())
 		{
 			//Sets the config from the internal file
-			setConfig(writeInternalConfig());
+			config = writeInternalConfig();
 		}
 		else
 		{
 			//Sets the current configuration from config.yml.
-			setConfig(new YamlConfiguration(readLocalConfig()));
+			config = new YamlConfiguration(readLocalConfig());
 			if (isConfigOld())
 			{
-				setConfig(writeInternalConfig());
+				config = writeInternalConfig();
 			}
 		}
 
-		logger.i(ChatColor.GREEN + "Successfully loaded configuration!");
-	}
-
-	private void setConfig(YamlConfiguration config)
-	{
-		this.config = config;
+		logger.i("&8====== &7FINISHED LOADING CONFIGURATION &8======");
 	}
 
 	public YamlConfiguration getConfig()
 	{
-		return this.config;
+		return config;
 	}
 }

@@ -14,19 +14,23 @@ public abstract class NetworkMessage
 	private NetworkReturn ret = null;
 	private String message = "";
 
-	public void setChannel(NetworkChannel channel) {this.channel = channel;}
-	public void setReturnChannel(NetworkChannel retChannel) {this.retChannel = retChannel;}
-	public void setMessage(String... arguments)
+	protected void setChannel(NetworkChannel channel) {this.channel = channel;}
+	protected void setReturnChannel(NetworkChannel retChannel) {this.retChannel = retChannel;}
+	protected void setMessage(String... arguments)
 	{
-		this.message = NetworkPlus.getInstance().getSerializer().encode(Arrays.asList(arguments));
+		this.message = NetworkPlus.getSerializer().encode(Arrays.asList(arguments));
+	}
+	public void setReturn(NetworkReturn ret)
+	{
+		this.ret = ret;
 	}
 
-	public String getChannel() {return channel.toString();}
-	public String getReturnChannel() {return retChannel.toString();}
+	public String getChannel() {return channel == null ? null : channel.toString();}
+	public String getReturnChannel() {return retChannel == null ? null : retChannel.toString();}
 	public String getMessage() {return message;}
 
 	public void send(String serverID)
 	{
-		NetworkPlus.getInstance().getConnection().sendNetworkRequest(serverID, this, ret);
+		NetworkPlus.getConnection().sendNetworkRequest(serverID, this, ret);
 	}
 }

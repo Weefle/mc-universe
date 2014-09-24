@@ -3,7 +3,7 @@ package com.octopod.networkplus.server;
 /**
  * @author Octopod - octopodsquad@gmail.com
  */
-public interface ServerPlayer extends ServerCommandSender
+public interface ServerPlayer extends ServerCommandSource
 {
 	public String getID();
 

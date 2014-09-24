@@ -3,36 +3,33 @@ package com.octopod.networkplus;
 import com.octopod.networkplus.event.events.NetworkConnectedEvent;
 import com.octopod.networkplus.event.events.NetworkMessageEvent;
 import com.octopod.networkplus.network.NetworkChannel;
+import com.octopod.networkplus.requests.ServerInfoReturn;
 import com.octopod.networkplus.requests.ServerOnlineMessage;
-import com.octopod.networkplus.requests.ServerPingRequest;
 import com.octopod.networkplus.requests.ServerPingReturn;
-import com.octopod.networkplus.server.*;
+import com.octopod.networkplus.server.ServerPlayer;
 
 import java.util.List;
 
 /**
  * @author Octopod - octopodsquad@gmail.com
  */
-public class NetworkEvents
+public class NetworkPlusListener
 {
-
 	/**
 	 * Listens for when this plugin is connected according to the NetworkConnection instance.
 	 * This method should request ServerValueManager and playerlists from every server.
 	 */
-	public static void actionNetworkConnected()
+	public static void onNetworkConnected()
 	{
 		NetworkConnectedEvent event = new NetworkConnectedEvent();
-		NetworkPlus networkPlus = NetworkPlus.getInstance();
 
-		networkPlus.getEventManager().triggerEvent(event);
-		networkPlus.getServer().broadcast(
-			networkPlus.prefix() + "&7Successfully connected via &a" +
-			networkPlus.getConnection().getName() + "&7!"
+		NetworkPlus.getEventManager().callEvent(event);
+		NetworkPlus.getServer().broadcast(
+			NetworkPlus.prefix() + "&7Successfully connected via &a" +
+			NetworkPlus.getConnection().getName() + "&7!"
 		);
 
-		networkPlus.getConnection().broadcastNetworkRequest(new ServerOnlineMessage());
-		networkPlus.getConnection().broadcastNetworkRequest(new ServerPingRequest());
+		NetworkPlus.getConnection().broadcastNetworkRequest(new ServerOnlineMessage());
 	}
 
 	/**
@@ -42,17 +39,16 @@ public class NetworkEvents
 	 * @param serverID the server's identifier
 	 * @param event The flags representing information.
 	 */
-	public static void recieveServerInfoEvent(String serverID, NetworkMessageEvent event)
+	public static void onServerInfoRecieved(String serverID, NetworkMessageEvent event)
 	{
-		NetworkPlus networkPlus = NetworkPlus.getInstance();
-		ServerLogger logger = networkPlus.getLogger();
-		ServerInfo info = networkPlus.getDatabase().getServerInfo(serverID);
+		Logger logger = NetworkPlus.getLogger();
+		ServerInfo info = NetworkPlus.getDatabase().getServerInfo(serverID);
 
 		if(info.containsValue(ServerValue.SERVER_VERSION))
 		{
 			//Checks for mismatched plugin versions between servers, and warns the server owners.
 			String version = (String)info.getValue(ServerValue.SERVER_VERSION);
-			if(!version.equals("TEST_BUILD") && !version.equals(networkPlus.getPlugin().getPluginVersion())) {
+			if(!version.equals("TEST_BUILD") && !version.equals(NetworkPlus.getPlugin().getPluginVersion())) {
 				logger.i("&a" + serverID + "&7: Running &6Net+&7 version &6" + (version.equals("") ? "No Version" : version));
 			}
 		}
@@ -78,10 +74,9 @@ public class NetworkEvents
 
 	}
 
-	public static void playerJoinServerEvent(String playerID, String serverID)
+	public static void onPlayerJoinServer(String playerID, String serverID)
 	{
-		NetworkPlus networkPlus = NetworkPlus.getInstance();
-		ServerInfo info = networkPlus.getDatabase().getServerInfo(serverID);
+		ServerInfo info = NetworkPlus.getDatabase().getServerInfo(serverID);
 
 		if(info.containsValue(ServerValue.ONLINE_PLAYERS))
 		{
@@ -93,17 +88,15 @@ public class NetworkEvents
 		}
 	}
 
-	public static void playerLeaveServerEvent(String playerID, String serverID)
+	public static void onPlayerLeaveServer(String playerID, String serverID)
 	{
-		NetworkPlus networkPlus = NetworkPlus.getInstance();
-		ServerInfo info = networkPlus.getDatabase().getServerInfo(serverID);
+		ServerInfo info = NetworkPlus.getDatabase().getServerInfo(serverID);
 
 		if(info.containsValue(ServerValue.ONLINE_PLAYERS))
 		{
 			@SuppressWarnings("unchecked")
 			List<String> players = (List<String>)info.getValue(ServerValue.ONLINE_PLAYERS);
-			if(players.contains(playerID))
-				players.remove(playerID);
+			if(players.contains(playerID)) players.remove(playerID);
 			info.setValue(ServerValue.ONLINE_PLAYERS, players);
 		}
 	}
@@ -112,10 +105,9 @@ public class NetworkEvents
 	 * Runs the action for when any players joins the queue on the network.
 	 * This method should add the player to the respective queue.
 	 */
-	public static void playerJoinQueueEvent(String player, String serverID, int queuePosition)
+	public static void onPlayerJoinQueue(String player, String serverID, int queuePosition)
 	{
-		NetworkPlus networkPlus = NetworkPlus.getInstance();
-		ServerLogger logger = networkPlus.getLogger();
+		Logger logger = NetworkPlus.getLogger();
 		logger.i(
 			"&b" + player + " &7joined the queue for &a" + serverID +
 			" &7in position: &a" + queuePosition
@@ -131,10 +123,9 @@ public class NetworkEvents
 	 * Runs the action for when any players leaves the queue on the network.
 	 * This method should clear the player from the respective queue.
 	 */
-	public static void playerLeaveQueueEvent(String player, String serverID)
+	public static void onPlayerLeaveQueue(String player, String serverID)
 	{
-		NetworkPlus networkPlus = NetworkPlus.getInstance();
-		ServerLogger logger = networkPlus.getLogger();
+		Logger logger = NetworkPlus.getLogger();
 		logger.i(
 			"&b" + player + " &7left the queue for &a" + serverID);
 		// If the server is this server, update queue.
@@ -149,27 +140,17 @@ public class NetworkEvents
 	 * This method is a gateway to other events and features.
 	 * Refer to NetworkConfig.MessageChannel to what each channel does.
 	 */
-	public static void messageEvent(String senderID, String channel, String message)
+	public static void onRecieveMessage(String senderID, String channel, String message)
 	{
 		NetworkMessageEvent event = new NetworkMessageEvent(senderID, channel, message);
 
-		NetworkPlus networkPlus = NetworkPlus.getInstance();
-		ServerLogger logger = networkPlus.getLogger();
-
+		NetworkPlus.getEventManager().callEvent(event);
 		if(event.isCancelled()) return;
-
-		logger.v
-			(
-				"Recieved message from &a" + senderID +
-					"&7 on channel &b" + channel
-			);
 
 		NetworkChannel netChannel = NetworkChannel.getByString(channel);
 		if(netChannel != null) //This is on an official channel
 		{
-			@SuppressWarnings("unchecked")
-			List<String> decoded = networkPlus.getSerializer().decode(message, List.class);
-			String[] args = decoded.toArray(new String[decoded.size()]);
+			String[] args = event.getParsed();
 			switch(netChannel)
 			{
 				case SERVER_PING_REQUEST:
@@ -181,7 +162,7 @@ public class NetworkEvents
 					break;
 				case SERVER_INFO_REQUEST:
 					//Message: array of requested value names
-					//TODO: serialize local values and return
+					new ServerInfoReturn().send(senderID);
 					break;
 				case SERVER_INFO_RETURN:
 					//Message: map of value names and values, to be deserialized
@@ -195,14 +176,14 @@ public class NetworkEvents
 					break;
 				case SERVER_SENDALL:
 					//Message is the server name
-					for(ServerPlayer player: networkPlus.getServer().getOnlinePlayers()) player.redirect(message);
+					for(ServerPlayer player: NetworkPlus.getServer().getOnlinePlayers()) player.redirect(message);
 				case PLAYER_MESSAGE:
 					break;
 				case PLAYER_JOIN_QUEUE:
-					//playerJoinQueueEvent(args[0], senderID, Integer.parseInt(args[1]));
+					//onPlayerJoinQueue(args[0], senderID, Integer.parseInt(args[1]));
 					break;
 				case PLAYER_LEAVE_QUEUE:
-					//playerLeaveQueueEvent(args[0], senderID);
+					//onPlayerLeaveQueue(args[0], senderID);
 					break;
 				case PLAYER_JOIN_SERVER:
 					//actionPlayerJoinServer(args[1], args[0]);
@@ -211,7 +192,7 @@ public class NetworkEvents
 					//actionPlayerLeaveServer(args[1], args[0]);
 					break;
 				case SERVER_ALERT:
-					networkPlus.getServer().broadcast(args[0]);
+					NetworkPlus.getServer().broadcast(args[0]);
 					break;
 			}
 		}

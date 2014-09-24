@@ -1,9 +1,9 @@
 package com.octopod.networkplus.database;
 
 import com.octopod.networkplus.NetworkPlus;
-import com.octopod.networkplus.server.CachedServerInfo;
-import com.octopod.networkplus.server.LocalServerInfo;
-import com.octopod.networkplus.server.ServerInfo;
+import com.octopod.networkplus.CachedServerInfo;
+import com.octopod.networkplus.LocalServerInfo;
+import com.octopod.networkplus.ServerInfo;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -19,7 +19,7 @@ public class LocalFileDatabase implements ServerDatabase
 
 	public LocalFileDatabase()
 	{
-		thisServerID = NetworkPlus.getInstance().getConnection().getServerIdentifier();
+		thisServerID = NetworkPlus.getConnection().getServerIdentifier();
 		servers.put(thisServerID, new LocalServerInfo());
 	}
 

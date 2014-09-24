@@ -1,16 +1,12 @@
 package com.octopod.networkplus.network.lilypad;
 
-import com.octopod.networkplus.NetworkEvents;
-import com.octopod.networkplus.NetworkPlus;
-import com.octopod.networkplus.NetworkPlusPlugin;
+import com.octopod.networkplus.*;
 import com.octopod.networkplus.event.EventManager;
-import com.octopod.networkplus.event.Listener;
-import com.octopod.networkplus.event.ListenerResult;
+import com.octopod.networkplus.TempListener;
 import com.octopod.networkplus.event.events.NetworkMessageEvent;
 import com.octopod.networkplus.network.NetworkConnection;
 import com.octopod.networkplus.network.NetworkMessage;
 import com.octopod.networkplus.network.NetworkReturn;
-import com.octopod.networkplus.server.ServerLogger;
 import com.octopod.networkplus.server.ServerPlayer;
 import com.octopod.util.configuration.yaml.YamlConfiguration;
 import lilypad.client.connect.api.Connect;
@@ -32,31 +28,20 @@ public class LilypadConnection implements NetworkConnection
 	 */
 	private LilypadListener listener = new LilypadListener();
 
-	private ServerLogger logger;
-
 	private Connect connection;
-
-	private YamlConfiguration config;
-
-	private NetworkPlusPlugin plugin;
 
 	/**
 	 * Gets the Connect instance and ensures that it is connected.
 	 * This should fire the NetworkConnectedEvent after it connects.
 	 */
-	public LilypadConnection(NetworkPlusPlugin plugin, ServerLogger logger) {
-
-		this.config = NetworkPlus.getInstance().getConfig();
-		this.logger = logger;
-		this.plugin = plugin;
-
-		connection = plugin.getConnect();
+	public LilypadConnection()
+	{
+		connection = NetworkPlus.getPlugin().getConnect();
 
 		//Unregisters any listeners if they exist.
 		if(listener != null) {
 			connection.unregisterEvents(listener);
 		}
-
 	}
 
 	@Override
@@ -85,6 +70,10 @@ public class LilypadConnection implements NetworkConnection
 	public void connect()
 	{
 		connection.registerEvents(listener);
+
+		final YamlConfiguration config = NetworkPlus.getConfig();
+		final Logger logger = NetworkPlus.getLogger();
+		final NetworkPlusPlugin plugin = NetworkPlus.getPlugin();
 
 		if(connection != null && !connection.isConnected()) {
 
@@ -119,13 +108,13 @@ public class LilypadConnection implements NetworkConnection
 							return;
 						}
 					}
-					NetworkEvents.actionNetworkConnected();
+					NetworkPlusListener.onNetworkConnected();
 				}
 
 			}).start();
 		} else
 		if(isConnected()) {
-			NetworkEvents.actionNetworkConnected();
+			NetworkPlusListener.onNetworkConnected();
 		}
 	}
 
@@ -136,11 +125,16 @@ public class LilypadConnection implements NetworkConnection
 	 */
 	private Result sendRequest(Request request) {
 		try {
-			return connection.request(request).awaitUninterruptibly(config.getInt("request-timeout", 500));
+			return connection.request(request).awaitUninterruptibly(NetworkPlus.getConfig().getInt("request-timeout", 500));
 		} catch (RequestException e) {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	private void sendRequestAsync(Request request)
+	{
+		try {connection.request(request);} catch (RequestException e) {}
 	}
 
 	/**
@@ -152,41 +146,52 @@ public class LilypadConnection implements NetworkConnection
 	 * @param message the message to send
 	 * @return the result of the request
 	 */
-	private Result sendMessageRequest(String serverID, String channel, String message)
+	private void sendMessageRequest(String serverID, String channel, String message)
 	{
-		try {
-			return sendRequest(new MessageRequest(serverID, channel, message));
-		} catch (UnsupportedEncodingException e) {
-			return null;
-		}
+		try {sendRequestAsync(new MessageRequest(serverID, channel, message));} catch (UnsupportedEncodingException e) {}
 	}
 
 	@Override
-	public void sendNetworkRequest(String serverID, final NetworkMessage request, final NetworkReturn callback)
+	public void sendNetworkRequest(String serverID, final NetworkMessage request, final NetworkReturn ret)
 	{
-		sendMessageRequest(serverID, request.getChannel(), request.getMessage());
+		final EventManager eventManager = NetworkPlus.getEventManager();
+		Thread thread = null;
 
-		final EventManager eventManager = NetworkPlus.getInstance().getEventManager();
-		if(request.getReturnChannel() != null && callback != null)
+		if(request.getReturnChannel() != null && ret != null)
 		{
-			final Listener<NetworkMessageEvent> tempListener = new Listener<NetworkMessageEvent>()
+			TempListenerFilter<NetworkMessageEvent> listener = new TempListenerFilter<NetworkMessageEvent>()
 			{
 				@Override
-				public void onEvent(NetworkMessageEvent event)
+				public boolean onEvent(TempListener listener, NetworkMessageEvent event)
 				{
 					if(event.getChannel().equals(request.getReturnChannel()))
 					{
-						callback.ret(ListenerResult.PASS, event);
-						eventManager.unregisterListener(this);
+						ret.ret(true, event);
+						return true;
+					}
+					return false;
+				}
+			};
+
+			final TempListener genListener = new TempListener<>(NetworkMessageEvent.class, listener);
+
+			thread = new Thread()
+			{
+				public void run()
+				{
+					eventManager.registerListener(genListener);
+					boolean success = genListener.waitFor(500);
+					if(!success)
+					{
+						ret.ret(false, null);
+						eventManager.unregisterListener(genListener);
 					}
 				}
 			};
-			eventManager.registerListener(tempListener);
-			if(tempListener.waitFor(500) == ListenerResult.FAIL)
-			{
-				callback.ret(ListenerResult.FAIL, null);
-			}
 		}
+
+		sendMessageRequest(serverID, request.getChannel(), request.getMessage());
+		if(thread != null) thread.start();
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package com.octopod.networkplus.server;
 
+import com.octopod.networkplus.PlayerOfflineException;
+
 import java.util.List;
 
 /**

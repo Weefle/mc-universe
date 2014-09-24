@@ -1,21 +1,21 @@
 package com.octopod.networkplus.server.bukkit;
 
+import com.octopod.networkplus.Command;
 import com.octopod.networkplus.NetworkPlus;
-import com.octopod.networkplus.server.ServerCommand;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.Arrays;
-import java.util.Map;
 
 /**
  * @author Octopod - octopodsquad@gmail.com
  */
-public class BukkitListener
+public class BukkitListener implements Listener
 {
 	/**
 	 * Handles all the command-related events
@@ -23,14 +23,12 @@ public class BukkitListener
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onCommand(PlayerCommandPreprocessEvent event)
 	{
-		Map<String, ServerCommand> commands = NetworkPlus.getInstance().getCommandManager().getCommands();
-
 		String[] parsed = event.getMessage().split(" ");
 
 		String root = parsed[0];
 		String[] args = Arrays.copyOfRange(parsed, 1, parsed.length);
 
-		ServerCommand command = NetworkPlus.getInstance().getCommandManager().getCommand(root);
+		Command command = NetworkPlus.getCommandManager().getCommand(root);
 
 		if(command != null) {
 			if(command.startCommand(new BukkitPlayer(event.getPlayer()), root, args)) {

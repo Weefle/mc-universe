@@ -1,4 +1,4 @@
-package com.octopod.networkplus.server;
+package com.octopod.networkplus;
 
 /**
  * @author Octopod - octopodsquad@gmail.com
