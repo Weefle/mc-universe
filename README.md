@@ -20,7 +20,8 @@ This allows you to process each event call and return which ones are "valid" exe
 //Or any event
 TempListenerFilter<NetworkMessageEvent> filter = new TempListenerFilter<>()
 {
-    public boolean onEvent(TempListener<NetworkMessageEvent> listener, NetworkMessageEvent event)
+    public boolean onEvent(TempListener<NetworkMessageEvent> listener,
+        NetworkMessageEvent event)
     {
         //Code here
         return true;
@@ -30,12 +31,14 @@ TempListenerFilter<NetworkMessageEvent> filter = new TempListenerFilter<>()
 
 Then, create the listener:
 ```java
-TempListener listener = new TempListener(NetworkMessageEvent.class, filter); //Defaults to 1 execution
+//Defaults to 1 execution
+TempListener<NetworkMessageEvent> listener = new TempListener<>(NetworkMessageEvent.class, filter);
 ```
 
 Now, the next time the event is called, it will run this listener, causing it to unregister itself.
 If you want, you can wait for the listener to unregister itself.
 
 ```java
-boolean complete = listener.waitFor(1000); //Wait for 1000 ms before timing out
+//Wait for 1000 ms before timing out
+boolean complete = listener.waitFor(1000);
 ```
