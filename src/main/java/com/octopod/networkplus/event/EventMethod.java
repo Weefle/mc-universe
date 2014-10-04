@@ -9,18 +9,21 @@ import java.util.Arrays;
 /**
  * @author Octopod - octopodsquad@gmail.com
  */
-class EventListener implements Comparable<EventListener> {
-	private Object object;
+class EventMethod implements Comparable<EventMethod>
+{
+	private Object instance;
 	private Method method;
-	private EventHandler annotation;
+	private EventHandler handler;
 
-	public EventListener(Object object, Method method, EventHandler annotation) {
-		this.object = object;
+	public EventMethod(Object object, Method method, EventHandler annotation) {
+		this.instance = object;
 		this.method = method;
-		this.annotation = annotation;
+		this.handler = annotation;
 	}
 
-	public int getPriorityLevel() {return annotation.priority().getPriority();}
+	public Object getInstance() {return instance;}
+
+	public int getPriorityLevel() {return handler.priority().getPriority();}
 
 	public Event callEvent(final Event event)
 	{
@@ -31,7 +34,7 @@ class EventListener implements Comparable<EventListener> {
 				{
 					try
 					{
-						method.invoke(object, event);
+						method.invoke(instance, event);
 					}
 					catch (Exception e)
 					{
@@ -43,19 +46,20 @@ class EventListener implements Comparable<EventListener> {
 				}
 			};
 
-			if(annotation.async()) {
+			if(handler.async()) {
 				new Thread(invokeMethod).start();
 			} else {
 				invokeMethod.run();
 			}
-		} catch (Exception e) {}
+		}
+		catch (Exception e) {}
 		return event;
 	}
 
-	public EventHandler handler() {return annotation;}
+	public EventHandler handler() {return handler;}
 
 	@Override
-	public int compareTo(EventListener other) {
+	public int compareTo(EventMethod other) {
 		return Integer.compare(getPriorityLevel(), other.getPriorityLevel());
 	}
 }
