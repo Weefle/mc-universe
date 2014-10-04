@@ -32,11 +32,19 @@ public class ServerCommands
 		new ChatElement("Server List", ChatColor.AQUA, ChatFormat.BOLD).send(source);
 		for(Server server: database.getServers())
 		{
-			new ChatElement("    ").
+			ChatElement element = new ChatElement("    ");
+			element.
 				append(server.getServerName(), ChatColor.AQUA).
-				sappend(":", ChatColor.DARK_GRAY).
-				sappend("(" + server.getOnlinePlayers().length + "/" + server.getMaxPlayers() + ")", ChatColor.GOLD).
-			send(source);
+				sappend(":", ChatColor.DARK_GRAY);
+			if(server.getMaxPlayers() == -1)
+			{
+				//Unknown max players
+				element.sappend("(" + server.getOnlinePlayers().length + ")", ChatColor.GOLD);
+			} else
+			{
+				element.sappend("(" + server.getOnlinePlayers().length + "/" + server.getMaxPlayers() + ")", ChatColor.GOLD);
+			}
+			element.send(source);
 		}
 	}
 
@@ -98,8 +106,10 @@ public class ServerCommands
 			@Override
 			public boolean onEvent(TempListener<NetworkMessageEvent> listener, NetworkMessageEvent event)
 			{
+				NetworkPlus.getInterface().broadcast("Ping returned");
 				if(event.getChannel().equals(message.getReturnChannel()) && Integer.parseInt(event.getParsed()[0]) == id)
 				{
+
 					event.setCancelled(true);
 					return true;
 				}
