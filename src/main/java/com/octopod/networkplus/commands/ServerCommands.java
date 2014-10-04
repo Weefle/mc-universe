@@ -32,18 +32,33 @@ public class ServerCommands
 		new ChatElement("Server List", ChatColor.AQUA, ChatFormat.BOLD).send(source);
 		for(Server server: database.getServers())
 		{
+			int total_players = server.getOnlinePlayers().length;
+			ChatElement playercount;
 			ChatElement element = new ChatElement("    ");
 			element.
 				append(server.getServerName(), ChatColor.AQUA).
-				sappend(":", ChatColor.DARK_GRAY);
+				sappend(":", ChatColor.DARK_GRAY).append(' ');
+
 			if(server.getMaxPlayers() == -1)
 			{
 				//Unknown max players
-				element.sappend("(" + server.getOnlinePlayers().length + ")", ChatColor.GOLD);
+				playercount = new ChatElement("(" + total_players + ")");
+
 			} else
 			{
-				element.sappend("(" + server.getOnlinePlayers().length + "/" + server.getMaxPlayers() + ")", ChatColor.GOLD);
+				playercount = new ChatElement("(" + total_players + "/" + server.getMaxPlayers() + ")");
 			}
+
+			if(total_players == 0)
+			{
+				playercount.color(ChatColor.DARK_GRAY);
+			}
+			else
+			{
+				playercount.color(ChatColor.GOLD);
+			}
+
+			element.append(playercount);
 			element.send(source);
 		}
 	}
