@@ -52,8 +52,10 @@ public class EventManager {
                         if(argTypes.length != 1)
                             continue;
 
-                        if(!event.getClass().equals(Event.class) && !event.getClass().equals(argTypes[0]))
+                        if(argTypes[0] != Event.class && !event.getClass().equals(argTypes[0])) {
 							continue;
+						}
+
 
                         methods.add(new EventListener(listener, method, annotation));
                     }
