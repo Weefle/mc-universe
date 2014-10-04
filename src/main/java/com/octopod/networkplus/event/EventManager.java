@@ -1,11 +1,7 @@
 package com.octopod.networkplus.event;
 
-import com.octopod.networkplus.NetworkPlus;
-import com.octopod.networkplus.server.ServerInterface;
-
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -17,63 +13,49 @@ public class EventManager {
 		return listeners;
 	}
 	
-	public void registerListener(Object listener) {
+	public synchronized void registerListener(Object listener)
+	{
 		listeners.add(listener);
 	}
 	
-	public void unregisterListener(Object listener) {
+	public synchronized void unregisterListener(Object listener)
+	{
 		listeners.remove(listener);
 	}
 	
-	public void unregisterAll() {
+	public void unregisterAll()
+	{
 		listeners.clear();
 	}
 
-    public void callEvent(final Event event) {
+    public synchronized void callEvent(final Event event)
+	{
+        List<EventListener> listeners = findListeners(event);
 
-        //NetworkPlus.getLogger().v("&7Triggering event &a" + event.getClass().getSimpleName() + "&7 in thread: &a" + Thread.currentThread().getName());
-
-        List<EventMethod> listeners = collectListenersOf(event);
-
-        synchronized(listeners) {
-
-            //Run all listeners
-            for(final EventMethod eventMethod: listeners) {
-                eventMethod.invoke(event);
-            }
-
-        }
+		for(final EventListener eventMethod: listeners) eventMethod.callEvent(event);
     }
 
-    private ArrayList<EventMethod> collectListenersOf(Event event) {
-
-        synchronized(listeners) {
-            ArrayList<EventMethod> methods = new ArrayList<>();
-            for(Object listener: listeners) {
-
-                for(Method method: listener.getClass().getMethods()) {
+    private ArrayList<EventListener> findListeners(Event event)
+	{
+        synchronized(listeners)
+		{
+            ArrayList<EventListener> methods = new ArrayList<>();
+            for(Object listener: listeners)
+			{
+                for(Method method: listener.getClass().getMethods())
+				{
                     EventHandler annotation = method.getAnnotation(EventHandler.class);
                     if(annotation != null)
                     {
                         Class<?>[] argTypes = method.getParameterTypes();
+
                         if(argTypes.length != 1)
                             continue;
 
-                        //Try to use argument expectedType to find Event expectedType.
-                        if(!Event.class.equals(Event.class) && !event.getClass().equals(argTypes[0])) {
-                            //If the listener is instanceof ListenerIdentifier, getProperty the expectedType
-//                            if(!ListenerIdentifier.class.isInstance(listener)) {
-//                                continue;
-//                            } else {
-//                                Class<? extends Event> expectedType = ((ListenerIdentifier)listener).getType();
-//                                if(!argTypes[0].equals(Event.class) || !(expectedType.equals(event.getClass()))) {
-//                                    continue;
-//                                }
-//                            }
+                        if(!event.getClass().equals(Event.class) && !event.getClass().equals(argTypes[0]))
 							continue;
-                        }
 
-                        methods.add(new EventMethod(listener, method, annotation));
+                        methods.add(new EventListener(listener, method, annotation));
                     }
                 }
 
@@ -83,51 +65,4 @@ public class EventManager {
         }
 
     }
-
-    private static class EventMethod implements Comparable<EventMethod>
-    {
-        private Object object;
-        private Method method;
-        private EventHandler annotation;
-
-        protected EventMethod(Object object, Method method, EventHandler annotation) {
-            this.object = object;
-            this.method = method;
-            this.annotation = annotation;
-        }
-
-        public Event invoke(final Event event) {
-
-            try {
-                Runnable invokeMethod = new Runnable() {
-                    public void run() {
-                        try {
-                            method.invoke(object, event);
-                        } catch (Exception e) {
-							ServerInterface server = NetworkPlus.getServer();
-                            server.console("&cFailed to invoke method " + method.getName() + "(" + Arrays.asList(method.getParameterTypes()) + ")");
-                            server.console("&cUsing arguments of types (" + event.getClass() + ")");
-                        }
-                    }
-                };
-
-                if(annotation.async()) {
-                    new Thread(invokeMethod).start();
-                } else {
-                    invokeMethod.run();
-                }
-            } catch (Exception e) {}
-
-            return event;
-        }
-
-        public EventHandler handler() {return annotation;}
-
-        @Override
-        public int compareTo(EventMethod o) {
-            return Integer.compare(annotation.priority().getPriority(), o.annotation.priority().getPriority());
-        }
-    }
-
-	
 }

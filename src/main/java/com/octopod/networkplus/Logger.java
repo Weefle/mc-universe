@@ -1,15 +1,15 @@
 package com.octopod.networkplus;
 
-import com.octopod.networkplus.server.ServerInterface;
+import com.octopod.minecraft.MinecraftServerInterface;
 
 /**
  * @author Octopod - octopodsquad@gmail.com
  */
 public class Logger
 {
-	ServerInterface server = null;
+	MinecraftServerInterface server = null;
 
-	public Logger(ServerInterface server)
+	public Logger(MinecraftServerInterface server)
 	{
 		this.server = server;
 	}
@@ -22,7 +22,7 @@ public class Logger
 	 */
 	public void log(LoggerLevel level, String message)
 	{
-		server.broadcast(message, level.getPermission().toString());
+		server.broadcast(message, level.node());
 		server.console(message);
 	}
 
@@ -58,20 +58,17 @@ public class Logger
 
 	public static enum LoggerLevel
 	{
-		INFO(Permission.LOGGER_INFO),
-		WARNING(Permission.LOGGER_WARNING),
-		VERBOSE(Permission.LOGGER_VERBOSE);
+		INFO("networkplus.log.info"),
+		WARNING("networkplus.log.warning"),
+		VERBOSE("networkplus.log.verbose");
 
-		Permission permission;
+		String node;
 
-		private LoggerLevel(Permission perm)
+		private LoggerLevel(String node)
 		{
-			permission = perm;
+			this.node = node;
 		}
 
-		public Permission getPermission()
-		{
-			return permission;
-		}
+		public String node() {return node;}
 	}
 }

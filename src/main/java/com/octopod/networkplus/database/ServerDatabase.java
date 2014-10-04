@@ -1,6 +1,6 @@
 package com.octopod.networkplus.database;
 
-import com.octopod.networkplus.ServerInfo;
+import com.octopod.networkplus.Server;
 
 import java.util.Collection;
 
@@ -10,34 +10,39 @@ import java.util.Collection;
 public interface ServerDatabase
 {
 	/**
-	 * Gets the ServerInfo of a server.
+	 * Gets the Server of a server.
 	 * If the server isn't made yet, a new one will be created.
 	 *
-	 * @param serverID the server's identifier
+	 * @param server the server's identifier
 	 * @return the server's information
 	 */
-	public ServerInfo getServerInfo(String serverID);
+	public Server getServer(String server);
 
 	/**
-	 * Gets the ServerInfo of this server
+	 * Adds a server to the database.
+	 * The server's identifier will be used to return this server in the future.
 	 *
-	 * @return the server's information
+	 * @param server the server
 	 */
-	public ServerInfo getServerInfo();
+	public void setServer(Server server);
+
+	public boolean serverExists(String server);
 
 	/**
-	 * Removes the ServerInfo of a server.
+	 * Removes the Server of a server.
 	 *
-	 * @param serverID the server's identifier
+	 * @param server the server's identifier
 	 */
-	public void removeServerInfo(String serverID);
+	public void removeServer(String server);
 
 	/**
 	 * Gets all the currently saved server identifiers.
 	 *
 	 * @return all the saved server identifiers
 	 */
-	public Collection<String> getServerIDs();
+	public Collection<String> getServerNames();
+
+	public Collection<Server> getServers();
 
 	/**
 	 * Saves this database.

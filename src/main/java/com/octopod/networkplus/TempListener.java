@@ -9,10 +9,12 @@ import com.octopod.networkplus.event.EventHandler;
 public class TempListener<T extends Event>
 {
 	private final Object lock = new Object();
+	private final Object last = new Object();
 	private int executionsLeft;
 	private TempListenerFilter<T> filter;
 	private Class<T> type;
 
+	@SuppressWarnings("unchecked")
 	public TempListener(Class<T> type, TempListenerFilter<T> filter)
 	{
 		this.type = type;
@@ -21,6 +23,7 @@ public class TempListener<T extends Event>
 		register();
 	}
 
+	@SuppressWarnings("unchecked")
 	public TempListener(Class<T> type, TempListenerFilter<T> callback, int executions)
 	{
 		this.type = type;
@@ -32,7 +35,7 @@ public class TempListener<T extends Event>
 	@EventHandler
 	public void processEvent(Event event)
 	{
-		if(type.isInstance(event))
+		if(executionsLeft > 0 && type.isInstance(event))
 		{
 			try
 			{
@@ -40,48 +43,66 @@ public class TempListener<T extends Event>
 				{
 					synchronized(lock)
 					{
-						executionsLeft--;
+						if(--executionsLeft == 0) unregister();
 						lock.notify();
 					}
 				}
 			}
 			catch (Exception e) {e.printStackTrace();}
-			if(executionsLeft == 0) unregister();
 		}
 	}
 
 	private void register()
 	{
-		NetworkPlus.getLogger().i("A TempListener has been registered.");
 		NetworkPlus.getEventManager().registerListener(this);
 	}
 
 	private void unregister()
 	{
-		NetworkPlus.getLogger().i("A TempListener has been unregistered.");
+		synchronized(last) {last.notify();}
 		NetworkPlus.getEventManager().unregisterListener(this);
 	}
 
 	/**
 	 * Waits for the filter to get its executions.
 	 * Use <code>timeout</code> (in ms) to timeout afterwards and return anyway.
+	 *
 	 * @param timeout the timeout, in ms
-	 * @return whether the request timed out or not
+	 * @param unregister unregister on timeout?
+	 * @return whether the listener succesfully did its executions within the timeout
 	 */
-	public boolean waitFor(long timeout)
+	public boolean waitFor(long timeout, boolean unregister)
 	{
-		long startTime = System.currentTimeMillis();
+		long start = System.currentTimeMillis();
 		try
 		{
-			//If the time elapsed is lower than the timeout and we still need more executionsLeft
-			while((System.currentTimeMillis() - startTime) < timeout && executionsLeft > 0)
-			{
-				synchronized(lock) {lock.wait(timeout);}
-			}
+			synchronized(last) {last.wait(timeout);}
 		}
 		catch (InterruptedException e) {}
+		boolean success = (System.currentTimeMillis() - start) < timeout;
+		if(!success && unregister) unregister();
+		return success;
+	}
 
-		return (System.currentTimeMillis() - startTime) < timeout;
+	public boolean waitFor(long timeout)
+	{
+		return waitFor(timeout, true);
+	}
+
+	public void waitForAsync(final long timeout, final boolean unregister, final TempListenerFinish finish)
+	{
+		new Thread()
+		{
+			public void run()
+			{
+				finish.finish(waitFor(timeout, unregister));
+			}
+		}.start();
+	}
+
+	public void waitForAsync(long timeout, TempListenerFinish finish)
+	{
+		waitForAsync(timeout, true, finish);
 	}
 
 }

@@ -1,9 +1,8 @@
 package com.octopod.networkplus.database;
 
+import com.octopod.networkplus.CurrentServer;
 import com.octopod.networkplus.NetworkPlus;
-import com.octopod.networkplus.CachedServerInfo;
-import com.octopod.networkplus.LocalServerInfo;
-import com.octopod.networkplus.ServerInfo;
+import com.octopod.networkplus.Server;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -14,36 +13,46 @@ import java.util.Map;
  */
 public class LocalFileDatabase implements ServerDatabase
 {
-	private Map<String, ServerInfo> servers = new HashMap<>();
-	private String thisServerID;
+	private Map<String, Server> servers = new HashMap<>();
 
 	public LocalFileDatabase()
 	{
-		thisServerID = NetworkPlus.getConnection().getServerIdentifier();
-		servers.put(thisServerID, new LocalServerInfo());
+		servers.put(NetworkPlus.getConnection().getServerIdentifier(), new CurrentServer());
 	}
 
 	@Override
-	public ServerInfo getServerInfo(String serverID)
+	public Server getServer(String server)
 	{
-		if(!servers.containsKey(serverID)) servers.put(serverID, new CachedServerInfo());
-		return servers.get(serverID);
+		if(!servers.containsKey(server)) throw new NullPointerException("Server '" + server + "' not found");
+		return servers.get(server);
 	}
 
 	@Override
-	public ServerInfo getServerInfo()
+	public Collection<Server> getServers()
 	{
-		return getServerInfo(thisServerID);
+		return servers.values();
 	}
 
 	@Override
-	public void removeServerInfo(String serverID)
+	public boolean serverExists(String server)
 	{
-		servers.remove(serverID);
+		return servers.containsKey(server);
 	}
 
 	@Override
-	public Collection<String> getServerIDs()
+	public void setServer(Server server)
+	{
+		servers.put(server.getServerIdentifier(), server);
+	}
+
+	@Override
+	public void removeServer(String server)
+	{
+		servers.remove(server);
+	}
+
+	@Override
+	public Collection<String> getServerNames()
 	{
 		return servers.keySet();
 	}
