@@ -153,6 +153,7 @@ public class NetworkPlusListener
 		StaticChannel netChannel = StaticChannel.getByString(channel);
 		if(netChannel != null) //This is on an official channel
 		{
+
 			switch(netChannel)
 			{
 				case SERVER_PING_REQUEST:
