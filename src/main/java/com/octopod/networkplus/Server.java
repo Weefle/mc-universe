@@ -15,6 +15,8 @@ public interface Server
 
 	public Map<ServerValue, Object> toValueMap();
 
+	public boolean isExternal();
+
 	public boolean isOnline();
 
 	public String getServerIdentifier();
