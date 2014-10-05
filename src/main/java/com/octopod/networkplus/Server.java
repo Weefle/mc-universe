@@ -1,5 +1,7 @@
 package com.octopod.networkplus;
 
+import java.util.Map;
+
 /**
  * @author Octopod - octopodsquad@gmail.com
  */
@@ -8,6 +10,10 @@ public interface Server
 	public void setValue(ServerValue type, Object object);
 
 	public Object getValue(ServerValue type);
+
+	public int totalValues();
+
+	public Map<ServerValue, Object> toValueMap();
 
 	public boolean isOnline();
 

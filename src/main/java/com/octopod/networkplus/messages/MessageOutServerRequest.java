@@ -10,7 +10,8 @@ public class MessageOutServerRequest extends NetworkMessage
 {
 	public MessageOutServerRequest()
 	{
-		setChannel(StaticChannel.SERVER_INFO_RETURN);
+		setChannel(StaticChannel.SERVER_INFO_REQUEST);
 		setMessage(NetworkPlus.serialize(NetworkPlus.getServer()));
+		setReturnChannel(StaticChannel.SERVER_INFO_RETURN);
 	}
 }

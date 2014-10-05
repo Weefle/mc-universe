@@ -3,7 +3,9 @@ package com.octopod.networkplus;
 import com.octopod.minecraft.MinecraftPlayer;
 import com.octopod.util.configuration.yaml.YamlConfiguration;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Octopod - octopodsquad@gmail.com
@@ -50,6 +52,23 @@ public class CurrentServer implements Server
 			default:
 				return null;
 		}
+	}
+
+	@Override
+	public int totalValues()
+	{
+		return ServerValue.values().length;
+	}
+
+	@Override
+	public Map<ServerValue, Object> toValueMap()
+	{
+		Map<ServerValue, Object> valueMap = new HashMap<>();
+		for(ServerValue value: ServerValue.values())
+		{
+			valueMap.put(value, getValue(value));
+		}
+		return valueMap;
 	}
 
 	@Override

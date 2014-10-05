@@ -17,14 +17,6 @@ public class CachedServer extends HashMap<ServerValue, Object> implements Server
 		this.name = servername;
 	}
 
-	public CachedServer(Map<ServerValue, Object> values)
-	{
-		if(values != null)
-		{
-			super.putAll(values);
-		}
-	}
-
 	public static CachedServer decode(String servername, String encoded)
 	{
 		CachedServer server = new CachedServer(servername);
@@ -46,15 +38,6 @@ public class CachedServer extends HashMap<ServerValue, Object> implements Server
 	}
 
 	@Override
-	public Object get(Object key)
-	{
-		if(!(key instanceof ServerValue)) return null;
-		ServerValue type = (ServerValue)key;
-
-		return type.expectedType().cast(super.get(key));
-	}
-
-	@Override
 	public void setValue(ServerValue type, Object value)
 	{
 		Class<?> classType = type.expectedType();
@@ -66,12 +49,16 @@ public class CachedServer extends HashMap<ServerValue, Object> implements Server
 		super.put(type, classType.cast(value));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public Object put(ServerValue type, Object value)
+	public Map<ServerValue, Object> toValueMap()
 	{
-		setValue(type, value);
-		return value;
+		return new HashMap<>(this);
+	}
+
+	@Override
+	public int totalValues()
+	{
+		return keySet().size();
 	}
 
 	@Override
@@ -81,7 +68,7 @@ public class CachedServer extends HashMap<ServerValue, Object> implements Server
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T ifNull(Object object, T def)
+	private <T> T ifNull(Object object, T def)
 	{
 		if(object == null) return def;
 		return (T)object;

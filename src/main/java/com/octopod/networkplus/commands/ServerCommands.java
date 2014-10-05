@@ -5,14 +5,18 @@ import com.octopod.networkplus.*;
 import com.octopod.networkplus.database.ServerDatabase;
 import com.octopod.networkplus.event.events.NetworkMessageEvent;
 import com.octopod.networkplus.exceptions.DeserializationException;
-import com.octopod.networkplus.messages.MessageInServerRequest;
 import com.octopod.networkplus.messages.MessageOutServerPing;
+import com.octopod.networkplus.messages.MessageOutServerRequest;
 import com.octopod.networkplus.messages.MessageOutServerValue;
 import com.octopod.networkplus.messages.NetworkMessage;
 import com.octopod.util.common.Math;
 import com.octopod.util.minecraft.chat.*;
 import com.octopod.util.minecraft.command.Command;
 import com.octopod.util.minecraft.command.Default;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Octopod - octopodsquad@gmail.com
@@ -30,8 +34,11 @@ public class ServerCommands
 	{
 		ServerDatabase database = NetworkPlus.getServerDatabase();
 		new ChatElement("Server List", ChatColor.AQUA, ChatFormat.BOLD).send(source);
-		for(Server server: database.getServers())
+		List<String> servernames = new ArrayList<>(database.getServerNames());
+		Collections.sort(servernames);
+		for(String servername: servernames)
 		{
+			Server server = database.getServer(servername);
 			int total_players = server.getOnlinePlayers().length;
 			ChatElement playercount;
 			ChatElement element = new ChatElement("    ");
@@ -121,10 +128,8 @@ public class ServerCommands
 			@Override
 			public boolean onEvent(TempListener<NetworkMessageEvent> listener, NetworkMessageEvent event)
 			{
-				NetworkPlus.getInterface().broadcast("Ping returned");
 				if(event.getChannel().equals(message.getReturnChannel()) && Integer.parseInt(event.getParsed()[0]) == id)
 				{
-
 					event.setCancelled(true);
 					return true;
 				}
@@ -188,7 +193,7 @@ public class ServerCommands
 	)
 	public void serverInfoRequest(final MinecraftCommandSource source, String server)
 	{
-		final NetworkMessage message = new MessageInServerRequest();
+		final NetworkMessage message = new MessageOutServerRequest();
 
 		TempListenerFilter<NetworkMessageEvent> filter = new TempListenerFilter<NetworkMessageEvent>()
 		{
@@ -196,12 +201,12 @@ public class ServerCommands
 			{
 				if(event.getChannel().equals(message.getReturnChannel()))
 				{
-					source.sendMessage("&aServerInfo recieved!");
-					Server serverInfo = new CachedServer(event.getMessage());
+					Server server = CachedServer.decode(event.getServer(), event.getMessage());
+					source.sendMessage("&aRecieved Server from " + event.getServer() + ", " + server.totalValues() + " values.");
 					source.sendMessage("&8------------");
 					for(ServerValue value: ServerValue.values())
 					{
-						source.sendMessage("&b" + value.name() + "&7: &6" + serverInfo.getValue(value));
+						source.sendMessage("&b" + value.name() + "&7: &6" + server.getValue(value));
 					}
 					source.sendMessage("&8------------");
 					return true;

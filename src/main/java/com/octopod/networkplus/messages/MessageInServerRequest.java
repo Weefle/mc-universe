@@ -10,8 +10,7 @@ public class MessageInServerRequest extends NetworkMessage
 {
 	public MessageInServerRequest()
 	{
-		setChannel(StaticChannel.SERVER_INFO_REQUEST);
-		setMessage(NetworkPlus.serialize(NetworkPlus.getServer()));
-		setReturnChannel(StaticChannel.SERVER_INFO_RETURN);
+		setChannel(StaticChannel.SERVER_INFO_RETURN);
+		setMessage(NetworkPlus.serialize(NetworkPlus.getServer().toValueMap()));
 	}
 }

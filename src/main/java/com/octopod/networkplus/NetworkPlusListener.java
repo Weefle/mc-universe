@@ -6,8 +6,8 @@ import com.octopod.networkplus.event.events.NetworkConnectedEvent;
 import com.octopod.networkplus.event.events.NetworkMessageEvent;
 import com.octopod.networkplus.exceptions.DeserializationException;
 import com.octopod.networkplus.messages.MessageInServerPing;
+import com.octopod.networkplus.messages.MessageInServerRequest;
 import com.octopod.networkplus.messages.MessageInServerValue;
-import com.octopod.networkplus.messages.MessageOutServerRequest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -163,7 +163,7 @@ public class NetworkPlusListener
 				case SERVER_PING_MESSAGE: break;
 
 				case SERVER_INFO_REQUEST:
-					new MessageOutServerRequest().send(server);
+					new MessageInServerRequest().send(server);
 					break;
 				case SERVER_INFO_RETURN:
 					if(server.equals(NetworkPlus.getServerIdentifier())) break;
