@@ -136,6 +136,14 @@
                     </filters>
                     <relocations>
                         <relocation>
+                            <pattern>com.octopod.minecraft</pattern>
+                            <shadedPattern>com.octopod.networkplus.minecraft</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.octopod.util</pattern>
+                            <shadedPattern>com.octopod.networkplus.util</shadedPattern>
+                        </relocation>
+                        <relocation>
                             <pattern>com.google.gson</pattern>
                             <shadedPattern>com.octopod.lib.com.google.gson</shadedPattern>
                         </relocation>
