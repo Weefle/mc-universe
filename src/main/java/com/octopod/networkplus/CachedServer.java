@@ -11,10 +11,18 @@ import java.util.Map;
 public class CachedServer extends HashMap<ServerValue, Object> implements Server
 {
 	private String name;
+	private boolean external;
 
 	public CachedServer(String servername)
 	{
 		this.name = servername;
+		this.external = false;
+	}
+
+	public CachedServer(String servername, boolean external)
+	{
+		this.name = servername;
+		this.external = external;
 	}
 
 	public static CachedServer decode(String servername, String encoded)
@@ -59,6 +67,12 @@ public class CachedServer extends HashMap<ServerValue, Object> implements Server
 	public int totalValues()
 	{
 		return keySet().size();
+	}
+
+	@Override
+	public boolean isExternal()
+	{
+		return external;
 	}
 
 	@Override

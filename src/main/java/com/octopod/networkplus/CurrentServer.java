@@ -72,6 +72,12 @@ public class CurrentServer implements Server
 	}
 
 	@Override
+	public boolean isExternal()
+	{
+		return false;
+	}
+
+	@Override
 	public boolean isOnline()
 	{
 		return true;
