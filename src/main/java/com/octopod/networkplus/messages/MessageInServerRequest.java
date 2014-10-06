@@ -8,9 +8,15 @@ import com.octopod.networkplus.StaticChannel;
  */
 public class MessageInServerRequest extends NetworkMessage
 {
-	public MessageInServerRequest()
+	@Override
+	public String[] getMessage()
 	{
-		setChannel(StaticChannel.SERVER_INFO_RETURN);
-		setMessage(NetworkPlus.serialize(NetworkPlus.getServer().toValueMap()));
+		return new String[]{NetworkPlus.serialize(NetworkPlus.getServer().toValueMap())};
+	}
+
+	@Override
+	public String getChannelOut()
+	{
+		return StaticChannel.SERVER_INFO_RETURN.toString();
 	}
 }

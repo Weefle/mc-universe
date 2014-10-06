@@ -1,35 +1,54 @@
 package com.octopod.networkplus.messages;
 
 import com.octopod.networkplus.NetworkPlus;
-import com.octopod.networkplus.StaticChannel;
 
 /**
  * @author Octopod - octopodsquad@gmail.com
  */
 public abstract class NetworkMessage
 {
-	private StaticChannel channel = null;
-	private StaticChannel retChannel = null;
-	private String message = "";
+	/**
+	 * Gets the channel this message will be sent out on.
+	 *
+	 * @return the channel to send out
+	 */
+	public abstract String getChannelOut();
 
-	protected void setChannel(StaticChannel channel) {this.channel = channel;}
-	protected void setReturnChannel(StaticChannel retChannel) {this.retChannel = retChannel;}
-	protected void setMessage(String... arguments)
+	/**
+	 * Gets the channel the expected return message will be sent out on.
+	 *
+	 * @return the channel to expect a return from
+	 */
+	public String getChannelIn() {return null;}
+
+	/**
+	 * Gets the message (arguments) to send.
+	 * The first element of the array will the the main message.
+	 *
+	 * @return the message
+	 */
+	public abstract String[] getMessage();
+
+	/**
+	 * Sends this message to a server.
+	 *
+	 * @param server the server's identifier
+	 */
+	public final void send(String server)
 	{
-		this.message = NetworkPlus.getSerializer().serialize(arguments);
+		NetworkPlus.getConnection().sendNetworkMessage(server, this);
 	}
 
-	public String getChannel() {return channel == null ? null : channel.toString();}
-	public String getReturnChannel() {return retChannel == null ? null : retChannel.toString();}
-	public String getMessage() {return message;}
-
-	public void send(String serverID)
-	{
-		NetworkPlus.getConnection().sendNetworkMessage(serverID, this);
-	}
-
-	public void broadcast()
+	/**
+	 * Sends this message to all servers.
+	 */
+	public final void broadcast()
 	{
 		NetworkPlus.getConnection().broadcastNetworkMessage(this);
+	}
+
+	public final String serialize()
+	{
+		return NetworkPlus.serialize(getMessage());
 	}
 }

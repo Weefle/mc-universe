@@ -12,11 +12,28 @@ import com.octopod.networkplus.StaticChannel;
  */
 public class MessageOutPlayerSend extends NetworkMessage
 {
+	String UUID;
+
 	public MessageOutPlayerSend(MinecraftPlayer player)
 	{
-		setMessage(player.getUUID());
-		setChannel(StaticChannel.PLAYER_WELCOME_REQUEST);
-		setReturnChannel(StaticChannel.PLAYER_WELCOME_RETURN);
+		UUID = player.getUUID();
 	}
 
+	@Override
+	public String[] getMessage()
+	{
+		return new String[]{UUID};
+	}
+
+	@Override
+	public String getChannelOut()
+	{
+		return StaticChannel.PLAYER_WELCOME_REQUEST.toString();
+	}
+
+	@Override
+	public String getChannelIn()
+	{
+		return StaticChannel.PLAYER_WELCOME_RETURN.toString();
+	}
 }

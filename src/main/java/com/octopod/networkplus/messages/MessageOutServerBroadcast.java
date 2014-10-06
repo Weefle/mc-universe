@@ -5,6 +5,10 @@ import com.octopod.networkplus.StaticChannel;
 /**
  * @author Octopod - octopodsquad@gmail.com
  */
+
+/**
+ * Tells the server to broadcast a message to all players.
+ */
 public class MessageOutServerBroadcast extends NetworkMessage
 {
 	private String message;
@@ -12,12 +16,17 @@ public class MessageOutServerBroadcast extends NetworkMessage
 	public MessageOutServerBroadcast(String message)
 	{
 		this.message = message;
-		setMessage(message);
-		setChannel(StaticChannel.SERVER_BROADCAST);
 	}
 
-	public String getMessage()
+	@Override
+	public String[] getMessage()
 	{
-		return message;
+		return new String[]{message};
+	}
+
+	@Override
+	public String getChannelOut()
+	{
+		return StaticChannel.SERVER_BROADCAST.toString();
 	}
 }

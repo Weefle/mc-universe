@@ -7,15 +7,36 @@ import com.octopod.networkplus.StaticChannel;
  */
 public class MessageOutServerPing extends NetworkMessage
 {
+	/**
+	 * The id of the ping, to tell apart different pings in the case of multiple pinging.
+	 */
+	int id;
+
 	public MessageOutServerPing(int id)
 	{
-		setChannel(StaticChannel.SERVER_PING_REQUEST);
-		setMessage("" + id);
-		setReturnChannel(StaticChannel.SERVER_PING_MESSAGE);
+		this.id = id;
 	}
 
 	public MessageOutServerPing()
 	{
-		this(0);
+		this.id = 0;
+	}
+
+	@Override
+	public String[] getMessage()
+	{
+		return new String[]{Integer.toString(id)};
+	}
+
+	@Override
+	public String getChannelOut()
+	{
+		return StaticChannel.SERVER_PING_REQUEST.toString();
+	}
+
+	@Override
+	public String getChannelIn()
+	{
+		return StaticChannel.SERVER_PING_MESSAGE.toString();
 	}
 }

@@ -13,9 +13,26 @@ import com.octopod.networkplus.StaticChannel;
  */
 public class MessageOutPlayerMessage extends NetworkMessage
 {
-	public MessageOutPlayerMessage(MinecraftCommandSource source, String name, String message)
+	String from;
+	String to;
+	String message;
+
+	public MessageOutPlayerMessage(MinecraftCommandSource source, String to, String message)
 	{
-		setChannel(StaticChannel.PLAYER_MESSAGE);
-		setMessage(name, message, source.getName());
+		this.from = source.getName();
+		this.to = to;
+		this.message = message;
+	}
+
+	@Override
+	public String[] getMessage()
+	{
+		return new String[]{from, to, message};
+	}
+
+	@Override
+	public String getChannelOut()
+	{
+		return StaticChannel.PLAYER_MESSAGE.toString();
 	}
 }

@@ -1,32 +1,46 @@
 package com.octopod.networkplus.messages;
 
 import com.octopod.networkplus.NetworkPlus;
-import com.octopod.networkplus.StaticChannel;
 import com.octopod.networkplus.PlayerSendResult;
+import com.octopod.networkplus.StaticChannel;
 
 /**
  * @author Octopod - octopodsquad@gmail.com
  */
 public class MessageInPlayerSend extends NetworkMessage
 {
-	public MessageInPlayerSend(String ID)
+	PlayerSendResult result;
+	String UUID;
+
+	public MessageInPlayerSend(String UUID)
 	{
 		if(NetworkPlus.getInterface().isFull())
 		{
-			setMessage(ID, PlayerSendResult.SERVER_FULL.name());
+			this.result = PlayerSendResult.SERVER_FULL;
 		}
-		else if(NetworkPlus.getInterface().isBanned(ID))
+		else if(NetworkPlus.getInterface().isBanned(UUID))
 		{
-			setMessage(ID, PlayerSendResult.SERVER_BANNED.name());
+			this.result = PlayerSendResult.SERVER_BANNED;
 		}
-		else if(NetworkPlus.getInterface().isWhitelisted(ID))
+		else if(NetworkPlus.getInterface().isWhitelisted(UUID))
 		{
-			setMessage(ID, PlayerSendResult.SERVER_WHITELISTED.name());
+			this.result = PlayerSendResult.SERVER_WHITELISTED;
 		}
 		else
 		{
-			setMessage(ID, PlayerSendResult.SUCCESS.name());
+			this.result = PlayerSendResult.SUCCESS;
 		}
-		setChannel(StaticChannel.PLAYER_WELCOME_RETURN);
+	}
+
+	@Override
+	public String[] getMessage()
+	{
+		return new String[]{UUID, result.name()};
+	}
+
+	@Override
+	public String getChannelOut()
+	{
+		return StaticChannel.PLAYER_WELCOME_RETURN.toString();
 	}
 }
