@@ -38,9 +38,13 @@ TempListenerFilter<NetworkMessageInEvent> filter = new TempListenerFilter<>()
         if(event.getChannel().equals(message.getChannelIn())
         {
             //Code here
+            return true;
         }
+        return false;
     }
 }
+
+TempListener<NetworkMessageInEvent> listener = new TempListener<>(NetworkMessageEvent.class, filter);
 ```
 
 Feel free to add your own NetworkPackets; just have your class extend NetworkPacket.
