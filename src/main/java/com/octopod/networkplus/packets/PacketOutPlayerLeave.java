@@ -28,6 +28,6 @@ public class PacketOutPlayerLeave extends NetworkPacket
 	@Override
 	public String getChannelOut()
 	{
-		return StaticChannel.PLAYER_LEAVE_SERVER.toString();
+		return StaticChannel.OUT_PLAYER_LEAVE_SERVER.toString();
 	}
 }

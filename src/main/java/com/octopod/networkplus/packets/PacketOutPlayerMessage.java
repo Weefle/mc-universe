@@ -33,6 +33,6 @@ public class PacketOutPlayerMessage extends NetworkPacket
 	@Override
 	public String getChannelOut()
 	{
-		return StaticChannel.PLAYER_MESSAGE.toString();
+		return StaticChannel.OUT_PLAYER_MESSAGE.toString();
 	}
 }

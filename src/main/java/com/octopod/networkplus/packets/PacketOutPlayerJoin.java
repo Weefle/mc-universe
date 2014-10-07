@@ -28,6 +28,6 @@ public class PacketOutPlayerJoin extends NetworkPacket
 	@Override
 	public String getChannelOut()
 	{
-		return StaticChannel.PLAYER_JOIN_SERVER.toString();
+		return StaticChannel.OUT_PLAYER_JOIN_SERVER.toString();
 	}
 }
