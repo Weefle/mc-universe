@@ -3,11 +3,12 @@ package com.octopod.networkplus;
 import com.octopod.minecraft.MinecraftPlayer;
 import com.octopod.networkplus.database.ServerDatabase;
 import com.octopod.networkplus.event.events.NetworkConnectedEvent;
-import com.octopod.networkplus.event.events.NetworkMessageEvent;
+import com.octopod.networkplus.event.events.NetworkMessageInEvent;
 import com.octopod.networkplus.exceptions.DeserializationException;
-import com.octopod.networkplus.messages.MessageInServerPing;
-import com.octopod.networkplus.messages.MessageInServerRequest;
-import com.octopod.networkplus.messages.MessageInServerValue;
+import com.octopod.networkplus.packets.PacketInServerDiscover;
+import com.octopod.networkplus.packets.PacketInServerPing;
+import com.octopod.networkplus.packets.PacketInServerValue;
+import com.octopod.networkplus.packets.PacketOutPlayerSend;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,7 +51,7 @@ public class NetworkPlusListener
 	 * @param serverID the server's identifier
 	 * @param event The flags representing information.
 	 */
-	public static void onServerInfoRecieved(String serverID, NetworkMessageEvent event)
+	public static void onServerInfoRecieved(String serverID, NetworkMessageInEvent event)
 	{
 		Logger logger = NetworkPlus.getLogger();
 		Server server = NetworkPlus.getServerDatabase().getServer(serverID);
@@ -143,9 +144,9 @@ public class NetworkPlusListener
 	 * This method is a gateway to other events and features.
 	 * Refer to NetworkConfig.MessageChannel to what each channel does.
 	 */
-	public static void onRecieveMessage(String server, String channel, String message)
+	public static void onMessageIn(String server, String channel, String message)
 	{
-		NetworkMessageEvent event = new NetworkMessageEvent(server, channel, message);
+		NetworkMessageInEvent event = new NetworkMessageInEvent(server, channel, message);
 
 		NetworkPlus.getEventManager().callEvent(event);
 		if(event.isCancelled()) return;
@@ -153,27 +154,28 @@ public class NetworkPlusListener
 		StaticChannel netChannel = StaticChannel.getByString(channel);
 		if(netChannel != null) //This is on an official channel
 		{
-
 			switch(netChannel)
 			{
-				case SERVER_PING_REQUEST:
+				case OUT_SERVER_PING:
 					int id = Integer.parseInt(event.arg(0));
-					new MessageInServerPing(id).send(server);
+					new PacketInServerPing(id).send(server);
 					break;
-				case SERVER_PING_MESSAGE: break;
+				case IN_SERVER_PING: break;
 
-				case SERVER_INFO_REQUEST:
-					new MessageInServerRequest().send(server);
+				case OUT_SERVER_DISCOVER: //Add this server and return
+					new PacketInServerDiscover().send(server);
+					if(server.equals(NetworkPlus.getServerIdentifier())) break;
+					NetworkPlus.getServerDatabase().setServer(CachedServer.decode(server, event.arg(0)));
 					break;
-				case SERVER_INFO_RETURN:
+				case IN_SERVER_DISCOVER: //Add this server
 					if(server.equals(NetworkPlus.getServerIdentifier())) break;
 					NetworkPlus.getServerDatabase().setServer(CachedServer.decode(server, event.arg(0)));
 					break;
 
-				case SERVER_VALUE_REQUEST:
-					new MessageInServerValue(ServerValue.valueOf(event.arg(0))).send(server);
+				case OUT_SERVER_VALUE_REQUEST:
+					new PacketInServerValue(ServerValue.valueOf(event.arg(0))).send(server);
 					break;
-				case SERVER_VALUE_RETURN:
+				case IN_SERVER_VALUE_REQUEST:
 					try {
 						ServerDatabase database = NetworkPlus.getServerDatabase();
 						if(database.serverExists(server))
@@ -194,31 +196,27 @@ public class NetworkPlusListener
 					catch (NullPointerException | DeserializationException e) {e.printStackTrace();}
 					break;
 
-				case SERVER_ONLINE:
-					//TODO: run event for server going online
-					break;
-				case SERVER_OFFLINE:
-					//TODO: run event for server going offline (with time as argument)
-					break;
-				case SERVER_SENDALL:
+				case OUT_SERVER_SENDALL:
 					//Message is the server name
-					NetworkConnection connection = NetworkPlus.getConnection();
-					for(MinecraftPlayer player: NetworkPlus.getInterface().getOnlinePlayers()) connection.redirectPlayer(player, message);
-				case PLAYER_MESSAGE:
+					for(MinecraftPlayer player: NetworkPlus.getInterface().getOnlinePlayers())
+					{
+						new PacketOutPlayerSend(player).send(event.getMessage());
+					}
+				case OUT_PLAYER_MESSAGE:
 					break;
-				case PLAYER_JOIN_QUEUE:
+				case OUT_PLAYER_JOIN_QUEUE:
 					//onPlayerJoinQueue(args[0], senderID, Integer.parseInt(args[1]));
 					break;
-				case PLAYER_LEAVE_QUEUE:
+				case OUT_PLAYER_LEAVE_QUEUE:
 					//onPlayerLeaveQueue(args[0], senderID);
 					break;
-				case PLAYER_JOIN_SERVER:
+				case OUT_PLAYER_JOIN_SERVER:
 					//actionPlayerJoinServer(args[1], args[0]);
 					break;
-				case PLAYER_LEAVE_SERVER:
+				case OUT_PLAYER_LEAVE_SERVER:
 					//actionPlayerLeaveServer(args[1], args[0]);
 					break;
-				case SERVER_BROADCAST:
+				case OUT_SERVER_BROADCAST:
 					NetworkPlus.getInterface().broadcast(event.arg(0));
 					break;
 			}
