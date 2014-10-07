@@ -1,11 +1,11 @@
-name: NetworkPlus
-main: com.octopod.networkplus.BukkitNetworkPlusPlugin
+name: SwitchCore
+main: com.octopod.switchcore.BukkitSwitchCorePlugin
 version: ${version}
 softdepend: ['LilyPad-Connect']
 permissions:
-    network.server.connect:
+    switchcore.server.connect:
         default: true
-    network.server.list:
+    switchcore.server.list:
         default: true
-    network.main:
+    switchcore.main:
         default: true 

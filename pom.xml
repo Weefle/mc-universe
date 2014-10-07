@@ -3,10 +3,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.octopod</groupId>
-    <artifactId>networkplus</artifactId>
+    <artifactId>switchcore</artifactId>
     <version>TEST_BUILD</version>
 
-    <name>NetworkPlus</name>
+    <name>SwitchCore</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -137,11 +137,11 @@
                     <relocations>
                         <relocation>
                             <pattern>com.octopod.minecraft</pattern>
-                            <shadedPattern>com.octopod.networkplus.minecraft</shadedPattern>
+                            <shadedPattern>com.octopod.switchcore.minecraft</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>com.octopod.util</pattern>
-                            <shadedPattern>com.octopod.networkplus.util</shadedPattern>
+                            <shadedPattern>com.octopod.switchcore.util</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>com.google.gson</pattern>
@@ -177,7 +177,7 @@
 					<options>
                         <option>-dontshrink</option>
 						<option>-keep class **</option>
-                        <option>-keepnames class com.octopod.network.NetworkPlusPlugin</option>
+                        <option>-keepnames class com.octopod.network.SwitchCorePlugin</option>
 						<option>-keepattributes **</option>
 					</options>
 					<libs>

@@ -19,23 +19,23 @@ Sending messages cross-server uses a packet-like system. For example, asking a s
 new PacketOutPlayerSend(player).send(server);
 ```
 
-The arguments of the packets are an array of strings, which are serialized and used as the message to send between servers.
-Because of this, the NetworkMessageInEvent automatically tries to deserialize the message as an array of strings for easy access.
-If the message cannot be deserialized as an array of strings, then then an array with the message being the only element will be made.
+The arguments of the packets are an array of strings, which are serialized and used as the packet to send between servers.
+Because of this, the NetworkMessageInEvent automatically tries to deserialize the packet as an array of strings for easy access.
+If the packet cannot be deserialized as an array of strings, then then an array with the packet being the only element will be made.
 
-Some messages, such as PacketOutPlayerSend, expect a message to be returned on a different channel via the NetworkMessageInEvent.
+Some messages, such as PacketOutPlayerSend, expect a packet to be returned on a different channel via the NetworkMessageInEvent.
 At this time, the only way to tell apart what return messages are for which packet is by the channel.
 
-You can create a Temporary Listener (next section) to listen and/or wait for this return message,
+You can create a Temporary Listener (next section) to listen and/or wait for this return packet,
 then match the channel of the event to the "in channel" of the packet:
 ```java
-final NetworkPacket message = new MessageOutPlayerSend(player).send(server);
+final NetworkPacket packet = new MessageOutPlayerSend(player).send(server);
 TempListenerFilter<NetworkMessageInEvent> filter = new TempListenerFilter<>()
 {
     public boolean onEvent(TempListener<NetworkMessageInEvent> listener,
         NetworkMessageInEvent event)
     {
-        if(event.getChannel().equals(message.getChannelIn())
+        if(event.getChannel().equals(packet.getChannelIn())
         {
             //Code here
             return true;
