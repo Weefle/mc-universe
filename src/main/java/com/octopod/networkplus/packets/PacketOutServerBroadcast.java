@@ -27,6 +27,6 @@ public class PacketOutServerBroadcast extends NetworkPacket
 	@Override
 	public String getChannelOut()
 	{
-		return StaticChannel.SERVER_BROADCAST.toString();
+		return StaticChannel.OUT_SERVER_BROADCAST.toString();
 	}
 }
