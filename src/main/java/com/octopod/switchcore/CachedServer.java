@@ -44,9 +44,15 @@ public class CachedServer implements Server
 	}
 
 	@Override
-	public Object getValue(ServerValue type)
+	public Object getValue(ServerValue vtype)
 	{
-		return type.expectedType().cast(values.get(type));
+		Class<?> type = vtype.expectedType();
+		Object value = values.get(vtype);
+		if(value instanceof Double && type.equals(Integer.class))
+		{
+			return ((Double)value).intValue();
+		}
+		return type.cast(value);
 	}
 
 	@Override
