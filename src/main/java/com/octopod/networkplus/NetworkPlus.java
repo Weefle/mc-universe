@@ -2,15 +2,17 @@ package com.octopod.networkplus;
 
 import com.octopod.minecraft.MinecraftPlayer;
 import com.octopod.minecraft.MinecraftServerInterface;
-import com.octopod.networkplus.compatable.CompatabilityLayer;
-import com.octopod.networkplus.compatable.LilypadEssentialsCompatability;
 import com.octopod.networkplus.database.LocalFileDatabase;
 import com.octopod.networkplus.database.ServerDatabase;
 import com.octopod.networkplus.event.EventManager;
-import com.octopod.networkplus.event.events.NetworkMessageEvent;
+import com.octopod.networkplus.event.events.NetworkMessageInEvent;
+import com.octopod.networkplus.event.events.NetworkMessageOutEvent;
+import com.octopod.networkplus.event.events.NetworkPacketOutEvent;
+import com.octopod.networkplus.extensions.LilypadEssentialsFaker;
+import com.octopod.networkplus.extensions.NetworkExtension;
 import com.octopod.networkplus.lilypad.LilypadConnection;
-import com.octopod.networkplus.messages.MessageOutPlayerSend;
-import com.octopod.networkplus.messages.NetworkMessage;
+import com.octopod.networkplus.packets.NetworkPacket;
+import com.octopod.networkplus.packets.PacketOutPlayerSend;
 import com.octopod.networkplus.serializer.GsonSerializer;
 import com.octopod.networkplus.serializer.NetworkPlusSerializer;
 import com.octopod.util.configuration.yaml.YamlConfiguration;
@@ -38,7 +40,7 @@ public class NetworkPlus
 		NetworkPlus.connection = new LilypadConnection();
 		NetworkPlus.database = new LocalFileDatabase();
 
-		registerCompatability(LilypadEssentialsCompatability.class);
+		registerExtension(LilypadEssentialsFaker.class);
 	}
 
 	public static void dinit()
@@ -62,10 +64,10 @@ public class NetworkPlus
 
 	private static NetworkPlusPlugin plugin = null;
 
-	private static List<CompatabilityLayer> compatabilityLayers = new ArrayList<>();
+	private static List<NetworkExtension> extensions = new ArrayList<>();
 
 	/**
-	 * The Serializer where messages will be encoded and decoded where possible
+	 * The Serializer where packets will be encoded and decoded where possible
 	 */
 	private static NetworkPlusSerializer serializer = null;
 
@@ -75,7 +77,7 @@ public class NetworkPlus
 	private static ServerDatabase database = null;
 
 	/**
-	 * Returns the prefix that some messages will use
+	 * Returns the prefix that some packets will use
 	 *
 	 * @return this plugin's message prefix
 	 */
@@ -94,14 +96,14 @@ public class NetworkPlus
 
 	public static NetworkPlusPlugin getPlugin() {return plugin;}
 
-	public static void registerCompatability(Class<? extends CompatabilityLayer> type)
+	public static void registerExtension(Class<? extends NetworkExtension> type)
 	{
 		try
 		{
-			CompatabilityLayer layer = type.newInstance();
-			compatabilityLayers.add(layer);
-			layer.onEnable();
-			server.broadcast(PREFIX + "&7Currently running in compatability with &a" + layer.getName() + "&7!");
+			NetworkExtension extension = type.newInstance();
+			extensions.add(extension);
+			extension.onEnable();
+			server.broadcast(PREFIX + "&7Loaded Extension &a" + extension.getName() + "&7!");
 		}
 		catch(InstantiationException | IllegalAccessException e)
 		{
@@ -111,11 +113,11 @@ public class NetworkPlus
 
 	public static void unregisterCompatabilities()
 	{
-		for(CompatabilityLayer layer: compatabilityLayers)
+		for(NetworkExtension layer: extensions)
 		{
 			layer.onDisable();
 		}
-		compatabilityLayers = new ArrayList<>();
+		extensions = new ArrayList<>();
 	}
 
 	/**
@@ -155,7 +157,7 @@ public class NetworkPlus
 	public static ServerDatabase getServerDatabase() {return database;}
 
 	/**
-	 * Gets the current Serializer for messages.
+	 * Gets the current Serializer for packets.
 	 *
 	 * @return the current NetworkPlusSerializer
 	 */
@@ -202,16 +204,57 @@ public class NetworkPlus
 		return serializer.deserialize(encoded, type);
 	}
 
+	public static void sendMessage(String server, String channel, String message)
+	{
+		NetworkMessageOutEvent event = new NetworkMessageOutEvent(server, channel, message);
+		NetworkPlus.getEventManager().callEvent(event);
+		if(!event.isCancelled())
+		{
+			connection.sendMessage(server, channel, message);
+		}
+	}
+
+	public static void sendPacket(String server, NetworkPacket message)
+	{
+		NetworkPacketOutEvent event = new NetworkPacketOutEvent(server, message);
+		NetworkPlus.getEventManager().callEvent(event);
+		if(!event.isCancelled())
+		{
+			sendMessage(server, message.getChannelOut(), NetworkPlus.serialize(message.getMessage()));
+		}
+	}
+
+	public static void broadcastMessage(String channel, String message)
+	{
+		NetworkMessageOutEvent event = new NetworkMessageOutEvent(channel, message);
+		NetworkPlus.getEventManager().callEvent(event);
+		if(!event.isCancelled())
+		{
+			connection.broadcastMessage(channel, message);
+		}
+
+	}
+
+	public static void broadcastPacket(NetworkPacket message)
+	{
+		NetworkPacketOutEvent event = new NetworkPacketOutEvent(message);
+		NetworkPlus.getEventManager().callEvent(event);
+		if(!event.isCancelled())
+		{
+			broadcastMessage(message.getChannelOut(), NetworkPlus.serialize(message.getMessage()));
+		}
+	}
+
 	public PlayerSendResult redirectPlayer(final MinecraftPlayer player, final String server)
 	{
 		final AtomicReference<PlayerSendResult> result = new AtomicReference<>();
-		final NetworkMessage message = new MessageOutPlayerSend(player);
+		final NetworkPacket message = new PacketOutPlayerSend(player);
 
-		TempListenerFilter<NetworkMessageEvent> filter = new TempListenerFilter<NetworkMessageEvent>()
+		TempListenerFilter<NetworkMessageInEvent> filter = new TempListenerFilter<NetworkMessageInEvent>()
 		{
-			public boolean onEvent(TempListener<NetworkMessageEvent> listener, NetworkMessageEvent event)
+			public boolean onEvent(TempListener<NetworkMessageInEvent> listener, NetworkMessageInEvent event)
 			{
-				if(event.getChannel().equals(message.getReturnChannel()))
+				if(event.getChannel().equals(message.getChannelIn()))
 				{
 					if(player.getUUID().equals(event.getParsed()[0]))
 					{
@@ -224,7 +267,7 @@ public class NetworkPlus
 		};
 
 		message.send(server);
-		new TempListener<>(NetworkMessageEvent.class, filter).waitFor(500);
+		new TempListener<>(NetworkMessageInEvent.class, filter).waitFor(500);
 
 		return result.get();
 	}

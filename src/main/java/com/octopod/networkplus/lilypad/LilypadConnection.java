@@ -2,8 +2,6 @@ package com.octopod.networkplus.lilypad;
 
 import com.octopod.minecraft.MinecraftPlayer;
 import com.octopod.networkplus.*;
-import com.octopod.networkplus.event.events.NetworkMessageSendEvent;
-import com.octopod.networkplus.messages.NetworkMessage;
 import com.octopod.util.configuration.yaml.YamlConfiguration;
 import lilypad.client.connect.api.Connect;
 import lilypad.client.connect.api.request.Request;
@@ -142,36 +140,20 @@ public class LilypadConnection implements NetworkConnection
 	 * @param message the message to send
 	 * @return the result of the request
 	 */
-	public void sendNetworkMessage(String server, String channel, String message)
+	@Override
+	public void sendMessage(String server, String channel, String message)
 	{
 		try {sendRequestAsync(new MessageRequest(server, channel, message));} catch (UnsupportedEncodingException e) {}
 	}
 
 	@Override
-	public void sendNetworkMessage(String server, NetworkMessage message)
+	public void broadcastMessage(String channel, String message)
 	{
-		NetworkMessageSendEvent event = new NetworkMessageSendEvent(server, message);
-		NetworkPlus.getEventManager().callEvent(event);
-		if(!event.isCancelled())
-		{
-			sendNetworkMessage(server, message.getChannel(), message.getMessage());
-		}
+		sendMessage(null, channel, message);
 	}
 
 	@Override
-	public void broadcastNetworkMessage(String channel, String message)
-	{
-		sendNetworkMessage(null, channel, message);
-	}
-
-	@Override
-	public void broadcastNetworkMessage(NetworkMessage message)
-	{
-		sendNetworkMessage(null, message);
-	}
-
-	@Override
-	public void redirectPlayer(MinecraftPlayer player, String server)
+	public void sendPlayer(MinecraftPlayer player, String server)
 	{
 		sendRequest(new RedirectRequest(server, player.getName()));
 	}

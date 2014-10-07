@@ -25,6 +25,6 @@ public class LilypadListener
 			return;
 		}
 
-		NetworkPlusListener.onRecieveMessage(serverID, channel, message);
+		NetworkPlusListener.onMessageIn(serverID, channel, message);
 	}
 }
