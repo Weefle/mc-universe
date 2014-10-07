@@ -8,12 +8,12 @@ import com.octopod.networkplus.exceptions.DeserializationException;
 /**
  * @author Octopod - octopodsquad@gmail.com
  */
-public class NetworkMessageEvent extends Event implements CancellableEvent
+public class NetworkMessageInEvent extends Event implements CancellableEvent
 {
 	String server, channel, message;
 	String[] parsed;
 
-	public NetworkMessageEvent(String server, String channel, String message)
+	public NetworkMessageInEvent(String server, String channel, String message)
 	{
 		this.server = server;
 		this.channel = channel;
@@ -29,7 +29,7 @@ public class NetworkMessageEvent extends Event implements CancellableEvent
 	public String getServer() {return server;}
 	public String getChannel() {return channel;}
 	public String getRawMessage() {return message;}
-	public String getMessage() {return parsed.length > 0 ? parsed[0] : "";}
+	public String getMessage() {return parsed.length > 0 ? parsed[0] : message;}
 	public String[] getParsed() {return parsed;}
 	public String arg(int i)
 	{
