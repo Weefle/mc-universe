@@ -8,7 +8,7 @@ import com.octopod.networkplus.event.EventManager;
 import com.octopod.networkplus.event.events.NetworkMessageInEvent;
 import com.octopod.networkplus.event.events.NetworkMessageOutEvent;
 import com.octopod.networkplus.event.events.NetworkPacketOutEvent;
-import com.octopod.networkplus.extensions.LilypadEssentialsFaker;
+import com.octopod.networkplus.extensions.LilypadEssentialsCompatability;
 import com.octopod.networkplus.extensions.NetworkExtension;
 import com.octopod.networkplus.lilypad.LilypadConnection;
 import com.octopod.networkplus.packets.NetworkPacket;
@@ -40,7 +40,7 @@ public class NetworkPlus
 		NetworkPlus.connection = new LilypadConnection();
 		NetworkPlus.database = new LocalFileDatabase();
 
-		registerExtension(LilypadEssentialsFaker.class);
+		registerExtension(LilypadEssentialsCompatability.class);
 	}
 
 	public static void dinit()
