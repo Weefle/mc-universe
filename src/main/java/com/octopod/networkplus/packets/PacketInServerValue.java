@@ -1,4 +1,4 @@
-package com.octopod.networkplus.messages;
+package com.octopod.networkplus.packets;
 
 import com.octopod.networkplus.NetworkPlus;
 import com.octopod.networkplus.StaticChannel;
@@ -7,11 +7,11 @@ import com.octopod.networkplus.ServerValue;
 /**
  * @author Octopod - octopodsquad@gmail.com
  */
-public class MessageInServerValue extends NetworkMessage
+public class PacketInServerValue extends NetworkPacket
 {
 	ServerValue value;
 
-	public MessageInServerValue(ServerValue value)
+	public PacketInServerValue(ServerValue value)
 	{
 		this.value = value;
 	}
@@ -26,6 +26,6 @@ public class MessageInServerValue extends NetworkMessage
 	@Override
 	public String getChannelOut()
 	{
-		return StaticChannel.SERVER_VALUE_RETURN.toString();
+		return StaticChannel.IN_SERVER_VALUE_REQUEST.toString();
 	}
 }

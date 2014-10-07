@@ -1,4 +1,4 @@
-package com.octopod.networkplus.messages;
+package com.octopod.networkplus.packets;
 
 import com.octopod.networkplus.NetworkPlus;
 import com.octopod.networkplus.StaticChannel;
@@ -6,7 +6,7 @@ import com.octopod.networkplus.StaticChannel;
 /**
  * @author Octopod - octopodsquad@gmail.com
  */
-public class MessageInServerRequest extends NetworkMessage
+public class PacketOutServerRequest extends NetworkPacket
 {
 	@Override
 	public String[] getMessage()
@@ -17,6 +17,12 @@ public class MessageInServerRequest extends NetworkMessage
 	@Override
 	public String getChannelOut()
 	{
-		return StaticChannel.SERVER_INFO_RETURN.toString();
+		return StaticChannel.OUT_SERVER_DISCOVER.toString();
+	}
+
+	@Override
+	public String getChannelIn()
+	{
+		return StaticChannel.IN_SERVER_DISCOVER.toString();
 	}
 }

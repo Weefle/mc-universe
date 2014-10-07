@@ -1,4 +1,4 @@
-package com.octopod.networkplus.messages;
+package com.octopod.networkplus.packets;
 
 import com.octopod.networkplus.StaticChannel;
 
@@ -9,11 +9,11 @@ import com.octopod.networkplus.StaticChannel;
 /**
  * Tells the server to broadcast a message to all players.
  */
-public class MessageOutServerBroadcast extends NetworkMessage
+public class PacketOutServerBroadcast extends NetworkPacket
 {
 	private String message;
 
-	public MessageOutServerBroadcast(String message)
+	public PacketOutServerBroadcast(String message)
 	{
 		this.message = message;
 	}

@@ -1,4 +1,4 @@
-package com.octopod.networkplus.messages;
+package com.octopod.networkplus.packets;
 
 import com.octopod.networkplus.StaticChannel;
 
@@ -9,11 +9,11 @@ import com.octopod.networkplus.StaticChannel;
 /**
  * This will tell a server to run a command (as the console)
  */
-public class MessageOutServerCommand extends NetworkMessage
+public class PacketOutServerCommand extends NetworkPacket
 {
 	String command;
 
-	public MessageOutServerCommand(String command)
+	public PacketOutServerCommand(String command)
 	{
 		this.command = command;
 	}
@@ -27,6 +27,6 @@ public class MessageOutServerCommand extends NetworkMessage
 	@Override
 	public String getChannelOut()
 	{
-		return StaticChannel.SERVER_DISPATCH.toString();
+		return StaticChannel.OUT_SERVER_DISPATCH.toString();
 	}
 }

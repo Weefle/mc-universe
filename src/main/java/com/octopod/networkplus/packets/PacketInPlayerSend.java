@@ -1,4 +1,4 @@
-package com.octopod.networkplus.messages;
+package com.octopod.networkplus.packets;
 
 import com.octopod.networkplus.NetworkPlus;
 import com.octopod.networkplus.PlayerSendResult;
@@ -7,12 +7,12 @@ import com.octopod.networkplus.StaticChannel;
 /**
  * @author Octopod - octopodsquad@gmail.com
  */
-public class MessageInPlayerSend extends NetworkMessage
+public class PacketInPlayerSend extends NetworkPacket
 {
 	PlayerSendResult result;
 	String UUID;
 
-	public MessageInPlayerSend(String UUID)
+	public PacketInPlayerSend(String UUID)
 	{
 		if(NetworkPlus.getInterface().isFull())
 		{
@@ -41,6 +41,6 @@ public class MessageInPlayerSend extends NetworkMessage
 	@Override
 	public String getChannelOut()
 	{
-		return StaticChannel.PLAYER_WELCOME_RETURN.toString();
+		return StaticChannel.IN_PLAYER_SEND_REQUEST.toString();
 	}
 }

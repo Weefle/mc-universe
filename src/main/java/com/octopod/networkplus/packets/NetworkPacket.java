@@ -1,11 +1,11 @@
-package com.octopod.networkplus.messages;
+package com.octopod.networkplus.packets;
 
 import com.octopod.networkplus.NetworkPlus;
 
 /**
  * @author Octopod - octopodsquad@gmail.com
  */
-public abstract class NetworkMessage
+public abstract class NetworkPacket
 {
 	/**
 	 * Gets the channel this message will be sent out on.
@@ -36,7 +36,7 @@ public abstract class NetworkMessage
 	 */
 	public final void send(String server)
 	{
-		NetworkPlus.getConnection().sendNetworkMessage(server, this);
+		NetworkPlus.sendPacket(server, this);
 	}
 
 	/**
@@ -44,7 +44,7 @@ public abstract class NetworkMessage
 	 */
 	public final void broadcast()
 	{
-		NetworkPlus.getConnection().broadcastNetworkMessage(this);
+		NetworkPlus.broadcastPacket(this);
 	}
 
 	public final String serialize()

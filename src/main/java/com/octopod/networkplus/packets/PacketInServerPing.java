@@ -1,20 +1,20 @@
-package com.octopod.networkplus.messages;
+package com.octopod.networkplus.packets;
 
 import com.octopod.networkplus.StaticChannel;
 
 /**
  * @author Octopod - octopodsquad@gmail.com
  */
-public class MessageInServerPing extends NetworkMessage
+public class PacketInServerPing extends NetworkPacket
 {
 	int id;
 
-	public MessageInServerPing(int id)
+	public PacketInServerPing(int id)
 	{
 		this.id = id;
 	}
 
-	public MessageInServerPing()
+	public PacketInServerPing()
 	{
 		this.id = 0;
 	}
@@ -28,6 +28,6 @@ public class MessageInServerPing extends NetworkMessage
 	@Override
 	public String getChannelOut()
 	{
-		return StaticChannel.SERVER_PING_MESSAGE.toString();
+		return StaticChannel.IN_SERVER_PING.toString();
 	}
 }

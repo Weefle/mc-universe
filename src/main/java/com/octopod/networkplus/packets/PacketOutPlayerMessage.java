@@ -1,4 +1,4 @@
-package com.octopod.networkplus.messages;
+package com.octopod.networkplus.packets;
 
 import com.octopod.minecraft.MinecraftCommandSource;
 import com.octopod.networkplus.StaticChannel;
@@ -11,13 +11,13 @@ import com.octopod.networkplus.StaticChannel;
  * Sending this message to a server will cause it to look for any player matching
  * the name and sending that player a message.
  */
-public class MessageOutPlayerMessage extends NetworkMessage
+public class PacketOutPlayerMessage extends NetworkPacket
 {
 	String from;
 	String to;
 	String message;
 
-	public MessageOutPlayerMessage(MinecraftCommandSource source, String to, String message)
+	public PacketOutPlayerMessage(MinecraftCommandSource source, String to, String message)
 	{
 		this.from = source.getName();
 		this.to = to;

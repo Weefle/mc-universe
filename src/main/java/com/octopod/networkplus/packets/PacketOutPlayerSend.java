@@ -1,4 +1,4 @@
-package com.octopod.networkplus.messages;
+package com.octopod.networkplus.packets;
 
 import com.octopod.minecraft.MinecraftPlayer;
 import com.octopod.networkplus.StaticChannel;
@@ -10,11 +10,11 @@ import com.octopod.networkplus.StaticChannel;
 /**
  * Requests a server to tell us if this player is welcomed on the server or not.
  */
-public class MessageOutPlayerSend extends NetworkMessage
+public class PacketOutPlayerSend extends NetworkPacket
 {
 	String UUID;
 
-	public MessageOutPlayerSend(MinecraftPlayer player)
+	public PacketOutPlayerSend(MinecraftPlayer player)
 	{
 		UUID = player.getUUID();
 	}
@@ -28,12 +28,12 @@ public class MessageOutPlayerSend extends NetworkMessage
 	@Override
 	public String getChannelOut()
 	{
-		return StaticChannel.PLAYER_WELCOME_REQUEST.toString();
+		return StaticChannel.OUT_PLAYER_SEND_REQUEST.toString();
 	}
 
 	@Override
 	public String getChannelIn()
 	{
-		return StaticChannel.PLAYER_WELCOME_RETURN.toString();
+		return StaticChannel.IN_PLAYER_SEND_REQUEST.toString();
 	}
 }

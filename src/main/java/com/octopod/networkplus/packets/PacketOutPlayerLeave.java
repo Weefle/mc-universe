@@ -1,4 +1,4 @@
-package com.octopod.networkplus.messages;
+package com.octopod.networkplus.packets;
 
 import com.octopod.minecraft.MinecraftPlayer;
 import com.octopod.networkplus.StaticChannel;
@@ -10,11 +10,11 @@ import com.octopod.networkplus.StaticChannel;
 /**
  * This will tell a server that this player has left the server.
  */
-public class MessageOutPlayerLeave extends NetworkMessage
+public class PacketOutPlayerLeave extends NetworkPacket
 {
 	String UUID;
 
-	public MessageOutPlayerLeave(MinecraftPlayer player)
+	public PacketOutPlayerLeave(MinecraftPlayer player)
 	{
 		UUID = player.getUUID();
 	}

@@ -1,4 +1,4 @@
-package com.octopod.networkplus.messages;
+package com.octopod.networkplus.packets;
 
 import com.octopod.minecraft.MinecraftPlayer;
 import com.octopod.networkplus.StaticChannel;
@@ -10,11 +10,11 @@ import com.octopod.networkplus.StaticChannel;
 /**
  * This will tell a server that a player has joined this server.
  */
-public class MessageOutPlayerJoin extends NetworkMessage
+public class PacketOutPlayerJoin extends NetworkPacket
 {
 	String UUID;
 
-	public MessageOutPlayerJoin(MinecraftPlayer player)
+	public PacketOutPlayerJoin(MinecraftPlayer player)
 	{
 		UUID = player.getUUID();
 	}
