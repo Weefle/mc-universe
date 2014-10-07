@@ -6,7 +6,7 @@ import com.octopod.networkplus.StaticChannel;
 /**
  * @author Octopod - octopodsquad@gmail.com
  */
-public class PacketInServerRequest extends NetworkPacket
+public class PacketInServerDiscover extends NetworkPacket
 {
 	@Override
 	public String[] getMessage()

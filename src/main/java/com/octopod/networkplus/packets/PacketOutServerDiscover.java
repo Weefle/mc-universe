@@ -6,7 +6,12 @@ import com.octopod.networkplus.StaticChannel;
 /**
  * @author Octopod - octopodsquad@gmail.com
  */
-public class PacketOutServerRequest extends NetworkPacket
+
+/**
+ * Used with broadcast()
+ * A server (with NetworkPlus loaded) that recieves this packet will return another one with their current information.
+ */
+public class PacketOutServerDiscover extends NetworkPacket
 {
 	@Override
 	public String[] getMessage()
