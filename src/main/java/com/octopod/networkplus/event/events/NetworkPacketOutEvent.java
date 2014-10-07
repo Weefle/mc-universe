@@ -2,20 +2,27 @@ package com.octopod.networkplus.event.events;
 
 import com.octopod.networkplus.event.CancellableEvent;
 import com.octopod.networkplus.event.Event;
-import com.octopod.networkplus.messages.NetworkMessage;
+import com.octopod.networkplus.packets.NetworkPacket;
 
 /**
  * @author Octopod - octopodsquad@gmail.com
  */
-public class NetworkMessageSendEvent extends Event implements CancellableEvent
+public class NetworkPacketOutEvent extends Event implements CancellableEvent
 {
 	private String server;
-	private NetworkMessage message;
+	private NetworkPacket message;
+
 	private boolean cancelled = false;
 
-	public NetworkMessageSendEvent(String server, NetworkMessage message)
+	public NetworkPacketOutEvent(String server, NetworkPacket message)
 	{
 		this.server = server;
+		this.message = message;
+	}
+
+	public NetworkPacketOutEvent(NetworkPacket message)
+	{
+		this.server = null;
 		this.message = message;
 	}
 
@@ -24,7 +31,7 @@ public class NetworkMessageSendEvent extends Event implements CancellableEvent
 		this.server = server;
 	}
 
-	public void setMessage(NetworkMessage message)
+	public void setMessage(NetworkPacket message)
 	{
 		this.message = message;
 	}
@@ -34,7 +41,7 @@ public class NetworkMessageSendEvent extends Event implements CancellableEvent
 		return server;
 	}
 
-	public NetworkMessage getMessage()
+	public NetworkPacket getMessage()
 	{
 		return message;
 	}
