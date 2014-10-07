@@ -1,4 +1,4 @@
-package com.octopod.networkplus.compatable;
+package com.octopod.networkplus.extensions;
 
 import com.octopod.networkplus.CachedServer;
 import com.octopod.networkplus.NetworkPlus;
@@ -6,8 +6,8 @@ import com.octopod.networkplus.Server;
 import com.octopod.networkplus.ServerValue;
 import com.octopod.networkplus.database.ServerDatabase;
 import com.octopod.networkplus.event.EventHandler;
-import com.octopod.networkplus.event.events.NetworkMessageEvent;
-import com.octopod.networkplus.event.events.NetworkMessageSendEvent;
+import com.octopod.networkplus.event.events.NetworkMessageInEvent;
+import com.octopod.networkplus.event.events.NetworkPacketOutEvent;
 import net.minecraft.util.com.google.common.collect.Lists;
 
 import java.util.List;
@@ -15,12 +15,12 @@ import java.util.List;
 /**
  * @author Octopod - octopodsquad@gmail.com
  */
-public class LilypadEssentialsCompatability implements CompatabilityLayer
+public class LilypadEssentialsCompatability implements NetworkExtension
 {
 	@Override
 	public String getName()
 	{
-		return "LilypadEssentials";
+		return "LilypadEssentials Compatability";
 	}
 
 	@Override
@@ -36,13 +36,13 @@ public class LilypadEssentialsCompatability implements CompatabilityLayer
 	}
 
 	@EventHandler
-	public void onMessageSend(NetworkMessageSendEvent event)
+	public void onMessageSend(NetworkPacketOutEvent event)
 	{
 
 	}
 
 	@EventHandler
-	public void onMessageRecieve(NetworkMessageEvent event)
+	public void onMessageRecieve(NetworkMessageInEvent event)
 	{
 		//This runs WAY too much, why??
 		if(event.getChannel().equals("lilyessentials.sync"))
@@ -56,7 +56,7 @@ public class LilypadEssentialsCompatability implements CompatabilityLayer
 			if(!database.serverExists(event.getServer()))
 			{
 				//Create new server
-				database.setServer(new CachedServer(event.getServer()));
+				database.setServer(new CachedServer(event.getServer(), true));
 			}
 			Server server = database.getServer(event.getServer());
 			server.setValue(ServerValue.SERVER_NAME, servername);

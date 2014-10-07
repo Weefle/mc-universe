@@ -1,9 +1,9 @@
-package com.octopod.networkplus.compatable;
+package com.octopod.networkplus.extensions;
 
 /**
  * @author Octopod - octopodsquad@gmail.com
  */
-public interface CompatabilityLayer
+public interface NetworkExtension
 {
 	public String getName();
 
