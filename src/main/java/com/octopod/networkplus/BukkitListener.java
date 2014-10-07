@@ -1,8 +1,8 @@
 package com.octopod.networkplus;
 
 import com.octopod.minecraft.BukkitPlayer;
-import com.octopod.networkplus.messages.MessageOutPlayerJoin;
-import com.octopod.networkplus.messages.MessageOutPlayerLeave;
+import com.octopod.networkplus.packets.PacketOutPlayerJoin;
+import com.octopod.networkplus.packets.PacketOutPlayerLeave;
 import com.octopod.util.minecraft.command.CommandManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -42,13 +42,13 @@ public class BukkitListener implements Listener
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event)
 	{
-		new MessageOutPlayerJoin(new BukkitPlayer(event.getPlayer())).broadcast();
+		new PacketOutPlayerJoin(new BukkitPlayer(event.getPlayer())).broadcast();
 	}
 
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent event)
 	{
-		new MessageOutPlayerLeave(new BukkitPlayer(event.getPlayer())).broadcast();
+		new PacketOutPlayerLeave(new BukkitPlayer(event.getPlayer())).broadcast();
 //		if (QueueManager.instance.isQueued(event.getPlayer()
 //											   .getServerName())) {
 //			QueueManager.instance
