@@ -39,14 +39,24 @@ public class ServerCommands
 		{
 			Server server = database.getServer(servername);
 			int total_players = server.getOnlinePlayers().length;
+			int max_players = server.getMaxPlayers();
 			ChatElement playercount;
 			ChatElement element = new ChatElement("    ");
 			if(server.isExternal())
 			{
+				element.tooltip(
+					Chat.colorize("&7This server was discovered from an external source."),
+					Chat.colorize("&6Players: " + total_players),
+					Chat.colorize("&6Max Players: " + (max_players == -1 ? "&7UNKNOWN" : max_players))
+				);
 				element.
 					append(server.getServerName(), ChatColor.WHITE).
 					sappend(":", ChatColor.DARK_GRAY).append(' ');
 			} else {
+				element.tooltip(
+					Chat.colorize("&6Players: " + total_players),
+					Chat.colorize("&6Max Players: " + (max_players == -1 ? "&7UNKNOWN" : max_players))
+				);
 				element.
 					append(server.getServerName(), ChatColor.AQUA).
 					sappend(":", ChatColor.DARK_GRAY).append(' ');
