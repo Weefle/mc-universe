@@ -11,75 +11,71 @@ public enum StaticChannel
 	 *  Requests a server to add a player to their queue.
 	 *  ARGS: Player, Server ID, Place (?)
 	 */
-	PLAYER_JOIN_QUEUE ("player.queue.join"),
+	OUT_PLAYER_JOIN_QUEUE("player.queue.join"),
 
 	/**
 	 *  Requests a server to clear a player from their queue.
 	 *  ARGS: Player, Server ID, Place (?)
 	 */
-	PLAYER_LEAVE_QUEUE ("player.queue.leave"),
+	OUT_PLAYER_LEAVE_QUEUE("player.queue.leave"),
 
 	/**
 	 * Requests a server to add a player to their ServerFlags entry.
 	 * ARGS: Player, Server
 	 */
-	PLAYER_JOIN_SERVER ("player.server.join"),
+	OUT_PLAYER_JOIN_SERVER("player.server.join"),
 
 	/**
 	 * Requests a server to clear a player to their ServerFlags entry.
 	 * ARGS: Player, Server
 	 */
-	PLAYER_LEAVE_SERVER ("player.server.leave"),
+	OUT_PLAYER_LEAVE_SERVER("player.server.leave"),
 
 	/**
 	 *  To be used in combination with broadcastMessage()
 	 *  Requests a server to send a player a message, if they are online.
 	 *  ARGS: Player, Message
 	 */
-	PLAYER_MESSAGE ("player.message"),
+	OUT_PLAYER_MESSAGE("player.message"),
 
 	/**
 	 *  Requests a server to broadcast a message to everyone.
 	 *  ARGS: Message
 	 */
-	SERVER_BROADCAST("server.alert"),
+	OUT_SERVER_BROADCAST("server.alert"),
 
 	/**
 	 *  Requests a server to send all players on it to another server.
 	 *  ARGS: Server ID
 	 */
-	SERVER_SENDALL ("server.sendall"),
+	OUT_SERVER_SENDALL("server.sendall"),
 
-	SERVER_PING_REQUEST("server.ping.request"),
+	OUT_SERVER_PING("server.ping.out"),
 
-	SERVER_PING_MESSAGE("server.ping"),
-
-	SERVER_OFFLINE("server.offline"),
-
-	SERVER_ONLINE("server.online"),
+	IN_SERVER_PING("server.ping.in"),
 
 	/**
 	 *  Requests a server to send back their current ServerFlags object (via SERVER_FLAGS_CACHE channel)
 	 *  ARGS: (none)
 	 */
-	SERVER_INFO_REQUEST("server.info.request"),
+	OUT_SERVER_DISCOVER("server.discover.out"),
 
 	/**
 	 *  Requests a server to cache a ServerFlags object (via a JSON object of a HashMap)
 	 *  If the server is already cached, the HashMap will merge into the existing one instead.
 	 *  ARGS: Server ID, HashMap (full or partial) (in JSON)
 	 */
-	SERVER_INFO_RETURN("server.info.return"),
+	IN_SERVER_DISCOVER("server.discover.in"),
 
-	SERVER_VALUE_REQUEST("server.value.request"),
+	OUT_SERVER_VALUE_REQUEST("server.value.request"),
 
-	SERVER_VALUE_RETURN("server.value.return"),
+	IN_SERVER_VALUE_REQUEST("server.value.return"),
 
-	PLAYER_WELCOME_REQUEST("player.welcome.request"),
+	OUT_PLAYER_SEND_REQUEST("player.send.out"),
 
-	PLAYER_WELCOME_RETURN("player.welcome.return"),
+	IN_PLAYER_SEND_REQUEST("player.send.in"),
 
-	SERVER_DISPATCH("server.dispatch");
+	OUT_SERVER_DISPATCH("server.dispatch");
 
 	private static HashMap<String, StaticChannel> lookup = new HashMap<>();
 
