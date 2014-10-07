@@ -3,12 +3,11 @@ package com.octopod.networkplus.commands;
 import com.octopod.minecraft.MinecraftCommandSource;
 import com.octopod.networkplus.*;
 import com.octopod.networkplus.database.ServerDatabase;
-import com.octopod.networkplus.event.events.NetworkMessageEvent;
+import com.octopod.networkplus.event.events.NetworkMessageInEvent;
 import com.octopod.networkplus.exceptions.DeserializationException;
-import com.octopod.networkplus.messages.MessageOutServerPing;
-import com.octopod.networkplus.messages.MessageOutServerRequest;
-import com.octopod.networkplus.messages.MessageOutServerValue;
-import com.octopod.networkplus.messages.NetworkMessage;
+import com.octopod.networkplus.packets.*;
+import com.octopod.networkplus.packets.PacketOutServerDiscover;
+import com.octopod.networkplus.packets.NetworkPacket;
 import com.octopod.util.common.Math;
 import com.octopod.util.minecraft.chat.*;
 import com.octopod.util.minecraft.command.Command;
@@ -42,9 +41,16 @@ public class ServerCommands
 			int total_players = server.getOnlinePlayers().length;
 			ChatElement playercount;
 			ChatElement element = new ChatElement("    ");
-			element.
-				append(server.getServerName(), ChatColor.AQUA).
-				sappend(":", ChatColor.DARK_GRAY).append(' ');
+			if(server.isExternal())
+			{
+				element.
+					append(server.getServerName(), ChatColor.WHITE).
+					sappend(":", ChatColor.DARK_GRAY).append(' ');
+			} else {
+				element.
+					append(server.getServerName(), ChatColor.AQUA).
+					sappend(":", ChatColor.DARK_GRAY).append(' ');
+			}
 
 			if(server.getMaxPlayers() == -1)
 			{
@@ -62,7 +68,12 @@ public class ServerCommands
 			}
 			else
 			{
-				playercount.color(ChatColor.GOLD);
+				if(server.isExternal())
+				{
+					playercount.color(ChatColor.WHITE);
+				} else {
+					playercount.color(ChatColor.GOLD);
+				}
 			}
 
 			element.append(playercount);
@@ -120,15 +131,15 @@ public class ServerCommands
 
 	private long ping(final int id, String server)
 	{
-		final NetworkMessage message = new MessageOutServerPing(id);
+		final NetworkPacket message = new PacketOutServerPing(id);
 		long time = System.currentTimeMillis();
 
-		TempListenerFilter<NetworkMessageEvent> filter = new TempListenerFilter<NetworkMessageEvent>()
+		TempListenerFilter<NetworkMessageInEvent> filter = new TempListenerFilter<NetworkMessageInEvent>()
 		{
 			@Override
-			public boolean onEvent(TempListener<NetworkMessageEvent> listener, NetworkMessageEvent event)
+			public boolean onEvent(TempListener<NetworkMessageInEvent> listener, NetworkMessageInEvent event)
 			{
-				if(event.getChannel().equals(message.getReturnChannel()) && Integer.parseInt(event.getParsed()[0]) == id)
+				if(event.getChannel().equals(message.getChannelIn()) && Integer.parseInt(event.getParsed()[0]) == id)
 				{
 					event.setCancelled(true);
 					return true;
@@ -138,7 +149,7 @@ public class ServerCommands
 		};
 
 		message.send(server);
-		return new TempListener<>(NetworkMessageEvent.class, filter).waitFor(500) ? System.currentTimeMillis() - time : -1;
+		return new TempListener<>(NetworkMessageInEvent.class, filter).waitFor(500) ? System.currentTimeMillis() - time : -1;
 	}
 
 	@Command
@@ -149,13 +160,13 @@ public class ServerCommands
 	)
 	public void serverValueRequest(final MinecraftCommandSource source, String server, final ServerValue value)
 	{
-		final NetworkMessage message = new MessageOutServerValue(value);
+		final NetworkPacket message = new PacketOutServerValue(value);
 
-		TempListenerFilter<NetworkMessageEvent> filter = new TempListenerFilter<NetworkMessageEvent>()
+		TempListenerFilter<NetworkMessageInEvent> filter = new TempListenerFilter<NetworkMessageInEvent>()
 		{
-			public boolean onEvent(TempListener<NetworkMessageEvent> listener, NetworkMessageEvent event)
+			public boolean onEvent(TempListener<NetworkMessageInEvent> listener, NetworkMessageInEvent event)
 			{
-				if(event.getChannel().equals(message.getReturnChannel()))
+				if(event.getChannel().equals(message.getChannelIn()))
 				{
 					try
 					{
@@ -181,7 +192,7 @@ public class ServerCommands
 		};
 
 		message.send(server);
-		new TempListener<>(NetworkMessageEvent.class, filter).waitForAsync(500, finish);
+		new TempListener<>(NetworkMessageInEvent.class, filter).waitForAsync(500, finish);
 		source.sendMessage("&aRequesting ServerValue " + value.name() + " from server &f" + server + "&a...");
 	}
 
@@ -193,13 +204,13 @@ public class ServerCommands
 	)
 	public void serverInfoRequest(final MinecraftCommandSource source, String server)
 	{
-		final NetworkMessage message = new MessageOutServerRequest();
+		final NetworkPacket message = new PacketOutServerDiscover();
 
-		TempListenerFilter<NetworkMessageEvent> filter = new TempListenerFilter<NetworkMessageEvent>()
+		TempListenerFilter<NetworkMessageInEvent> filter = new TempListenerFilter<NetworkMessageInEvent>()
 		{
-			public boolean onEvent(TempListener<NetworkMessageEvent> listener, NetworkMessageEvent event)
+			public boolean onEvent(TempListener<NetworkMessageInEvent> listener, NetworkMessageInEvent event)
 			{
-				if(event.getChannel().equals(message.getReturnChannel()))
+				if(event.getChannel().equals(message.getChannelIn()))
 				{
 					Server server = CachedServer.decode(event.getServer(), event.getMessage());
 					source.sendMessage("&aRecieved Server from " + event.getServer() + ", " + server.totalValues() + " values.");
@@ -224,7 +235,7 @@ public class ServerCommands
 		};
 
 		message.send(server);
-		new TempListener<>(NetworkMessageEvent.class, filter).waitForAsync(500, finish);
+		new TempListener<>(NetworkMessageInEvent.class, filter).waitForAsync(500, finish);
 		source.sendMessage("&aRequesting Server from server &f" + server + "&a...");
 	}
 }
