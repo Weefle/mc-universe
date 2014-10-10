@@ -1,24 +1,50 @@
 package com.octopod.switchcore.packets;
 
 import com.octopod.minecraft.MinecraftOfflinePlayer;
-import com.octopod.minecraft.MinecraftPlayer;
-import com.octopod.switchcore.StaticChannel;
+import com.octopod.switchcore.PlayerSwitchResult;
 import com.octopod.switchcore.SwitchCore;
 
 /**
  * @author Octopod - octopodsquad@gmail.com
  */
-
-/**
- * Requests a server to tell us if this player is welcomed on the server or not.
- */
 public class PacketOutPlayerSwitch extends SwitchPacket
 {
+	PlayerSwitchResult result;
 	String UUID;
 
-	public PacketOutPlayerSwitch(MinecraftPlayer player)
+	public PacketOutPlayerSwitch(String UUID)
 	{
-		UUID = player.getUUID();
+		this.UUID = UUID;
+		if(SwitchCore.getInterface().isFull())
+		{
+			this.result = PlayerSwitchResult.SERVER_FULL;
+		}
+		else if(SwitchCore.getInterface().isBanned(UUID))
+		{
+			this.result = PlayerSwitchResult.SERVER_BANNED;
+		}
+		else if(SwitchCore.getInterface().isWhitelisted(UUID))
+		{
+			this.result = PlayerSwitchResult.SERVER_WHITELISTED;
+		}
+		else
+		{
+			this.result = PlayerSwitchResult.SUCCESS;
+		}
+	}
+
+	/**
+	 * This is for testing purposes only, don't use this normally.
+	 */
+	public PacketOutPlayerSwitch()
+	{
+		this.result = PlayerSwitchResult.SUCCESS;
+		this.UUID = "test";
+	}
+
+	public PlayerSwitchResult getResult()
+	{
+		return result;
 	}
 
 	public MinecraftOfflinePlayer getPlayer()
@@ -29,23 +55,5 @@ public class PacketOutPlayerSwitch extends SwitchPacket
 	public String getUUID()
 	{
 		return UUID;
-	}
-
-	@Override
-	public String[] getMessage()
-	{
-		return new String[]{UUID};
-	}
-
-	@Override
-	public String getChannelOut()
-	{
-		return StaticChannel.OUT_PLAYER_SEND_REQUEST.toString();
-	}
-
-	@Override
-	public String getChannelIn()
-	{
-		return StaticChannel.IN_PLAYER_SEND_REQUEST.toString();
 	}
 }

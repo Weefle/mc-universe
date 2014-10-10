@@ -1,7 +1,6 @@
 package com.octopod.switchcore.packets;
 
 import com.octopod.minecraft.MinecraftCommandSource;
-import com.octopod.switchcore.StaticChannel;
 
 /**
  * @author Octopod - octopodsquad@gmail.com
@@ -11,13 +10,13 @@ import com.octopod.switchcore.StaticChannel;
  * Sending this message to a server will cause it to look for any player matching
  * the name and sending that player a message.
  */
-public class PacketOutPlayerMessage extends SwitchPacket
+public class PacketInPlayerMessage extends SwitchPacket
 {
 	String from;
 	String to;
 	String message;
 
-	public PacketOutPlayerMessage(MinecraftCommandSource source, String to, String message)
+	public PacketInPlayerMessage(MinecraftCommandSource source, String to, String message)
 	{
 		this.from = source.getName();
 		this.to = to;
@@ -37,17 +36,5 @@ public class PacketOutPlayerMessage extends SwitchPacket
 	public String getPrivateMessage()
 	{
 		return message;
-	}
-
-	@Override
-	public String[] getMessage()
-	{
-		return new String[]{from, to, message};
-	}
-
-	@Override
-	public String getChannelOut()
-	{
-		return StaticChannel.OUT_PLAYER_MESSAGE.toString();
 	}
 }

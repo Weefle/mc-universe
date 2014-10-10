@@ -2,7 +2,6 @@ package com.octopod.switchcore.packets;
 
 import com.octopod.minecraft.MinecraftOfflinePlayer;
 import com.octopod.minecraft.MinecraftPlayer;
-import com.octopod.switchcore.StaticChannel;
 import com.octopod.switchcore.SwitchCore;
 
 /**
@@ -12,11 +11,11 @@ import com.octopod.switchcore.SwitchCore;
 /**
  * This will tell a server that this player has left the server.
  */
-public class PacketOutPlayerLeave extends SwitchPacket
+public class PacketInPlayerLeave extends SwitchPacket
 {
 	String UUID;
 
-	public PacketOutPlayerLeave(MinecraftPlayer player)
+	public PacketInPlayerLeave(MinecraftPlayer player)
 	{
 		UUID = player.getUUID();
 	}
@@ -29,17 +28,5 @@ public class PacketOutPlayerLeave extends SwitchPacket
 	public String getUUID()
 	{
 		return UUID;
-	}
-
-	@Override
-	public String[] getMessage()
-	{
-		return new String[]{UUID};
-	}
-
-	@Override
-	public String getChannelOut()
-	{
-		return StaticChannel.OUT_PLAYER_LEAVE_SERVER.toString();
 	}
 }

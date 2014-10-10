@@ -2,7 +2,6 @@ package com.octopod.switchcore.packets;
 
 import com.octopod.minecraft.MinecraftOfflinePlayer;
 import com.octopod.minecraft.MinecraftPlayer;
-import com.octopod.switchcore.StaticChannel;
 import com.octopod.switchcore.SwitchCore;
 
 /**
@@ -12,11 +11,11 @@ import com.octopod.switchcore.SwitchCore;
 /**
  * This will tell a server that a player has joined this server.
  */
-public class PacketOutPlayerJoin extends SwitchPacket
+public class PacketInPlayerJoin extends SwitchPacket
 {
 	String UUID;
 
-	public PacketOutPlayerJoin(MinecraftPlayer player)
+	public PacketInPlayerJoin(MinecraftPlayer player)
 	{
 		UUID = player.getUUID();
 	}
@@ -29,17 +28,5 @@ public class PacketOutPlayerJoin extends SwitchPacket
 	public String getUUID()
 	{
 		return UUID;
-	}
-
-	@Override
-	public String[] getMessage()
-	{
-		return new String[]{UUID};
-	}
-
-	@Override
-	public String getChannelOut()
-	{
-		return StaticChannel.OUT_PLAYER_JOIN_SERVER.toString();
 	}
 }

@@ -5,16 +5,16 @@ import com.octopod.switchcore.SwitchCore;
 /**
  * @author Octopod - octopodsquad@gmail.com
  */
-public class PacketOutServerSwitchAll extends SwitchPacket
+public class PacketInServerSwitchAll extends SwitchPacket
 {
 	String destination;
 
-	public PacketOutServerSwitchAll(String destination)
+	public PacketInServerSwitchAll(String destination)
 	{
 		this.destination = destination;
 	}
 
-	public PacketOutServerSwitchAll()
+	public PacketInServerSwitchAll()
 	{
 		this.destination = SwitchCore.getServerIdentifier();
 	}
@@ -22,17 +22,5 @@ public class PacketOutServerSwitchAll extends SwitchPacket
 	public String getDestination()
 	{
 		return destination;
-	}
-
-	@Override
-	public String getChannelOut()
-	{
-		return null;
-	}
-
-	@Override
-	public String[] getMessage()
-	{
-		return new String[0];
 	}
 }
