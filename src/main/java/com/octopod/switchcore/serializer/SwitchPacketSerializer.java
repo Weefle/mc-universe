@@ -7,7 +7,7 @@ import com.octopod.switchcore.packets.SwitchPacket;
 /**
  * @author Octopod - octopodsquad@gmail.com
  */
-public interface SwitchCorePacketSerializer
+public interface SwitchPacketSerializer
 {
 	public String getName();
 

@@ -2,20 +2,17 @@ package com.octopod.switchcore.serializer;
 
 import com.octopod.switchcore.CachedServer;
 import com.octopod.switchcore.Server;
-import com.octopod.switchcore.ServerValue;
 import com.octopod.switchcore.SwitchCore;
 import com.octopod.switchcore.exceptions.DeserializationException;
 import com.octopod.switchcore.packets.SwitchPacket;
 import net.minecraft.util.com.google.gson.*;
-import net.minecraft.util.com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
-import java.util.Map;
 
 /**
  * @author Octopod - octopodsquad@gmail.com
  */
-public class GsonSerializer implements SwitchCorePacketSerializer
+public class GsonSerializer implements SwitchPacketSerializer
 {
 	@Override
 	public String getName() {return "Gson";}
@@ -25,7 +22,7 @@ public class GsonSerializer implements SwitchCorePacketSerializer
 	public GsonSerializer()
 	{
 		GsonBuilder builder = new GsonBuilder();
-		builder.setLongSerializationPolicy(LongSerializationPolicy.STRING);
+		//builder.setLongSerializationPolicy(LongSerializationPolicy.STRING);
 		builder.registerTypeAdapter(SwitchPacket.class, new NetworkPacketAdapter());
 		builder.registerTypeAdapter(Server.class, new ServerAdapter());
 		builder.enableComplexMapKeySerialization();
@@ -89,10 +86,7 @@ public class GsonSerializer implements SwitchCorePacketSerializer
 		@Override
 		public JsonElement serialize(Server server, Type ttype, JsonSerializationContext context)
 		{
-			JsonObject object = new JsonObject();
-			object.add("_server", new JsonPrimitive(server.getServerIdentifier()));
-			object.add("_json", context.serialize(server.toValueMap()));
-			return object;
+			return context.serialize(new CachedServer(server));
 		}
 
 		@Override
@@ -100,10 +94,7 @@ public class GsonSerializer implements SwitchCorePacketSerializer
 		public Server deserialize(JsonElement element, Type ttype, JsonDeserializationContext context)
 			throws JsonParseException
 		{
-			JsonObject object = element.getAsJsonObject();
-			String server = object.get("_server").getAsString();
-			JsonElement json = object.get("_json");
-			return new CachedServer(server, (Map<ServerValue, Object>)context.deserialize(json, new TypeToken<Map<ServerValue, Object>>(){}.getType()));
+			return context.deserialize(element, CachedServer.class);
 		}
 	}
 }

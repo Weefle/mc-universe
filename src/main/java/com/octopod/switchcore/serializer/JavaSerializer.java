@@ -13,7 +13,7 @@ import java.io.ObjectOutputStream;
 /**
  * @author Octopod - octopodsquad@gmail.com
  */
-public class JavaSerializer implements SwitchCorePacketSerializer
+public class JavaSerializer implements SwitchPacketSerializer
 {
 	@Override
 	public String getName() {return "Java";}
