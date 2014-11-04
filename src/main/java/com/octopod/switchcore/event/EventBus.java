@@ -1,109 +1,87 @@
 package com.octopod.switchcore.event;
 
-import com.octopod.util.event.v2.EventHandler;
-import com.octopod.util.event.v2.EventPriority;
-
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
+/**
+ * @author Octopod - octopodsquad@gmail.com
+ */
 public class EventBus
 {
-	private final Map<Class<?>, Object> instances = new HashMap<>();
-	private final Map<Class<? extends Event>, Set<Method>> handlers = new HashMap<>();
+	private final Map<Class<? extends Event>, SortedSet<EventHandler>> handlerMap = new HashMap<>();
 
 	public void unregisterAll()
 	{
-		handlers.clear();
+		handlerMap.clear();
 	}
 
 	public void unregisterAll(Class<? extends Event> event)
 	{
-		if(handlers.containsKey(event)) handlers.get(event).clear();
+		if(handlerMap.containsKey(event)) handlerMap.get(event).clear();
 	}
 
-	@SuppressWarnings("unchecked")
-	public void register(Object object)
+	public int register(Object object)
 	{
-		for(Method method: object.getClass().getDeclaredMethods())
+		int count = 0;
+		for(EventHandler handler: findEventHandlers(object))
 		{
-			if(isHandler(method))
-			{
-				Class<? extends Event> event = (Class<? extends Event>)method.getParameterTypes()[0];
-				if(!handlers.containsKey(event)) handlers.put(event, new TreeSet<>(new HandlerComparator()));
-				handlers.get(event).add(method);
-			}
+			Class<? extends Event> event = handler.getEventType();
+			if(!handlerMap.containsKey(event)) handlerMap.put(event, new TreeSet<EventHandler>());
+			handlerMap.get(event).add(handler);
+			count++;
 		}
-		instances.put(object.getClass(), object);
+		return count;
 	}
 
-	@SuppressWarnings("unchecked")
-	public void unregister(Object object)
+	public int unregister(Object object)
 	{
-		for(Method method: object.getClass().getDeclaredMethods())
+		int count = 0;
+		for(EventHandler handler: findEventHandlers(object))
 		{
-			if(isHandler(method))
-			{
-				Class<? extends Event> event = (Class<? extends Event>)method.getParameterTypes()[0];
-				if(handlers.containsKey(event)) handlers.get(event).remove(method);
-			}
+			Class<? extends Event> event = handler.getEventType();
+			if(handlerMap.containsKey(event)) handlerMap.get(event).remove(handler);
+			count++;
 		}
-		instances.remove(object.getClass());
+		return count;
 	}
 
-	@SuppressWarnings("unchecked")
-    public synchronized void post(final Event event)
-	{
-		if(handlers.containsKey(event.getClass()))
-		{
-			for(Method handler: handlers.get(event.getClass()))
-			{
-				try
-				{
-					handler.invoke(instances.get(handler.getDeclaringClass()), event);
-				}
-				catch (IllegalAccessException | InvocationTargetException e)
-				{
-					e.printStackTrace();
-				}
-			}
-		}
-    }
-
-	@SuppressWarnings("unchecked")
 	public boolean registered(Object object)
 	{
-		for(Method method: object.getClass().getDeclaredMethods())
+		for(EventHandler handler: findEventHandlers(object))
 		{
-			if(isHandler(method))
-			{
-				Class<? extends Event> event = (Class<? extends Event>)method.getParameterTypes()[0];
-
-				if(handlers.containsKey(event)) if(handlers.get(event).contains(method)) return true;
-			}
+			Class<? extends Event> event = handler.getEventType();
+			if(handlerMap.containsKey(event)) if(handlerMap.get(event).contains(handler)) return true;
 		}
 		return false;
 	}
 
-	@SuppressWarnings("unchecked")
-	private boolean isHandler(Method method)
+    public synchronized void post(final Event event)
 	{
-		return
-			method.getParameterTypes().length == 1 &&
-			Event.class.isAssignableFrom(method.getParameterTypes()[0]) &&
-			method.isAnnotationPresent(com.octopod.util.event.v2.EventHandler.class);
-	}
-
-	private class HandlerComparator implements Comparator<Method>
-	{
-		@Override
-		public int compare(Method o1, Method o2)
+		if(handlerMap.containsKey(event.getClass()) || handlerMap.containsKey(Event.class))
 		{
-			com.octopod.util.event.v2.EventHandler h1 = o1.getAnnotation(com.octopod.util.event.v2.EventHandler.class);
-			com.octopod.util.event.v2.EventHandler h2 = o2.getAnnotation(EventHandler.class);
-			Integer p1 = h1 != null ? h1.priority().getPriority() : EventPriority.NORMAL.getPriority();
-			Integer p2 = h2 != null ? h2.priority().getPriority() : EventPriority.NORMAL.getPriority();
-			return p1.compareTo(p2);
+			SortedSet<EventHandler> handlers;
+			if(handlerMap.containsKey(event.getClass()))
+				handlers = new TreeSet<>(handlerMap.get(event.getClass()));
+			else
+				handlers = new TreeSet<>();
+
+			if(handlerMap.containsKey(Event.class))
+				handlers.addAll(handlerMap.get(Event.class));
+
+			for(EventHandler handler: handlers)
+			{
+				handler.invoke(event);
+			}
 		}
+    }
+
+	private static Set<EventHandler> findEventHandlers(Object object)
+	{
+		Set<EventHandler> handlers = new HashSet<>();
+		for(Method method: object.getClass().getMethods())
+		{
+			if(EventHandler.isEventHandler(method)) handlers.add(new EventHandler(method, object));
+		}
+		return handlers;
 	}
 }

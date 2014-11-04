@@ -1,8 +1,9 @@
 package com.octopod.switchcore.event;
 
 /**
- * @author Octopod
- *         Created on 3/15/14
+ * Defines an Event as being cancellable.
+ *
+ * @author Octopod <octopodsquad@gmail.com>
  */
 public interface CancellableEvent
 {
