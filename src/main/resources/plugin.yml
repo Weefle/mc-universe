@@ -1,11 +1,11 @@
-name: SwitchCore
-main: com.octopod.switchcore.BukkitSwitchCorePlugin
+name: Universe
+main: com.hyperfresh.mc-universe.BukkitUniversePlugin
 version: ${version}
 softdepend: ['LilyPad-Connect']
 permissions:
-    switchcore.server.connect:
+    universe.server.connect:
         default: true
-    switchcore.server.list:
+    universe.server.list:
         default: true
-    switchcore.main:
-        default: true 
+    universe.main:
+        default: true

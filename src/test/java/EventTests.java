@@ -1,6 +1,6 @@
-import com.octopod.switchcore.event.AsyncEventHandler;
-import com.octopod.switchcore.event.Event;
-import com.octopod.switchcore.event.EventBus;
+import com.hyperfresh.mcuniverse.event.AsyncEventHandler;
+import com.hyperfresh.mcuniverse.event.Event;
+import com.hyperfresh.mcuniverse.event.EventBus;
 import org.junit.Test;
 
 /**

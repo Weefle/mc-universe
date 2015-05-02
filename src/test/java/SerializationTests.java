@@ -1,12 +1,12 @@
-import com.octopod.switchcore.Server;
-import com.octopod.switchcore.ServerValue;
-import com.octopod.switchcore.packets.PacketInPlayerSwitch;
-import com.octopod.switchcore.packets.PacketOutServerDiscover;
-import com.octopod.switchcore.packets.PacketOutServerPing;
-import com.octopod.switchcore.packets.SwitchPacket;
-import com.octopod.switchcore.serializer.GsonSerializer;
-import com.octopod.switchcore.serializer.JavaSerializer;
-import com.octopod.switchcore.serializer.SwitchCorePacketSerializer;
+import com.hyperfresh.mcuniverse.Server;
+import com.hyperfresh.mcuniverse.ServerValue;
+import com.hyperfresh.mcuniverse.packets.PacketInPlayerSwitch;
+import com.hyperfresh.mcuniverse.packets.PacketOutServerDiscover;
+import com.hyperfresh.mcuniverse.packets.PacketOutServerPing;
+import com.hyperfresh.mcuniverse.packets.Packet;
+import com.hyperfresh.mcuniverse.serializer.GsonSerializer;
+import com.hyperfresh.mcuniverse.serializer.JavaSerializer;
+import com.hyperfresh.mcuniverse.serializer.SwitchCorePacketSerializer;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -45,7 +45,7 @@ public class SerializationTests
 
 	public void testPingPacketSerialization(SwitchCorePacketSerializer serializer)
 	{
-		SwitchPacket packet;
+		Packet packet;
 		String encoded;
 
 		encoded = serializer.serialize(new PacketOutServerPing());
@@ -56,7 +56,7 @@ public class SerializationTests
 
 	public void testServerPacketSerialization(SwitchCorePacketSerializer serializer)
 	{
-		SwitchPacket packet;
+		Packet packet;
 		String encoded;
 
 		encoded = serializer.serialize(new PacketOutServerDiscover(new FakeServer()));
@@ -67,7 +67,7 @@ public class SerializationTests
 
 	public void testSwitchPacketSerialization(SwitchCorePacketSerializer serializer)
 	{
-		SwitchPacket packet;
+		Packet packet;
 		String encoded;
 
 		encoded = serializer.serialize(new PacketInPlayerSwitch());

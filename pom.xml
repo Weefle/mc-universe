@@ -3,19 +3,20 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.octopod</groupId>
-    <artifactId>switchcore</artifactId>
-    <version>TEST_BUILD</version>
+    <artifactId>mc-universe</artifactId>
+    <version>SNAPSHOT</version>
 
-    <name>SwitchCore</name>
+    <name>Universe</name>
+    <inceptionYear>2014</inceptionYear>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <scm>
-        <connection>scm:git:http://git@github.com:TheOctopod/NetworkPlus.git</connection>
-        <developerConnection>scm:git:http://git@github.com:TheOctopod/NetworkPlus.git</developerConnection>
-        <url>scm:git:http://github.com/TheOctopod/NetworkPlus</url>
+        <connection>scm:git:http://git@github.com:hyperfresh/mc-universe.git</connection>
+        <developerConnection>scm:git:http://git@github.com:hyperfresh/mc-universe.git</developerConnection>
+        <url>scm:git:http://github.com/hyperfresh/mc-universe</url>
     </scm>
 
     <developers>
@@ -45,6 +46,7 @@
     </contributors>
 
     <build>
+        <finalName>${project.name}-${project.version}</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -61,7 +63,6 @@
                 </includes>
             </resource>
         </resources>
-        <finalName>original</finalName>
         <plugins>
             <!-- BuildNumber Plugin -->
             <!--
@@ -137,11 +138,11 @@
                     <relocations>
                         <relocation>
                             <pattern>com.octopod.minecraft</pattern>
-                            <shadedPattern>com.octopod.switchcore.minecraft</shadedPattern>
+                            <shadedPattern>com.hyperfresh.mcuniverse.minecraft</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>com.octopod.util</pattern>
-                            <shadedPattern>com.octopod.switchcore.util</shadedPattern>
+                            <shadedPattern>com.hyperfresh.mcuniverse.util</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>com.google.gson</pattern>
