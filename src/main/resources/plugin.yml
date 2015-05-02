@@ -1,0 +1,11 @@
+name: SwitchCore
+main: com.octopod.switchcore.BukkitSwitchCorePlugin
+version: ${version}
+softdepend: ['LilyPad-Connect']
+permissions:
+    switchcore.server.connect:
+        default: true
+    switchcore.server.list:
+        default: true
+    switchcore.main:
+        default: true 
