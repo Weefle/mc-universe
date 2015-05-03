@@ -204,12 +204,12 @@
         <!-- Nixium Repo -->
         <repository>
             <id>nixium-repo</id>
-            <url>http://repo.nixium.com/</url>
+            <url>http://ci.nixium.com/plugin/repository/everything/</url>
         </repository>
 
         <!-- LilyPad Repo -->
         <repository>
-            <id>lilypad</id>
+            <id>lilypad-repo</id>
             <url>http://ci.lilypadmc.org/plugin/repository/everything</url>
         </repository>
 
