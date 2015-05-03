@@ -1,7 +1,6 @@
-NetworkPlus
+Universe
 ======
-
-Multi-server based commands and events.
+##### Minecraft server network synchronization API
 
 Plugin Goals:
 - [ ] Send relevant information dynamically between servers when they need it (as opposed to interval-based)
@@ -12,7 +11,7 @@ Dynamic Information Synchronizing
 ------
 In contrast to interval-based server synchronization, NetworkPlus aims to send relevant information only when it needs to.
 
-Network Packets
+Packets
 ------
 Sending messages cross-server uses a packet-like system. For example, asking a server to bring a player into it is:
 ```java
