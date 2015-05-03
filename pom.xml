@@ -201,59 +201,60 @@
     </build>
 
     <repositories>
-        <!--<repository>
+        <!-- Nixium Repo -->
+        <repository>
             <id>nixium-repo</id>
             <url>http://repo.nixium.com/</url>
-        </repository>-->
+        </repository>
+
+        <!-- LilyPad Repo -->
         <repository>
             <id>lilypad</id>
             <url>http://ci.lilypadmc.org/plugin/repository/everything</url>
         </repository>
-        <repository>
-            <id>bukkit-repo</id>
-            <url>http://repo.bukkit.org/content/groups/public/</url>
-        </repository>
-        <repository>
-            <id>sonatype-snapshots</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-        </repository>
-        <repository>
-            <id>maven-central</id>
-            <url>http://repo1.maven.org/maven2/</url>
-        </repository>
+
+        <!-- Spigot Repo (for Bukkit) -->
+		<repository>
+			<id>spigot-repo</id>
+			<url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
+		</repository>
     </repositories>
 
     <dependencies>
+        <!-- Octal -->
         <dependency>
             <groupId>com.octopod</groupId>
             <artifactId>octal</artifactId>
             <version>0.1.1</version>
         </dependency>
+
+        <!-- LilyPad -->
         <dependency>
             <groupId>lilypad.client.connect</groupId>
             <artifactId>api</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>1.7.10-R0.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>craftbukkit</artifactId>
-            <version>1.7.10-R0.1-SNAPSHOT</version>
-        </dependency>
+
+        <!-- Bukkit -->
+		<dependency>
+			<groupId>org.bukkit</groupId>
+			<artifactId>bukkit</artifactId>
+			<version>1.8-R0.1-SNAPSHOT</version>
+		</dependency>
+
+		<!-- JUnit -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.1</version>
+			<scope>test</scope>
+		</dependency>
+
+        <!-- GSON -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.3</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.8.1</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 
