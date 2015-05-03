@@ -9,7 +9,7 @@ Plugin Goals:
 
 Dynamic Information Synchronizing
 ------
-In contrast to interval-based server synchronization, NetworkPlus aims to send relevant information only when it needs to.
+In contrast to interval-based server synchronization, Universe aims to send relevant information only when it needs to.
 
 Packets
 ------
@@ -50,7 +50,7 @@ Feel free to add your own NetworkPackets; just have your class extend NetworkPac
 
 Temporary Listeners
 ------
-In NetworkPlus, you can create listeners that will run an X amount of times before unregistering itself.
+In Universe, you can create listeners that will run an X amount of times before unregistering itself.
 You can also wait for the listener to unregister, allowing you to wait for responses from other servers.
 There are three parts in creating the TempListener, the type of event, the filter, and the required executions.
 

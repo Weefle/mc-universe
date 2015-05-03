@@ -110,7 +110,7 @@ public class UniverseConfig
 	 */
 	public void load() throws IOException
 	{
-		logger.i("&8====== &7LOADING NETWORKPLUS CONFIGURATION &8======");
+		logger.i("&8====== &7LOADING Universe CONFIGURATION &8======");
 
 		if (!file.exists())
 		{
