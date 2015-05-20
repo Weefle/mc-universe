@@ -1,0 +1,36 @@
+apply plugin: 'java'
+
+group = 'org.hyperfresh.mc.universe'
+version = '0.0.1-SNAPSHOT'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories
+{
+	mavenCentral()
+
+	// Nixium Repo
+	maven { url "http://ci.nixium.com/plugin/repository/everything/" }
+
+	// Repository for Bukkit
+	maven { url "https://hub.spigotmc.org/nexus/content/groups/public/" }
+
+	// LilyPad
+	maven { url "http://ci.lilypadmc.org/plugin/repository/everything" }
+}
+
+dependencies
+{
+	// Bukkit
+	compile 'org.bukkit:bukkit:1.8-R0.1-SNAPSHOT'
+
+	// LilyPad
+	compile 'lilypad.client.connect:api.0.0.1-SNAPSHOT'
+
+	// GSON
+	compile 'com.google.code.gson:gson:2.3.1'
+
+	// JUnit
+	testCompile 'junit:junit:4.8.1'
+}
