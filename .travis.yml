@@ -7,7 +7,7 @@ jdk:
 
 install: true
 
-script: mvn package
+script: gradle
 
 deploy:
     skip_cleanup: true
